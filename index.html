@@ -3690,7 +3690,20 @@
     .brand-text { font-size: 22px; }
   }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@sb/sb-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Fallback: if the primary CDN failed to load the SDK, try unpkg
+window.addEventListener('DOMContentLoaded', function() {
+  if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
+    console.warn('[supabase] primary CDN failed, trying fallback');
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js';
+    s.onload = function() { console.log('[supabase] loaded from unpkg fallback'); };
+    s.onerror = function() { console.error('[supabase] all CDNs failed'); };
+    document.head.appendChild(s);
+  }
+});
+</script>
 </head>
 <body>
 
