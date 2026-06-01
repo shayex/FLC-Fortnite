@@ -4947,14 +4947,12 @@
 </div>
 
 <!-- Diagnostic / Supabase troubleshooting modal -->
-<div class="modal" id="diagnosticModal">
-  <div class="modal-content" style="max-width:600px;">
-    <div class="modal-header">
-      <h3>Diagnostic Supabase</h3>
-      <button class="modal-close" onclick="closeModal('diagnosticModal')">×</button>
-    </div>
-    <div id="diagnosticBody" style="font-size:13px;line-height:1.6;"></div>
-    <div class="modal-actions" style="margin-top:20px;">
+<div class="modal-overlay" id="diagnosticModal">
+  <div class="modal" style="max-width:640px;">
+    <button class="modal-close" onclick="closeModal('diagnosticModal')">×</button>
+    <h3 style="margin-top:0;font-family:var(--font-display);letter-spacing:0.1em;text-transform:uppercase;color:var(--white);">Diagnostic Supabase</h3>
+    <div id="diagnosticBody" style="font-size:13px;line-height:1.6;margin-top:20px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
       <button class="btn btn-ghost" onclick="resetSupabaseConfig()">Reconfigurer Supabase</button>
       <button class="btn btn-ghost" onclick="forceCreateAdmin()">Forcer création admin</button>
       <button class="btn btn-primary" onclick="runDiagnostic()">Re-tester</button>
@@ -10804,14 +10802,14 @@ async function runAuthDiag() {
 }
 
 function autoShowAuthDiag() {
-  // Show the inline diag panel automatically when on the auth screen and
-  // (a) Supabase not configured, OR (b) no users loaded
+  // Auto-open the diagnostic modal when on the auth screen and
+  // (a) Supabase not configured, OR (b) no users loaded.
+  // This way the user immediately sees what's wrong without having to click anywhere.
   const authVisible = document.getElementById('authScreen') &&
                       document.getElementById('authScreen').style.display !== 'none';
   if (!authVisible) return;
   if (!supabase || users.length === 0) {
-    document.getElementById('authDiagPanel').style.display = 'block';
-    runAuthDiag();
+    showDiagnostic();
   }
 }
 
