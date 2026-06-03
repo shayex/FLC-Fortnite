@@ -2482,6 +2482,24 @@
     white-space: nowrap;
   }
 
+  .report-toggle {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .report-toggle:hover { border-color: var(--red); color: var(--text); }
+  .report-toggle.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
   .dash-empty {
     padding: 24px;
     text-align: center;
@@ -3691,6 +3709,7 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // Fallback: if the primary CDN failed to load the SDK, try unpkg
 window.addEventListener('DOMContentLoaded', function() {
@@ -4922,6 +4941,47 @@ window.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
+<!-- Player report modal (1920x1080 image export) -->
+<div class="modal-overlay" id="reportModal">
+  <div class="modal" style="max-width:1000px;width:96%;">
+    <button class="modal-close" onclick="closeModal('reportModal')">×</button>
+    <h3 style="margin-top:0;font-family:var(--font-display);letter-spacing:0.1em;text-transform:uppercase;color:var(--white);">Rapport joueur</h3>
+    <div style="font-size:12px;color:var(--text-mute);margin-bottom:16px;">Aperçu du rapport · format 1920×1080 · prêt à partager</div>
+
+    <!-- Version + language toggles -->
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px;">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:6px;">Version</div>
+        <div style="display:flex;gap:6px;">
+          <button class="report-toggle active" data-version="private" onclick="setReportOption('version','private')">Privée (complète)</button>
+          <button class="report-toggle" data-version="public" onclick="setReportOption('version','public')">Publique (sans contrat)</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:6px;">Langue</div>
+        <div style="display:flex;gap:6px;">
+          <button class="report-toggle active" data-lang="fr" onclick="setReportOption('lang','fr')">🇫🇷 Français</button>
+          <button class="report-toggle" data-lang="en" onclick="setReportOption('lang','en')">🇬🇧 English</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scaled preview wrapper -->
+    <div id="reportPreviewWrap" style="width:100%;overflow:hidden;border:1px solid var(--border);border-radius:10px;background:#000;position:relative;">
+      <!-- The actual 1920x1080 canvas-source, scaled down via transform -->
+      <div id="reportCanvas" style="width:1920px;height:1080px;transform-origin:top left;"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--border);">
+      <button class="btn btn-ghost" onclick="closeModal('reportModal')">Fermer</button>
+      <button class="btn btn-primary" id="reportDownloadBtn" onclick="downloadPlayerReport()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger en PNG
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -5189,7 +5249,16 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(s) { return escapeHtml(s); }
-function todayISO() { return new Date().toISOString().slice(0, 10); }
+// Returns YYYY-MM-DD for a Date object using LOCAL time (not UTC).
+// Using toISOString() would convert to UTC and can shift the day by ±1
+// depending on the timezone — this avoids that bug.
+function dateToLocalISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function todayISO() { return dateToLocalISO(new Date()); }
 function formatDate(iso) {
   if (!iso) return '—';
   const d = new Date(iso);
@@ -8365,6 +8434,469 @@ function setRosterFilter(f) {
   renderRoster();
 }
 
+/* ============================================================
+   PLAYER REPORT (1920x1080 image export)
+   ============================================================ */
+let currentReportPlayerId = null;
+let reportOptions = { version: 'private', lang: 'fr' };
+
+// Translation strings for the report
+const REPORT_I18N = {
+  fr: {
+    reportTitle: 'Rapport joueur · SOVEREIGN',
+    generatedOn: 'Généré le',
+    years: 'ans',
+    powerRanking: 'Power Ranking',
+    cupsPlayed: 'Cups jouées',
+    bestPlace: 'Meilleure place',
+    avgPlace: 'Place moyenne',
+    totalEarnings: 'Gains totaux',
+    prEvolution: 'Évolution Power Ranking',
+    recordsSingular: 'relevé enregistré',
+    recordsPlural: 'relevés enregistrés',
+    notEnoughPR: 'Pas assez de données PR (minimum 2 entrées)',
+    currentForm: 'Forme du moment',
+    contract: 'Contrat',
+    start: 'Début',
+    end: 'Fin',
+    salary: 'Salaire',
+    indefinite: 'CDI',
+    noRecentCup: 'Aucune cup récente',
+    footerNote: 'Document confidentiel',
+    footerNotePublic: 'Profil public',
+    top10: 'Top 10',
+    cupsWord: 'cups',
+    sinceStart: 'depuis le début',
+    lastUpdate: 'dernier relevé',
+    topTiers: 'Top 10 / 50 / 100',
+    bestCup: 'Meilleur gain',
+    recentResults: 'Derniers résultats',
+    colDate: 'Date',
+    colCup: 'Compétition',
+    colPlace: 'Place',
+    colPrize: 'Gain',
+    noCupData: 'Aucune cup enregistrée',
+    formExcellent: 'EXCELLENTE',
+    formGood: 'BONNE',
+    formAvg: 'MOYENNE',
+    formWeak: 'FAIBLE',
+    perMonth: '/mois', perYear: '/an', perWeek: '/sem', once: ' (unique)'
+  },
+  en: {
+    reportTitle: 'Player Report · SOVEREIGN',
+    generatedOn: 'Generated on',
+    years: 'y.o.',
+    powerRanking: 'Power Ranking',
+    cupsPlayed: 'Cups played',
+    bestPlace: 'Best placement',
+    avgPlace: 'Average place',
+    totalEarnings: 'Total earnings',
+    prEvolution: 'Power Ranking Evolution',
+    recordsSingular: 'record',
+    recordsPlural: 'records',
+    notEnoughPR: 'Not enough PR data (minimum 2 entries)',
+    currentForm: 'Current Form',
+    contract: 'Contract',
+    start: 'Start',
+    end: 'End',
+    salary: 'Salary',
+    indefinite: 'Permanent',
+    noRecentCup: 'No recent cups',
+    footerNote: 'Confidential document',
+    footerNotePublic: 'Public profile',
+    top10: 'Top 10',
+    cupsWord: 'cups',
+    sinceStart: 'since start',
+    lastUpdate: 'last update',
+    topTiers: 'Top 10 / 50 / 100',
+    bestCup: 'Best prize',
+    recentResults: 'Recent results',
+    colDate: 'Date',
+    colCup: 'Tournament',
+    colPlace: 'Place',
+    colPrize: 'Prize',
+    noCupData: 'No cups recorded',
+    formExcellent: 'EXCELLENT',
+    formGood: 'GOOD',
+    formAvg: 'AVERAGE',
+    formWeak: 'WEAK',
+    perMonth: '/mo', perYear: '/yr', perWeek: '/wk', once: ' (one-off)'
+  }
+};
+
+function setReportOption(key, value) {
+  reportOptions[key] = value;
+  // Update toggle button active states
+  if (key === 'version') {
+    document.querySelectorAll('[data-version]').forEach(b => b.classList.toggle('active', b.dataset.version === value));
+  } else if (key === 'lang') {
+    document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === value));
+  }
+  // Re-render preview
+  const p = players.find(x => x.id === currentReportPlayerId);
+  if (p) {
+    document.getElementById('reportCanvas').innerHTML = buildReportHtml(p);
+    requestAnimationFrame(scaleReportPreview);
+  }
+}
+
+function openPlayerReport(playerId) {
+  const p = players.find(x => x.id === playerId);
+  if (!p) return;
+  currentReportPlayerId = playerId;
+  // Reset to defaults each open
+  reportOptions = { version: 'private', lang: 'fr' };
+  document.querySelectorAll('[data-version]').forEach(b => b.classList.toggle('active', b.dataset.version === 'private'));
+  document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === 'fr'));
+  const canvas = document.getElementById('reportCanvas');
+  canvas.innerHTML = buildReportHtml(p);
+  document.getElementById('reportModal').classList.add('active');
+  // Scale the 1920px-wide canvas to fit the modal preview
+  requestAnimationFrame(scaleReportPreview);
+}
+
+function scaleReportPreview() {
+  const wrap = document.getElementById('reportPreviewWrap');
+  const canvas = document.getElementById('reportCanvas');
+  if (!wrap || !canvas) return;
+  const availW = wrap.clientWidth;
+  const scale = availW / 1920;
+  canvas.style.transform = 'scale(' + scale + ')';
+  // Set wrapper height to match scaled canvas
+  wrap.style.height = (1080 * scale) + 'px';
+}
+
+// Build the inner HTML of the 1920x1080 report for a player
+function buildReportHtml(p) {
+  const cur = currentPR(p);
+  const prPoints = cur ? fmtPRPoints(cur.points) : '—';
+  const realAge = p.birthdate ? ageFromBirthdate(p.birthdate) : (p.age ? Number(p.age) : null);
+  const countryStr = p.country ? p.country.toUpperCase() : '';
+  const cups = p.cups || [];
+
+  // Cup stats
+  let bestPlace = Infinity, bestPlaceCup = null;
+  let top10 = 0, top50 = 0, top100 = 0, withPos = 0, sumPlace = 0;
+  cups.forEach(c => {
+    const m = String(c.position || '').match(/(\d+)/);
+    if (!m) return;
+    const n = parseInt(m[1], 10);
+    if (isNaN(n)) return;
+    withPos++;
+    sumPlace += n;
+    if (n < bestPlace) { bestPlace = n; bestPlaceCup = c; }
+    if (n <= 10) top10++;
+    if (n <= 50) top50++;
+    if (n <= 100) top100++;
+  });
+  const avgPlace = withPos > 0 ? (sumPlace / withPos).toFixed(1) : '—';
+  const bestPlaceStr = isFinite(bestPlace) ? '#' + bestPlace : '—';
+  const totalPrize = cups.reduce((s, c) => s + (Number(c.prize) || 0), 0);
+
+  // Most profitable cup
+  let topPrizeCup = null;
+  cups.forEach(c => {
+    const prize = Number(c.prize) || 0;
+    if (prize > 0 && (!topPrizeCup || prize > (Number(topPrizeCup.prize) || 0))) topPrizeCup = c;
+  });
+
+  // PR evolution: first vs current
+  const prHistSorted = (p.prHistory || []).slice()
+    .filter(e => e.points != null && e.date)
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  let prDelta = null, prLastDate = null, prFirstVal = null;
+  if (prHistSorted.length >= 1) {
+    prLastDate = prHistSorted[prHistSorted.length - 1].date;
+  }
+  if (prHistSorted.length >= 2) {
+    prFirstVal = Number(prHistSorted[0].points);
+    const curVal = Number(prHistSorted[prHistSorted.length - 1].points);
+    prDelta = curVal - prFirstVal;
+  }
+
+  // Recent form (last 5 cups by date)
+  const recentCups = cups.slice().filter(c => c.date)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+    .slice(0, 5);
+  let formAvg = null;
+  if (recentCups.length > 0) {
+    let t = 0, c = 0;
+    recentCups.forEach(cup => {
+      const m = String(cup.position || '').match(/(\d+)/);
+      if (!m) return;
+      const n = parseInt(m[1], 10);
+      if (isNaN(n)) return;
+      t += cupQualityScore(n); c++;
+    });
+    if (c > 0) formAvg = Math.round(t / c);
+  }
+  const T = REPORT_I18N[reportOptions.lang] || REPORT_I18N.fr;
+  const isPublic = reportOptions.version === 'public';
+  const dateLocale = reportOptions.lang === 'en' ? 'en-GB' : 'fr-FR';
+
+  function shortDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function formLabel(avg) {
+    if (avg == null) return { txt: '—', color: '#64748b' };
+    if (avg >= 70) return { txt: T.formExcellent, color: '#22c55e' };
+    if (avg >= 50) return { txt: T.formGood, color: '#22c55e' };
+    if (avg >= 30) return { txt: T.formAvg, color: '#f59e0b' };
+    return { txt: T.formWeak, color: '#ef4444' };
+  }
+  const form = formLabel(formAvg);
+
+  // PR evolution sparkline (SVG)
+  const prHist = (p.prHistory || []).slice()
+    .filter(e => e.points != null)
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  let prChartSvg = '';
+  if (prHist.length >= 2) {
+    const vals = prHist.map(e => Number(e.points));
+    const minV = Math.min(...vals), maxV = Math.max(...vals);
+    const range = maxV - minV || 1;
+    const W = 760, H = 240, pad = 20;
+    const pts = prHist.map((e, i) => {
+      const x = pad + (i / (prHist.length - 1)) * (W - pad * 2);
+      const y = H - pad - ((Number(e.points) - minV) / range) * (H - pad * 2);
+      return [x, y];
+    });
+    const path = smoothPath(pts);
+    // Area fill path
+    const areaPath = path + ' L ' + pts[pts.length-1][0].toFixed(1) + ',' + (H - pad) + ' L ' + pts[0][0].toFixed(1) + ',' + (H - pad) + ' Z';
+    prChartSvg =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" preserveAspectRatio="none">' +
+        '<defs><linearGradient id="prGrad" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="rgba(220,38,38,0.4)"/>' +
+          '<stop offset="100%" stop-color="rgba(220,38,38,0)"/>' +
+        '</linearGradient></defs>' +
+        '<path d="' + areaPath + '" fill="url(#prGrad)" />' +
+        '<path d="' + path + '" fill="none" stroke="#ef4444" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />' +
+        pts.map(pt => '<circle cx="' + pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="4" fill="#ef4444" />').join('') +
+      '</svg>';
+  } else {
+    prChartSvg = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;font-size:18px;font-style:italic;">' + T.notEnoughPR + '</div>';
+  }
+
+  // Recent form mini bars
+  const formBars = recentCups.length > 0 ? recentCups.slice().reverse().map(c => {
+    const m = String(c.position || '').match(/(\d+)/);
+    const n = m ? parseInt(m[1], 10) : null;
+    const q = (n != null && !isNaN(n)) ? cupQualityScore(n) : 0;
+    const barColor = q >= 70 ? '#22c55e' : q >= 45 ? '#f59e0b' : '#ef4444';
+    const h = Math.max(8, q);
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;">' +
+      '<div style="width:100%;display:flex;align-items:flex-end;height:90px;">' +
+        '<div style="width:100%;height:' + h + '%;background:' + barColor + ';border-radius:6px 6px 0 0;"></div>' +
+      '</div>' +
+      '<div style="font-size:15px;color:#fff;font-weight:700;">' + (n != null ? '#' + n : '—') + '</div>' +
+      '<div style="font-size:11px;color:#cbd5e1;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;">' + escapeHtml(c.name || 'cup') + '</div>' +
+      '<div style="font-size:10px;color:#64748b;text-align:center;">' + shortDate(c.date) + '</div>' +
+    '</div>';
+  }).join('') : '<div style="color:#64748b;font-style:italic;font-size:16px;align-self:center;margin:auto;">' + T.noRecentCup + '</div>';
+
+  // Recent results table (last 5)
+  const resultsRows = recentCups.length > 0 ? recentCups.map(c => {
+    const m = String(c.position || '').match(/(\d+)/);
+    const n = m ? parseInt(m[1], 10) : null;
+    const placeColor = (n != null && n <= 10) ? '#22c55e' : (n != null && n <= 50) ? '#f59e0b' : '#cbd5e1';
+    const prize = Number(c.prize) || 0;
+    return '<tr style="border-bottom:1px solid #232323;">' +
+      '<td style="padding:12px 16px;color:#94a3b8;font-size:15px;white-space:nowrap;">' + shortDate(c.date) + '</td>' +
+      '<td style="padding:12px 16px;color:#fff;font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;max-width:400px;white-space:nowrap;">' + escapeHtml(c.name || '—') + '</td>' +
+      '<td style="padding:12px 16px;font-size:18px;font-weight:900;color:' + placeColor + ';white-space:nowrap;">' + (c.position ? (n != null ? '#' + c.position.replace(/^#/, '') : escapeHtml(String(c.position))) : '—') + '</td>' +
+      '<td style="padding:12px 16px;text-align:right;font-size:16px;color:' + (prize > 0 ? '#22c55e' : '#475569') + ';font-weight:700;white-space:nowrap;">' + (prize > 0 ? fmtNumber(prize) + ' €' : '—') + '</td>' +
+    '</tr>';
+  }).join('') : '<tr><td colspan="4" style="padding:24px;text-align:center;color:#64748b;font-style:italic;">' + T.noCupData + '</td></tr>';
+
+  // Avatar
+  const avatarHtml = p.photo
+    ? '<div style="width:160px;height:160px;border-radius:20px;overflow:hidden;border:3px solid #dc2626;flex-shrink:0;"><img src="' + p.photo + '" style="width:100%;height:100%;object-fit:cover;" crossorigin="anonymous" /></div>'
+    : '<div style="width:160px;height:160px;border-radius:20px;background:linear-gradient(135deg,#dc2626,#991b1b);display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:900;color:#fff;flex-shrink:0;">' + (p.pseudo || '?').charAt(0).toUpperCase() + '</div>';
+
+  // Contract
+  const contractStart = p.contractStart ? formatDate(p.contractStart) : '—';
+  const contractEnd = p.contractIndefinite ? T.indefinite : (p.contractEnd ? formatDate(p.contractEnd) : '—');
+  const salaryStr = (function() {
+    if (!p.salary || Number(p.salary) <= 0) return '—';
+    const freqMap = { monthly: T.perMonth, yearly: T.perYear, weekly: T.perWeek, once: T.once };
+    const freqLabel = freqMap[p.salaryFreq] || T.perMonth;
+    return fmtNumber(Number(p.salary)) + ' €' + freqLabel;
+  })();
+
+  // KPI card helper (with optional subtext line)
+  function kpi(label, value, accent, sub) {
+    return '<div style="flex:1;background:#141414;border:1px solid #2a2a2a;border-radius:14px;padding:20px;border-top:3px solid ' + (accent || '#dc2626') + ';min-width:0;">' +
+      '<div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;">' + label + '</div>' +
+      '<div style="font-size:38px;font-weight:900;color:#fff;line-height:1;font-family:\'Arial Black\',sans-serif;">' + value + '</div>' +
+      (sub ? '<div style="font-size:12px;color:#64748b;margin-top:8px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;">' + sub + '</div>' : '<div style="height:18px;margin-top:8px;"></div>') +
+    '</div>';
+  }
+
+  const today = new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // KPI subtexts
+  const bestPlaceSub = (bestPlaceCup && isFinite(bestPlace))
+    ? (escapeHtml(bestPlaceCup.name || 'cup') + (bestPlaceCup.date ? ' · ' + shortDate(bestPlaceCup.date) : ''))
+    : '';
+  const prSub = (function() {
+    let parts = [];
+    if (prLastDate) parts.push(T.lastUpdate + ' : ' + shortDate(prLastDate));
+    if (prDelta != null) {
+      const sign = prDelta >= 0 ? '+' : '';
+      const color = prDelta >= 0 ? '#22c55e' : '#ef4444';
+      parts.push('<span style="color:' + color + ';font-weight:700;">' + sign + fmtNumber(prDelta) + '</span> ' + T.sinceStart);
+    }
+    return parts.join(' · ');
+  })();
+  const cupsSub = withPos > 0 ? (T.top10 + ' ' + top10 + ' · Top 50 ' + top50 + ' · Top 100 ' + top100) : '';
+  const earningsSub = (topPrizeCup && Number(topPrizeCup.prize) > 0)
+    ? (T.bestCup + ' : ' + fmtNumber(Number(topPrizeCup.prize)) + ' € (' + escapeHtml(topPrizeCup.name || 'cup') + ')')
+    : '';
+  const avgPlaceSub = withPos > 0 ? (withPos + ' ' + T.cupsWord) : '';
+
+  // Full 1920x1080 layout
+  return '' +
+  '<div style="width:1920px;height:1080px;background:linear-gradient(135deg,#0a0a0a 0%,#140808 100%);box-sizing:border-box;padding:48px 70px;font-family:Arial,Helvetica,sans-serif;color:#fff;position:relative;overflow:hidden;">' +
+
+    // Background accent
+    '<div style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(220,38,38,0.15),transparent 70%);pointer-events:none;"></div>' +
+
+    // Header
+    '<div style="display:flex;align-items:center;gap:30px;margin-bottom:32px;position:relative;">' +
+      avatarHtml +
+      '<div style="flex:1;">' +
+        '<div style="font-size:16px;letter-spacing:0.3em;text-transform:uppercase;color:#dc2626;font-weight:700;margin-bottom:6px;">' + T.reportTitle + '</div>' +
+        '<div style="font-size:64px;font-weight:900;line-height:1;font-family:\'Arial Black\',sans-serif;letter-spacing:-1px;">' + escapeHtml(p.pseudo || '—') + '</div>' +
+        '<div style="display:flex;align-items:center;gap:18px;margin-top:14px;font-size:20px;color:#cbd5e1;">' +
+          (p.realName ? '<span>' + escapeHtml(p.realName) + '</span>' : '') +
+          (countryStr ? '<span style="display:inline-flex;align-items:center;gap:8px;background:#dc2626;color:#fff;padding:4px 14px;border-radius:8px;font-size:17px;font-weight:700;letter-spacing:0.1em;">' + escapeHtml(countryStr) + '</span>' : '') +
+          (realAge != null && !isNaN(realAge) ? '<span>' + realAge + ' ' + T.years + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<div style="font-size:13px;color:#64748b;letter-spacing:0.15em;text-transform:uppercase;">' + T.generatedOn + '</div>' +
+        '<div style="font-size:18px;color:#fff;margin-top:4px;">' + today + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // KPI row (with subtexts)
+    '<div style="display:flex;gap:18px;margin-bottom:28px;">' +
+      kpi(T.powerRanking, prPoints, '#dc2626', prSub) +
+      kpi(T.cupsPlayed, cups.length, '#3b82f6', cupsSub) +
+      kpi(T.bestPlace, bestPlaceStr, '#f59e0b', bestPlaceSub) +
+      kpi(T.avgPlace, avgPlace !== '—' ? '#' + avgPlace : '—', '#3b82f6', avgPlaceSub) +
+      kpi(T.totalEarnings, fmtNumber(totalPrize) + ' €', '#22c55e', earningsSub) +
+    '</div>' +
+
+    // Middle row: PR chart + recent form
+    '<div style="display:flex;gap:24px;height:300px;margin-bottom:24px;">' +
+      // PR evolution chart
+      '<div style="flex:1.3;background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:24px;display:flex;flex-direction:column;">' +
+        '<div style="font-size:15px;letter-spacing:0.2em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">' + T.prEvolution + '</div>' +
+        '<div style="font-size:13px;color:#64748b;margin-bottom:14px;">' + prHist.length + ' ' + (prHist.length > 1 ? T.recordsPlural : T.recordsSingular) + '</div>' +
+        '<div style="flex:1;min-height:0;">' + prChartSvg + '</div>' +
+      '</div>' +
+      // Recent form
+      '<div style="flex:1;background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:24px;display:flex;flex-direction:column;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
+          '<div style="font-size:15px;letter-spacing:0.2em;text-transform:uppercase;color:#94a3b8;">' + T.currentForm + '</div>' +
+          '<div style="font-size:15px;font-weight:900;color:' + form.color + ';letter-spacing:0.1em;">' + form.txt + '</div>' +
+        '</div>' +
+        '<div style="flex:1;display:flex;gap:12px;align-items:stretch;">' + formBars + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // Bottom row: results table + (contract if private)
+    '<div style="display:flex;gap:24px;height:' + (isPublic ? '300px' : '300px') + ';">' +
+      // Recent results table
+      '<div style="flex:' + (isPublic ? '1' : '1.5') + ';background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:24px;display:flex;flex-direction:column;overflow:hidden;">' +
+        '<div style="font-size:15px;letter-spacing:0.2em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">' + T.recentResults + '</div>' +
+        '<div style="flex:1;overflow:hidden;">' +
+          '<table style="width:100%;border-collapse:collapse;">' +
+            '<thead><tr style="border-bottom:2px solid #2a2a2a;">' +
+              '<th style="padding:10px 16px;text-align:left;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#64748b;font-weight:700;">' + T.colDate + '</th>' +
+              '<th style="padding:10px 16px;text-align:left;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#64748b;font-weight:700;">' + T.colCup + '</th>' +
+              '<th style="padding:10px 16px;text-align:left;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#64748b;font-weight:700;">' + T.colPlace + '</th>' +
+              '<th style="padding:10px 16px;text-align:right;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#64748b;font-weight:700;">' + T.colPrize + '</th>' +
+            '</tr></thead>' +
+            '<tbody>' + resultsRows + '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>' +
+
+      // Contract — ONLY in private version
+      (isPublic ? '' :
+      '<div style="flex:1;background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;">' +
+        '<div style="font-size:15px;letter-spacing:0.2em;text-transform:uppercase;color:#94a3b8;margin-bottom:24px;">' + T.contract + '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:20px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #232323;padding-bottom:16px;"><span style="font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;">' + T.start + '</span><span style="font-size:24px;font-weight:700;color:#fff;">' + contractStart + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #232323;padding-bottom:16px;"><span style="font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;">' + T.end + '</span><span style="font-size:24px;font-weight:700;color:#fff;">' + contractEnd + '</span></div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;">' + T.salary + '</span><span style="font-size:24px;font-weight:700;color:#22c55e;">' + salaryStr + '</span></div>' +
+        '</div>' +
+      '</div>') +
+    '</div>' +
+
+    // Footer
+    '<div style="position:absolute;bottom:24px;left:70px;right:70px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#475569;border-top:1px solid #2a2a2a;padding-top:16px;">' +
+      '<span style="letter-spacing:0.2em;text-transform:uppercase;font-weight:700;color:#dc2626;">SOVEREIGN ESPORTS</span>' +
+      '<span>' + T.top10 + ' : ' + top10 + '/' + withPos + ' ' + T.cupsWord + ' · ' + (isPublic ? T.footerNotePublic : T.footerNote) + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+async function downloadPlayerReport() {
+  const p = players.find(x => x.id === currentReportPlayerId);
+  if (!p) return;
+  const btn = document.getElementById('reportDownloadBtn');
+  const origHtml = btn.innerHTML;
+  btn.innerHTML = 'Génération...';
+  btn.disabled = true;
+
+  try {
+    if (typeof html2canvas === 'undefined') {
+      showToast('Bibliothèque de capture non chargée', 'error');
+      btn.innerHTML = origHtml; btn.disabled = false;
+      return;
+    }
+    const source = document.getElementById('reportCanvas');
+    // Temporarily reset transform so html2canvas captures at full 1920x1080
+    const prevTransform = source.style.transform;
+    source.style.transform = 'none';
+
+    const canvas = await html2canvas(source, {
+      width: 1920,
+      height: 1080,
+      scale: 1,
+      backgroundColor: '#0a0a0a',
+      logging: false,
+      useCORS: true,
+      allowTaint: true
+    });
+
+    source.style.transform = prevTransform;
+
+    const link = document.createElement('a');
+    const safeName = (p.pseudo || 'joueur').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const versionTag = reportOptions.version === 'public' ? 'public' : 'prive';
+    const langTag = reportOptions.lang === 'en' ? 'en' : 'fr';
+    link.download = 'rapport_' + safeName + '_' + versionTag + '_' + langTag + '_' + dateToLocalISO(new Date()) + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast(reportOptions.lang === 'en' ? 'Report downloaded' : 'Rapport téléchargé', 'success');
+  } catch (e) {
+    console.error('Report generation error:', e);
+    showToast('Erreur lors de la génération : ' + (e.message || e), 'error');
+  } finally {
+    btn.innerHTML = origHtml;
+    btn.disabled = false;
+  }
+}
+
 function renderRoster() {
   const search = (document.getElementById('rosterSearch')?.value || '').toLowerCase().trim();
   let list = players.slice();
@@ -8457,6 +8989,7 @@ function playerCardHtml(p) {
     socialsHtml +
     '<div class="card-footer">' +
       '<button onclick="event.stopPropagation();openPlayerModal(\'' + p.id + '\')">Éditer</button>' +
+      '<button onclick="event.stopPropagation();openPlayerReport(\'' + p.id + '\')">📊 Rapport</button>' +
       '<button class="danger" onclick="event.stopPropagation();deletePlayer(\'' + p.id + '\')">Supprimer</button>' +
     '</div>' +
   '</div>';
@@ -10255,7 +10788,7 @@ function deriveAutoEvents() {
       // Renewal alert: 14 days before end
       const endTs = new Date(p.contractEnd + 'T00:00:00').getTime();
       const renewalTs = endTs - 14 * 86400000;
-      const renewalDate = new Date(renewalTs).toISOString().slice(0, 10);
+      const renewalDate = dateToLocalISO(new Date(renewalTs));
       out.push({
         id: 'auto_re_' + p.id,
         type: 'renewal',
@@ -10275,7 +10808,7 @@ function deriveAutoEvents() {
         const thisYear = new Date().getFullYear();
         [thisYear - 1, thisYear, thisYear + 1, thisYear + 2].forEach(y => {
           const occ = new Date(y, b.getMonth(), b.getDate());
-          const iso = occ.toISOString().slice(0, 10);
+          const iso = dateToLocalISO(occ);
           const age = y - b.getFullYear();
           out.push({
             id: 'auto_bd_' + p.id + '_' + y,
@@ -10426,11 +10959,12 @@ function renderCalendarMonthView() {
     '<div class="cal-dow-row">' + dowLabels.map(d => '<div class="cal-dow-cell">' + d + '</div>').join('') + '</div>' +
     '<div class="cal-days-grid">';
 
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = todayISO();
 
   for (let i = 0; i < numCells; i++) {
-    const d = new Date(startDate.getTime() + i * 86400000);
-    const iso = d.toISOString().slice(0, 10);
+    // Build the date by incrementing day-of-month (avoids DST/ms drift)
+    const d = new Date(year, month, 1 - firstDow + i);
+    const iso = dateToLocalISO(d);
     const isOtherMonth = d.getMonth() !== month;
     const isToday = iso === todayIso;
     const dayEvents = sortEventsForDay(eventsOnDate(iso));
@@ -10464,14 +10998,17 @@ function renderCalendarListView() {
   center.setDate(1);
   const start = new Date(center.getTime() - 15 * 86400000);
   const end = new Date(center.getTime() + 60 * 86400000);
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = todayISO();
 
-  // Build day-by-day map
+  // Build day-by-day map (iterate by calendar day to avoid DST/timezone drift)
   const byDay = {};
-  for (let t = start.getTime(); t <= end.getTime(); t += 86400000) {
-    const iso = new Date(t).toISOString().slice(0, 10);
+  const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  while (cursor <= endDay) {
+    const iso = dateToLocalISO(cursor);
     const evs = eventsOnDate(iso);
     if (evs.length > 0) byDay[iso] = sortEventsForDay(evs);
+    cursor.setDate(cursor.getDate() + 1);
   }
   const sortedDays = Object.keys(byDay).sort();
 
