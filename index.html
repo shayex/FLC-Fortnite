@@ -8809,7 +8809,11 @@ function toggleCompareSelect(playerId) {
 
 
 function renderActivity() {
-  const recent = activityLog.slice().reverse().slice(0, 20);
+  // Sort by timestamp descending (most recent first) — don't rely on array
+  // insertion order, since data loaded from Supabase can come back in any order.
+  const sortedLog = activityLog.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  const recent = sortedLog.slice(0, 20);
   const html = recent.length === 0
     ? '<div style="padding:20px;text-align:center;color:var(--text-mute);font-size:12px;">Aucune activité enregistrée</div>'
     : recent.map(a =>
@@ -8822,10 +8826,9 @@ function renderActivity() {
   document.getElementById('recentActivity').innerHTML = html;
   const fullLog = document.getElementById('fullActivityLog');
   if (fullLog) {
-    const full = activityLog.slice().reverse();
-    fullLog.innerHTML = full.length === 0
+    fullLog.innerHTML = sortedLog.length === 0
       ? '<div style="padding:20px;text-align:center;color:var(--text-mute);font-size:12px;">Aucune activité</div>'
-      : full.map(a =>
+      : sortedLog.map(a =>
           '<div class="activity-item">' +
             '<span class="who">' + escapeHtml(a.userName) + '</span>' +
             '<span class="what">' + escapeHtml(a.description) + '</span>' +
