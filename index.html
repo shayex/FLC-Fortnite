@@ -4580,6 +4580,42 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <div class="admin-panel">
+      <div class="admin-panel-title">🔔 Intégration Discord</div>
+      <div class="admin-panel-sub">Envoie automatiquement les événements importants sur ton serveur Discord via un webhook</div>
+
+      <label class="checkbox-row" style="margin-bottom:14px;">
+        <input type="checkbox" id="dc_enabled" onchange="onDiscordToggle()" />
+        <strong>Activer les notifications Discord</strong>
+      </label>
+
+      <div class="form-group">
+        <label>URL du webhook Discord</label>
+        <input type="url" id="dc_webhookUrl" placeholder="https://discord.com/api/webhooks/..." style="font-family:var(--font-mono);font-size:11px;" />
+        <div style="font-size:11px;color:var(--text-mute);margin-top:4px;">Serveur Discord → Paramètres du salon → Intégrations → Webhooks → Nouveau webhook → Copier l'URL</div>
+      </div>
+
+      <div class="form-group">
+        <label>Seuil "gros gain" (€)</label>
+        <input type="number" id="dc_bigPrize" min="0" placeholder="1000" style="max-width:160px;" />
+      </div>
+
+      <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-mute);margin:16px 0 8px;">Événements à notifier</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
+        <label class="checkbox-row"><input type="checkbox" id="dc_ev_cupWin" /> 🏆 Victoire en cup (Top 1)</label>
+        <label class="checkbox-row"><input type="checkbox" id="dc_ev_bigPrize" /> 💰 Gros gain</label>
+        <label class="checkbox-row"><input type="checkbox" id="dc_ev_prRecord" /> 📈 Nouveau record PR</label>
+        <label class="checkbox-row"><input type="checkbox" id="dc_ev_promotion" /> ✍️ Signature (prospect promu)</label>
+        <label class="checkbox-row"><input type="checkbox" id="dc_ev_newPlayer" /> 🆕 Nouveau joueur</label>
+        <label class="checkbox-row"><input type="checkbox" id="dc_ev_contractExpiring" /> ⚠️ Contrat bientôt expiré</label>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+        <button class="btn btn-primary" onclick="saveDiscordSettings()">Enregistrer</button>
+        <button class="btn btn-ghost" onclick="testDiscordWebhook()">Envoyer un message test</button>
+      </div>
+    </div>
+
+    <div class="admin-panel">
       <div class="admin-panel-title">Données</div>
       <div class="admin-panel-sub">Export, sauvegarde et migration</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -5811,6 +5847,210 @@ document.addEventListener('click', (e) => {
    ============================================================ */
 function genNotifId() { return 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
 
+/* ============================================================
+   DISCORD WEBHOOK
+   Config stored in the sovereign_kv table (shared across users).
+   ============================================================ */
+let discordConfig = {
+  enabled: false,
+  webhookUrl: '',
+  bigPrizeThreshold: 1000,
+  events: {
+    cupWin: true,        // 🏆 Victoire (Top 1)
+    bigPrize: true,      // 💰 Gros gain
+    prRecord: true,      // 📈 Nouveau record PR
+    promotion: true,     // ✍️ Signature (prospect promu)
+    newPlayer: true,     // 🆕 Nouveau joueur
+    contractExpiring: true // ⚠️ Contrat bientôt expiré
+  }
+};
+
+async function loadDiscordConfig() {
+  try {
+    const r = await appStorage.get('sovereign_discord_config');
+    if (r && r.value) {
+      const parsed = typeof r.value === 'string' ? JSON.parse(r.value) : r.value;
+      discordConfig = Object.assign({}, discordConfig, parsed);
+      // Ensure events object merge
+      if (parsed.events) discordConfig.events = Object.assign({}, discordConfig.events, parsed.events);
+    }
+  } catch (e) { /* keep defaults */ }
+}
+
+async function saveDiscordConfig() {
+  await appStorage.set('sovereign_discord_config', JSON.stringify(discordConfig));
+}
+
+// Populate the admin form fields from discordConfig
+function fillDiscordForm() {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) { if (el.type === 'checkbox') el.checked = !!val; else el.value = val; } };
+  set('dc_enabled', discordConfig.enabled);
+  set('dc_webhookUrl', discordConfig.webhookUrl || '');
+  set('dc_bigPrize', discordConfig.bigPrizeThreshold || 1000);
+  set('dc_ev_cupWin', discordConfig.events.cupWin);
+  set('dc_ev_bigPrize', discordConfig.events.bigPrize);
+  set('dc_ev_prRecord', discordConfig.events.prRecord);
+  set('dc_ev_promotion', discordConfig.events.promotion);
+  set('dc_ev_newPlayer', discordConfig.events.newPlayer);
+  set('dc_ev_contractExpiring', discordConfig.events.contractExpiring);
+}
+
+function onDiscordToggle() {
+  // (visual only — actual save happens on "Enregistrer")
+}
+
+async function saveDiscordSettings() {
+  const get = (id) => document.getElementById(id);
+  const url = get('dc_webhookUrl').value.trim();
+  const enabled = get('dc_enabled').checked;
+
+  if (enabled && !url) {
+    showToast('Renseigne l\'URL du webhook pour activer', 'error');
+    return;
+  }
+  if (url && !/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//.test(url)) {
+    showToast('URL de webhook Discord invalide', 'error');
+    return;
+  }
+
+  discordConfig.enabled = enabled;
+  discordConfig.webhookUrl = url;
+  discordConfig.bigPrizeThreshold = Number(get('dc_bigPrize').value) || 1000;
+  discordConfig.events = {
+    cupWin: get('dc_ev_cupWin').checked,
+    bigPrize: get('dc_ev_bigPrize').checked,
+    prRecord: get('dc_ev_prRecord').checked,
+    promotion: get('dc_ev_promotion').checked,
+    newPlayer: get('dc_ev_newPlayer').checked,
+    contractExpiring: get('dc_ev_contractExpiring').checked
+  };
+  await saveDiscordConfig();
+  logActivity('admin', 'Configuration Discord mise à jour');
+  showToast('Configuration Discord enregistrée', 'success');
+}
+
+async function testDiscordWebhook() {
+  const url = document.getElementById('dc_webhookUrl').value.trim();
+  if (!url) { showToast('Renseigne d\'abord l\'URL du webhook', 'error'); return; }
+  if (!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//.test(url)) {
+    showToast('URL de webhook Discord invalide', 'error'); return;
+  }
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'SOVEREIGN',
+        embeds: [{
+          title: '✅ Test de connexion',
+          description: 'Les notifications Discord de SOVEREIGN sont bien configurées !',
+          color: 0xdc2626,
+          footer: { text: 'SOVEREIGN Esports' },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    });
+    if (res.ok || res.status === 204) {
+      showToast('Message test envoyé ! Vérifie ton Discord', 'success');
+    } else {
+      showToast('Échec de l\'envoi (code ' + res.status + ')', 'error');
+    }
+  } catch (e) {
+    showToast('Erreur réseau : ' + (e.message || e), 'error');
+  }
+}
+
+// Check contracts expiring within 14 days and notify Discord once per player per day.
+// Dedup keys are stored in sovereign_kv so a reminder isn't sent on every reload.
+async function checkContractsForDiscord() {
+  if (!discordConfig.enabled || !discordConfig.webhookUrl) return;
+  if (discordConfig.events.contractExpiring === false) return;
+
+  const now = Date.now();
+  const fourteenMs = 14 * 86400000;
+  const todayKey = dateToLocalISO(new Date());
+
+  // Load the set of already-sent keys for today
+  let sentKeys = {};
+  try {
+    const r = await appStorage.get('sovereign_discord_sent');
+    if (r && r.value) {
+      const parsed = typeof r.value === 'string' ? JSON.parse(r.value) : r.value;
+      // Only keep today's entries (auto-cleanup of old keys)
+      if (parsed.day === todayKey) sentKeys = parsed.keys || {};
+    }
+  } catch (e) { /* start fresh */ }
+
+  let changed = false;
+  for (const p of players) {
+    if (p.contractIndefinite || !p.contractEnd) continue;
+    const end = new Date(p.contractEnd + 'T00:00:00').getTime();
+    const diff = end - now;
+    if (diff < 0 || diff > fourteenMs) continue;  // only "expiring soon" (not already expired)
+    const key = 'p_' + p.id;
+    if (sentKeys[key]) continue;  // already sent today
+
+    const days = Math.ceil(diff / 86400000);
+    sendDiscordNotification('contractExpiring', {
+      title: '⚠️ Contrat bientôt expiré',
+      description: 'Le contrat de **' + p.pseudo + '** arrive à échéance',
+      fields: [
+        { name: 'Échéance', value: fmtDateFR(p.contractEnd), inline: true },
+        { name: 'Dans', value: days + ' jour' + (days > 1 ? 's' : ''), inline: true }
+      ],
+      thumbnail: p.photo || null
+    });
+    sentKeys[key] = true;
+    changed = true;
+  }
+
+  if (changed) {
+    await appStorage.set('sovereign_discord_sent', JSON.stringify({ day: todayKey, keys: sentKeys }));
+  }
+}
+
+// Send a message to Discord. eventType must be enabled in config.
+// Colors: green win, gold prize, blue info, orange warning.
+async function sendDiscordNotification(eventType, payload) {
+  if (!discordConfig.enabled) return;
+  if (!discordConfig.webhookUrl) return;
+  if (eventType && discordConfig.events[eventType] === false) return;
+
+  const colorMap = {
+    cupWin: 0x22c55e,
+    bigPrize: 0xfacc15,
+    prRecord: 0x3b82f6,
+    promotion: 0x22c55e,
+    newPlayer: 0x3b82f6,
+    contractExpiring: 0xf59e0b
+  };
+
+  const embed = {
+    title: payload.title || 'SOVEREIGN',
+    description: payload.description || '',
+    color: colorMap[eventType] || 0xdc2626,
+    footer: { text: 'SOVEREIGN Esports' },
+    timestamp: new Date().toISOString()
+  };
+  if (payload.fields) embed.fields = payload.fields;
+  if (payload.thumbnail) embed.thumbnail = { url: payload.thumbnail };
+
+  const body = {
+    username: 'SOVEREIGN',
+    embeds: [embed]
+  };
+
+  try {
+    await fetch(discordConfig.webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    console.warn('[discord] envoi échoué:', e);
+  }
+}
+
 async function pushNotification(type, message, severity, targetUserId) {
   // Add a notification. By default visible to all users (except the author).
   // If targetUserId is set, only that specific user will see this notification.
@@ -5981,8 +6221,17 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 12;  // bump this when you add an entry
+const CHANGELOG_VERSION = 13;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-06-18',
+    title: 'Intégration Discord',
+    items: [
+      'Envoi automatique des événements importants sur Discord via webhook (configurable dans l\'Admin).',
+      'Événements : victoire en cup, gros gain, record PR, signature, nouveau joueur, contrat bientôt expiré.',
+      'Chaque type d\'événement peut être activé ou désactivé, et le seuil "gros gain" est paramétrable.'
+    ]
+  },
   {
     date: '2026-06-18',
     title: 'Explication "Forme du moment"',
@@ -6475,6 +6724,8 @@ function showApp() {
   }
   renderAll();
   updateChangelogBadge();
+  // Fire Discord reminders for contracts expiring soon (deduped per day)
+  checkContractsForDiscord();
 }
 
 /* ============================================================
@@ -6521,6 +6772,7 @@ async function clearActivityLog() {
 async function loadAll() {
   await loadUsers();
   await loadActivityLog();
+  await loadDiscordConfig();
 
   // Players (roster)
   try {
@@ -6758,6 +7010,7 @@ function switchTab(tab) {
     admin: 'tabAdminContent'
   };
   document.getElementById(map[tab]).classList.add('active');
+  if (tab === 'admin') fillDiscordForm();
 }
 
 function renderAll() {
@@ -9630,6 +9883,18 @@ async function savePlayer(e) {
     renderCalendar();
     logActivity('roster', (wasNew ? 'Ajout' : 'Modification') + ' du joueur ' + data.pseudo);
     await pushNotification('roster', (wasNew ? 'Nouveau joueur ajouté au roster : ' : 'Joueur modifié : ') + data.pseudo, 'info');
+    if (wasNew) {
+      const teamLabel = (data.team === 'academy') ? 'Académie' : 'Main';
+      sendDiscordNotification('newPlayer', {
+        title: '🆕 Nouveau joueur',
+        description: '**' + data.pseudo + '** rejoint le roster',
+        fields: [
+          { name: 'Équipe', value: teamLabel, inline: true },
+          { name: 'Jeu', value: data.game || '—', inline: true }
+        ],
+        thumbnail: data.photo || null
+      });
+    }
     showToast(wasNew ? 'Joueur ajouté' : 'Joueur modifié', 'success');
   } catch (err) { showToast(err.message, 'error'); }
 }
@@ -10193,6 +10458,14 @@ async function promoteToPlayer(id) {
   renderCalendar();
   logActivity('roster', 'Promotion de ' + p.pseudo + ' depuis le scouting');
   await pushNotification('roster', p.pseudo + ' a été promu(e) au roster officiel', 'success');
+  sendDiscordNotification('promotion', {
+    title: '✍️ Nouvelle signature !',
+    description: '**' + p.pseudo + '** signe avec SOVEREIGN et rejoint le roster',
+    fields: [
+      { name: 'Équipe', value: (newPlayer.team === 'academy') ? 'Académie' : 'Main', inline: true }
+    ],
+    thumbnail: p.photo || null
+  });
   showToast(p.pseudo + ' ajouté au roster — pense à compléter le contrat', 'success');
   setTimeout(() => { switchTab('roster'); openPlayerModal(newPlayer.id); }, 400);
 }
@@ -10742,6 +11015,15 @@ async function addPrEntry() {
   logActivity('data', 'PR ' + fmtNumber(Number(pts)) + ' pts pour ' + p.pseudo);
   if (isRecord) {
     await pushNotification('data', '📈 Nouveau record PR pour ' + p.pseudo + ' : ' + fmtNumber(newVal) + ' pts (ancien : ' + fmtNumber(previousMax) + ')', 'success');
+    sendDiscordNotification('prRecord', {
+      title: '📈 Nouveau record PR !',
+      description: '**' + p.pseudo + '** bat son record de Power Ranking',
+      fields: [
+        { name: 'Nouveau PR', value: fmtNumber(newVal) + ' pts', inline: true },
+        { name: 'Ancien', value: fmtNumber(previousMax) + ' pts', inline: true }
+      ],
+      thumbnail: p.photo || null
+    });
   } else {
     await pushNotification('data', 'PR mis à jour : ' + p.pseudo + ' → ' + fmtNumber(Number(pts)) + ' pts', 'info');
   }
@@ -10830,7 +11112,7 @@ async function addCupEntry() {
   const posMatch = String(place || '').match(/(\d+)/);
   const posNum = posMatch ? parseInt(posMatch[1], 10) : null;
   const prizeNum = Number(prize) || 0;
-  const BIG_PRIZE_THRESHOLD = 1000;   // € — threshold for "gros gain" notification
+  const BIG_PRIZE_THRESHOLD = (discordConfig.bigPrizeThreshold && discordConfig.bigPrizeThreshold > 0) ? discordConfig.bigPrizeThreshold : 1000;
 
   if (posNum === 1) {
     // 🏆 Victory in cup
@@ -10839,6 +11121,15 @@ async function addCupEntry() {
       '🏆 ' + p.pseudo + ' remporte ' + name + (prizeNum > 0 ? ' — ' + fmtNumber(Math.round(prizeNum)) + ' €' : ' !'),
       'success'
     );
+    sendDiscordNotification('cupWin', {
+      title: '🏆 Victoire en cup !',
+      description: '**' + p.pseudo + '** remporte **' + name + '**',
+      fields: [
+        { name: 'Place', value: '🥇 #1', inline: true },
+        { name: 'Gain', value: prizeNum > 0 ? fmtNumber(Math.round(prizeNum)) + ' €' : '—', inline: true }
+      ],
+      thumbnail: p.photo || null
+    });
   } else if (prizeNum >= BIG_PRIZE_THRESHOLD) {
     // 💰 Big prize
     await pushNotification(
@@ -10846,6 +11137,15 @@ async function addCupEntry() {
       '💰 Gros gain : ' + p.pseudo + ' remporte ' + fmtNumber(Math.round(prizeNum)) + ' € sur ' + name + (place ? ' (' + place + ')' : ''),
       'success'
     );
+    sendDiscordNotification('bigPrize', {
+      title: '💰 Gros gain !',
+      description: '**' + p.pseudo + '** sur **' + name + '**',
+      fields: [
+        { name: 'Place', value: place ? '#' + String(place).replace(/^#/, '') : '—', inline: true },
+        { name: 'Gain', value: fmtNumber(Math.round(prizeNum)) + ' €', inline: true }
+      ],
+      thumbnail: p.photo || null
+    });
   } else {
     // Standard cup notification
     await pushNotification('data', p.pseudo + ' — ' + name + (place ? ' (' + place + ')' : ''), 'success');
