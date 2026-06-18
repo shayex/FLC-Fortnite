@@ -6033,7 +6033,11 @@ async function sendDiscordNotification(eventType, payload) {
     timestamp: new Date().toISOString()
   };
   if (payload.fields) embed.fields = payload.fields;
-  if (payload.thumbnail) embed.thumbnail = { url: payload.thumbnail };
+  // Discord only accepts http(s) image URLs for thumbnails — NOT base64 data URIs.
+  // Including a base64 string makes Discord reject the whole message, so we skip it.
+  if (payload.thumbnail && /^https?:\/\//i.test(payload.thumbnail)) {
+    embed.thumbnail = { url: payload.thumbnail };
+  }
 
   const body = {
     username: 'SOVEREIGN',
@@ -6041,11 +6045,15 @@ async function sendDiscordNotification(eventType, payload) {
   };
 
   try {
-    await fetch(discordConfig.webhookUrl, {
+    const res = await fetch(discordConfig.webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
+    if (!res.ok && res.status !== 204) {
+      console.warn('[discord] rejet (code ' + res.status + ')');
+      if (typeof showToast === 'function') showToast('Discord a rejeté la notification (code ' + res.status + ')', 'error');
+    }
   } catch (e) {
     console.warn('[discord] envoi échoué:', e);
   }
@@ -6221,8 +6229,16 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 13;  // bump this when you add an entry
+const CHANGELOG_VERSION = 14;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-06-18',
+    title: 'Correction notifications Discord',
+    items: [
+      'Les notifications de cup (victoire, gros gain) ne partaient pas quand le joueur avait une photo : Discord refuse les images en base64.',
+      'La photo n\'est désormais incluse que si c\'est une URL web valide, sinon le message part sans vignette.'
+    ]
+  },
   {
     date: '2026-06-18',
     title: 'Intégration Discord',
