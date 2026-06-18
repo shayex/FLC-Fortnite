@@ -5980,8 +5980,24 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 8;  // bump this when you add an entry
+const CHANGELOG_VERSION = 10;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-06-18',
+    title: 'Correction "Top performer du mois"',
+    items: [
+      'Le KPI "Top performer du mois" affichait toujours vide quand tous les relevés PR dataient du mois en cours.',
+      'Il utilise désormais le premier relevé du mois comme point de départ s\'il n\'existe pas de relevé antérieur.'
+    ]
+  },
+  {
+    date: '2026-06-17',
+    title: 'Lisibilité & corrections',
+    items: [
+      'Refonte du bloc "Joueur vs moyenne roster" : colonnes étiquetées (PR, Cups, Gains), valeurs réelles et barres d\'écart à la moyenne.',
+      'Correction de l\'ordre des activités récentes (les plus récentes apparaissent désormais bien en haut).'
+    ]
+  },
   {
     date: '2026-06-16',
     title: 'Filtre 1 mois & journal des mises à jour',
@@ -6827,12 +6843,21 @@ function renderKPIs() {
       const cur = Number(hist[hist.length - 1].points);
       if (!isNaN(cur)) prSumPrev += cur;
     }
-    // Player gain this month
-    const startOfMonthEntry = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() < monthStart).pop();
+    // Player gain this month.
+    // Baseline = last entry BEFORE this month if it exists; otherwise the
+    // FIRST entry within this month (so months with only in-month data still count).
+    const beforeMonthEntries = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() < monthStart);
+    const thisMonthEntries = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() >= monthStart);
+    let baselineEntry = null;
+    if (beforeMonthEntries.length > 0) {
+      baselineEntry = beforeMonthEntries[beforeMonthEntries.length - 1];
+    } else if (thisMonthEntries.length > 0) {
+      baselineEntry = thisMonthEntries[0];
+    }
     const latestEntry = hist[hist.length - 1];
-    if (startOfMonthEntry && latestEntry && latestEntry !== startOfMonthEntry) {
-      const gain = Number(latestEntry.points) - Number(startOfMonthEntry.points);
-      if (!isNaN(gain) && (!topGainerThisMonth || gain > topGainerThisMonth.gain)) {
+    if (baselineEntry && latestEntry && latestEntry !== baselineEntry) {
+      const gain = Number(latestEntry.points) - Number(baselineEntry.points);
+      if (!isNaN(gain) && gain > 0 && (!topGainerThisMonth || gain > topGainerThisMonth.gain)) {
         topGainerThisMonth = { player: p, gain };
       }
     }
