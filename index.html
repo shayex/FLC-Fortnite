@@ -2072,6 +2072,31 @@
     position: relative;
     overflow: hidden;
   }
+  .dash-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 34px 0 4px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .dash-section-title::before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    background: var(--red);
+    border-radius: 2px;
+  }
+  .dash-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .dash-section-title:first-of-type { margin-top: 8px; }
   .dash-card-header {
     display: flex;
     justify-content: space-between;
@@ -2649,6 +2674,24 @@
   }
   .kanban-card-tag.nego { background: rgba(245,158,11,0.12); color: var(--amber); }
   .kanban-card-tag.fa { background: rgba(34,197,94,0.12); color: var(--green); }
+
+  /* Neglected prospect badge + card highlight */
+  .stale-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(245,158,11,0.15);
+    color: var(--amber);
+    white-space: nowrap;
+  }
+  .card.card-stale {
+    border-color: rgba(245,158,11,0.35);
+  }
+  .kanban-card.card-stale {
+    border-color: rgba(245,158,11,0.35);
+  }
   .kanban-card-actions {
     display: flex;
     gap: 6px;
@@ -4160,6 +4203,8 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
+    <div class="dash-section-title">Vue d'ensemble</div>
+
     <!-- KPI Bandeau -->
     <div class="dash-grid" id="kpiRow"></div>
 
@@ -4198,6 +4243,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <!-- ============ PERFORMANCE & RÉSULTATS ============ -->
+    <div class="dash-section-title">Performance &amp; résultats</div>
     <!-- Row: Forme du moment + Meilleure perf all-time -->
     <div class="dash-grid">
       <div class="dash-card span-6">
@@ -4258,6 +4304,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <!-- ============ TENDANCES TEMPORELLES ============ -->
+    <div class="dash-section-title">Tendances temporelles</div>
     <!-- Row: Meilleur mois + Mois en cours vs précédent -->
     <div class="dash-grid">
       <div class="dash-card span-6">
@@ -4294,35 +4341,8 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
-    <!-- Row: Activity heatmap (full width) -->
-    <div class="dash-grid">
-      <div class="dash-card span-12">
-        <div class="dash-card-header">
-          <div>
-            <div class="dash-card-title">Activité — 12 dernières semaines</div>
-            <div class="dash-card-sub">PR enregistrés, cups, actions admin</div>
-          </div>
-          <div id="heatmapTotal" style="font-size:11px;color:var(--text-mute);letter-spacing:0.15em;text-transform:uppercase;"></div>
-        </div>
-        <div class="heatmap-wrap">
-          <div class="heatmap-months" id="heatmapMonths"></div>
-          <div class="heatmap" id="activityHeatmap"></div>
-          <div class="heatmap-legend">
-            <span>Moins</span>
-            <div class="hl-cells">
-              <div class="hl-cell l0"></div>
-              <div class="hl-cell l1"></div>
-              <div class="hl-cell l2"></div>
-              <div class="hl-cell l3"></div>
-              <div class="hl-cell l4"></div>
-            </div>
-            <span>Plus</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- ============ FINANCE & EFFECTIF ============ -->
+    <div class="dash-section-title">Finance &amp; effectif</div>
     <!-- Row: Masse salariale + Pyramide des âges -->
     <div class="dash-grid">
       <div class="dash-card span-6">
@@ -4360,6 +4380,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <!-- ============ RECONNAISSANCE & SUIVI ============ -->
+    <div class="dash-section-title">Reconnaissance &amp; suivi</div>
     <!-- Row: Hall of Fame -->
     <div class="dash-grid">
       <div class="dash-card span-12">
@@ -5581,6 +5602,43 @@ function dateToLocalISO(d) {
   return y + '-' + m + '-' + day;
 }
 function todayISO() { return dateToLocalISO(new Date()); }
+
+// "il y a X" from a timestamp (ms). Returns short FR relative time.
+function timeAgo(ts) {
+  if (!ts) return null;
+  const diff = Date.now() - ts;
+  if (diff < 0) return "à l'instant";
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "à l'instant";
+  if (mins < 60) return 'il y a ' + mins + ' min';
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return 'il y a ' + hours + ' h';
+  const days = Math.floor(hours / 24);
+  if (days < 7) return 'il y a ' + days + ' j';
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return 'il y a ' + weeks + ' sem';
+  const months = Math.floor(days / 30);
+  if (months < 12) return 'il y a ' + months + ' mois';
+  const years = Math.floor(days / 365);
+  return 'il y a ' + years + ' an' + (years > 1 ? 's' : '');
+}
+
+// Number of full days since a timestamp
+function daysSince(ts) {
+  if (!ts) return null;
+  return Math.floor((Date.now() - ts) / 86400000);
+}
+
+// A prospect is "neglected" if not touched for 14+ days (and not signed/rejected)
+const PROSPECT_STALE_DAYS = 14;
+function isProspectStale(p) {
+  if (!p) return false;
+  if (p.status === 'rejected' || p.status === 'signed') return false;
+  const last = p.updatedAt || p.createdAt;
+  const d = daysSince(last);
+  return d != null && d >= PROSPECT_STALE_DAYS;
+}
+
 function formatDate(iso) {
   if (!iso) return '—';
   const d = new Date(iso);
@@ -6237,8 +6295,25 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 15;  // bump this when you add an entry
+const CHANGELOG_VERSION = 17;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-06-29',
+    title: 'Scouting : suivi des mises à jour',
+    items: [
+      'Chaque carte prospect affiche "modifié il y a X" (jours/semaines).',
+      'Badge "⏳ Négligé" sur les prospects non touchés depuis 14 jours et toujours en cours.',
+      'La vue grille trie désormais par dernière modification (les plus récents en haut).'
+    ]
+  },
+  {
+    date: '2026-06-18',
+    title: 'Dashboard : titres de sections',
+    items: [
+      'Ajout de titres de catégories sur le dashboard (Vue d\'ensemble, Performance, Tendances, Finance, Suivi).',
+      'Suppression du bloc "Activité — 12 dernières semaines".'
+    ]
+  },
   {
     date: '2026-06-18',
     title: 'Discord : @everyone + Top 10',
@@ -7089,7 +7164,6 @@ function renderDashboard() {
   renderKPIs();
   renderPRChart();
   renderDashLeaderboard();
-  renderActivityHeatmap();
   renderCupDistribution();
   renderTopEarners();
   renderPayroll();
@@ -9997,7 +10071,7 @@ function renderScouting() {
       (p.currentTeam || '').toLowerCase().includes(search)
     );
   }
-  list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  list.sort((a, b) => ((b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0)));
 
   const container = document.getElementById('scoutingList');
   if (list.length === 0) {
@@ -10071,15 +10145,19 @@ function kanbanCard(p) {
   const teamRaw = (p.currentTeam || '').trim();
   const isFA = isFreeAgent(teamRaw);
   const negoCount = Array.isArray(p.negoThread) ? p.negoThread.length : 0;
+  const stale = isProspectStale(p);
+  const lastTs = p.updatedAt || p.createdAt;
+  const ago = timeAgo(lastTs);
 
   const tags = [];
   tags.push(teamBadge(p.targetTeam || 'main'));
+  if (stale) tags.push('<span class="stale-badge" title="Pas mis à jour depuis ' + daysSince(lastTs) + ' jours">⏳ Négligé</span>');
   if (isFA) tags.push('<span class="kanban-card-tag fa">F/A</span>');
   else if (teamRaw) tags.push('<span class="kanban-card-tag">' + escapeHtml(teamRaw) + '</span>');
   if (p.age) tags.push('<span class="kanban-card-tag">' + p.age + ' ans</span>');
   if (negoCount > 0) tags.push('<span class="kanban-card-tag nego">📋 ' + negoCount + '</span>');
 
-  return '<div class="kanban-card" draggable="true" data-id="' + p.id + '" ' +
+  return '<div class="kanban-card' + (stale ? ' card-stale' : '') + '" draggable="true" data-id="' + p.id + '" ' +
     'ondragstart="kanbanDragStart(event,\'' + p.id + '\')" ondragend="kanbanDragEnd(event)" ' +
     'onclick="openProspectModal(\'' + p.id + '\')">' +
     '<div class="kanban-card-head">' +
@@ -10090,6 +10168,7 @@ function kanbanCard(p) {
       '</div>' +
     '</div>' +
     (tags.length ? '<div class="kanban-card-meta">' + tags.join('') + '</div>' : '') +
+    (ago ? '<div style="font-size:10px;color:' + (stale ? 'var(--amber)' : 'var(--text-mute)') + ';margin-top:8px;">Modifié ' + ago + '</div>' : '') +
     '<div class="kanban-card-actions">' +
       '<button onclick="event.stopPropagation();openProspectModal(\'' + p.id + '\')">Éditer</button>' +
       '<button class="promote" onclick="event.stopPropagation();promoteToPlayer(\'' + p.id + '\')">→ Roster</button>' +
@@ -10213,7 +10292,11 @@ function prospectCardHtml(p) {
     ? '<div class="card-socials">' + socials.join('') + '</div>'
     : '';
 
-  return '<div class="card" onclick="openProspectModal(\'' + p.id + '\')">' +
+  const stale = isProspectStale(p);
+  const lastTs = p.updatedAt || p.createdAt;
+  const ago = timeAgo(lastTs);
+
+  return '<div class="card' + (stale ? ' card-stale' : '') + '" onclick="openProspectModal(\'' + p.id + '\')">' +
     '<div class="card-header">' +
       '<div class="card-avatar">' + avatar + '</div>' +
       '<div class="card-id">' +
@@ -10223,7 +10306,10 @@ function prospectCardHtml(p) {
           '<span>' + escapeHtml(p.game || '—') + '</span>' +
           (p.role ? '<span class="dot"></span><span>' + escapeHtml(p.role) + '</span>' : '') +
         '</div>' +
-        '<div style="margin-top:6px;">' + teamBadge(p.targetTeam || 'main') + '</div>' +
+        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
+          teamBadge(p.targetTeam || 'main') +
+          (stale ? '<span class="stale-badge" title="Pas mis à jour depuis ' + daysSince(lastTs) + ' jours">⏳ Négligé</span>' : '') +
+        '</div>' +
       '</div>' +
       statusBadge(p.status) +
     '</div>' +
@@ -10238,6 +10324,7 @@ function prospectCardHtml(p) {
         const count = Array.isArray(p.negoThread) ? p.negoThread.length : 1;
         return '<div class="info-row"><span class="lbl">Nego</span><span class="val" style="color:var(--amber);font-size:11px;font-style:italic;">📋 ' + count + ' note' + (count > 1 ? 's' : '') + '</span></div>';
       })()) +
+      (ago ? '<div class="info-row"><span class="lbl">Modifié</span><span class="val" style="font-size:11px;color:' + (stale ? 'var(--amber)' : 'var(--text-mute)') + ';">' + ago + '</span></div>' : '') +
     '</div>' +
     socialsHtml +
     '<div class="card-footer">' +
