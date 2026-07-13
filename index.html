@@ -4918,6 +4918,7 @@ window.addEventListener('DOMContentLoaded', function() {
             <option value="">— Choisir —</option>
             <option value="owner">Owner</option>
             <option value="ceo">CEO / Directeur</option>
+            <option value="esport_director">Directeur esport</option>
             <option value="manager">Manager</option>
             <option value="coach">Coach</option>
             <option value="analyst">Analyste</option>
@@ -5237,6 +5238,7 @@ window.addEventListener('DOMContentLoaded', function() {
           <option value="coach">Coach</option>
           <option value="coach_plus">Coach +</option>
           <option value="ceo">CEO</option>
+          <option value="esport_director">Directeur esport</option>
           <option value="hof">HOF (Head of)</option>
           <option value="admin">Admin (accès complet)</option>
         </select>
@@ -6297,9 +6299,16 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 0;  // bump this when you add an entry
+const CHANGELOG_VERSION = 1;  // bump this when you add an entry
 const CHANGELOG = [
-  // Les prochaines mises à jour apparaîtront ici.
+  {
+    date: '2026-07-13',
+    title: 'Nouveau rôle : Directeur esport',
+    items: [
+      'Ajout du rôle "Directeur esport" pour les comptes utilisateurs.',
+      'Ce rôle crée automatiquement une fiche dans l\'onglet Staff (catégorie direction).'
+    ]
+  }
 ];
 
 function getSeenChangelogVersion() {
@@ -10491,9 +10500,9 @@ function renderStaff() {
 
   if (staffFilter !== 'all') {
     if (staffFilter === 'coach') list = list.filter(s => s.role === 'coach');
-    else if (staffFilter === 'manager') list = list.filter(s => s.role === 'manager' || s.role === 'ceo' || s.role === 'owner');
+    else if (staffFilter === 'manager') list = list.filter(s => s.role === 'manager' || s.role === 'ceo' || s.role === 'owner' || s.role === 'esport_director');
     else if (staffFilter === 'analyst') list = list.filter(s => s.role === 'analyst');
-    else if (staffFilter === 'other') list = list.filter(s => !['coach','manager','ceo','owner','analyst'].includes(s.role));
+    else if (staffFilter === 'other') list = list.filter(s => !['coach','manager','ceo','owner','analyst','esport_director'].includes(s.role));
   }
   if (search) {
     list = list.filter(s =>
@@ -10514,7 +10523,8 @@ function renderStaff() {
 
 function roleLabel(r) {
   const map = {
-    owner: 'Owner', ceo: 'CEO', manager: 'Manager', coach: 'Coach',
+    owner: 'Owner', ceo: 'CEO', esport_director: 'Directeur esport',
+    manager: 'Manager', coach: 'Coach',
     analyst: 'Analyste', psy: 'Préparateur', content: 'Content',
     editor: 'Editor', other: 'Staff'
   };
@@ -11271,7 +11281,7 @@ function openUserModal(id) {
 function onUserRoleChange() {
   const role = document.getElementById('u_role').value;
   const hint = document.getElementById('u_staffHint');
-  if (['ceo', 'hof', 'coach_plus'].includes(role)) {
+  if (['ceo', 'esport_director', 'hof', 'coach_plus'].includes(role)) {
     hint.style.display = 'block';
   } else {
     hint.style.display = 'none';
@@ -11279,10 +11289,11 @@ function onUserRoleChange() {
 }
 
 // Roles that auto-create a staff entry
-const STAFF_LINKED_ROLES = ['ceo', 'hof', 'coach_plus'];
+const STAFF_LINKED_ROLES = ['ceo', 'esport_director', 'hof', 'coach_plus'];
 
 function userRoleToStaffRole(role) {
   if (role === 'ceo') return 'ceo';
+  if (role === 'esport_director') return 'esport_director';
   if (role === 'hof') return 'manager';   // HOF = Head Of, treated as manager-tier
   if (role === 'coach_plus') return 'coach';
   return null;
@@ -11398,6 +11409,7 @@ function getRoleShortLabel(role) {
     coach: 'COACH',
     coach_plus: 'COACH +',
     ceo: 'CEO',
+    esport_director: 'DIR. ESPORT',
     hof: 'HOF',
     member: 'MEMBRE'
   };
