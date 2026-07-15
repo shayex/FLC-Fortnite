@@ -6299,8 +6299,16 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 1;  // bump this when you add an entry
+const CHANGELOG_VERSION = 2;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-15',
+    title: 'Couleurs cohérentes sur le dashboard',
+    items: [
+      'Les courbes du graphique "Évolution Power Ranking" utilisent désormais la même couleur que le joueur dans le "Classement PR".',
+      'Les couleurs se décalaient dès qu\'un joueur du roster n\'avait pas encore de relevé PR.'
+    ]
+  },
   {
     date: '2026-07-13',
     title: 'Nouveau rôle : Directeur esport',
@@ -7313,7 +7321,9 @@ function renderPRChart() {
   const endTs = today.getTime();
 
   // Build series with step-forward interpolation (PR stays at last known value)
-  const series = playersWithPR.map((p, idx) => {
+  // Colour is keyed on the player's index in the FULL players array (not in the
+  // filtered list) so it always matches the leaderboard and other blocks.
+  const series = playersWithPR.map((p) => {
     const sorted = (p.prHistory || []).slice().sort((a, b) =>
       new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
     );
@@ -7333,7 +7343,7 @@ function renderPRChart() {
     if (pts.length > 0 && pts[pts.length - 1].t < endTs) {
       pts.push({ t: endTs, v: pts[pts.length - 1].v });
     }
-    return { player: p, color: playerColor(p, idx), pts };
+    return { player: p, color: playerColor(p, players.indexOf(p)), pts };
   }).filter(s => s.pts.length > 0);
 
   if (series.length === 0) {
