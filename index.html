@@ -4559,6 +4559,7 @@ window.addEventListener('DOMContentLoaded', function() {
       <button class="filter-chip team-chip active" data-rteamfilter="all" onclick="setRosterTeamFilter('all')">Toutes équipes</button>
       <button class="filter-chip team-chip" data-rteamfilter="main" onclick="setRosterTeamFilter('main')">Main</button>
       <button class="filter-chip team-chip" data-rteamfilter="academy" onclick="setRosterTeamFilter('academy')">Académie</button>
+      <button class="filter-chip team-chip" data-rteamfilter="cdf" onclick="setRosterTeamFilter('cdf')">CDF</button>
       <input type="text" class="search-input" placeholder="Rechercher un joueur..." id="rosterSearch" oninput="renderRoster()" />
       <div class="scouting-view-toggle">
         <button class="sv-toggle-btn active" data-rview="grid" onclick="setRosterView('grid')" title="Vue cartes">
@@ -4658,6 +4659,7 @@ window.addEventListener('DOMContentLoaded', function() {
       <button class="filter-chip team-chip active" data-teamfilter="all" onclick="setScoutingTeamFilter('all')">Toutes équipes</button>
       <button class="filter-chip team-chip" data-teamfilter="main" onclick="setScoutingTeamFilter('main')">Main</button>
       <button class="filter-chip team-chip" data-teamfilter="academy" onclick="setScoutingTeamFilter('academy')">Académie</button>
+      <button class="filter-chip team-chip" data-teamfilter="cdf" onclick="setScoutingTeamFilter('cdf')">CDF</button>
       <input type="text" class="search-input" placeholder="Rechercher un prospect..." id="scoutingSearch" oninput="renderScouting()" />
       <div class="scouting-view-toggle">
         <button class="sv-toggle-btn active" data-sview="grid" onclick="setScoutingView('grid')" title="Vue grille">
@@ -4832,6 +4834,7 @@ window.addEventListener('DOMContentLoaded', function() {
           <select id="p_team">
             <option value="main">Équipe Main</option>
             <option value="academy">Équipe Académique</option>
+            <option value="cdf">FLC Future (CDF)</option>
           </select>
         </div>
       </div>
@@ -4958,6 +4961,7 @@ window.addEventListener('DOMContentLoaded', function() {
           <select id="sp_targetTeam">
             <option value="main">Équipe Main</option>
             <option value="academy">Équipe Académique</option>
+            <option value="cdf">FLC Future (CDF)</option>
             <option value="undecided">Non défini</option>
           </select>
         </div>
@@ -5715,10 +5719,10 @@ let currentUser = null;
 let currentTab = 'dashboard';
 
 let rosterFilter = 'all';
-let rosterTeamFilter = 'all';  // 'all' | 'main' | 'academy'
+let rosterTeamFilter = 'all';  // 'all' | 'main' | 'academy' | 'cdf'
 let rosterView = 'grid';       // 'grid' | 'table'
 let scoutingFilter = 'all';
-let scoutingTeamFilter = 'all';  // 'all' | 'main' | 'academy'
+let scoutingTeamFilter = 'all';  // 'all' | 'main' | 'academy' | 'cdf'
 let scoutingView = 'grid';  // 'grid' | 'kanban'
 let staffFilter = 'all';
 
@@ -6508,8 +6512,16 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 4;  // bump this when you add an entry
+const CHANGELOG_VERSION = 5;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-16',
+    title: 'Nouvelle structure : FLC Future (CDF)',
+    items: [
+      'Ajout du centre de formation "FLC Future (CDF)" en plus du Main et de l\'Académie.',
+      'Disponible sur les fiches joueurs et prospects, avec badge violet, filtres dédiés (Roster et Scouting) et affichage dans le rapport joueur.'
+    ]
+  },
   {
     date: '2026-07-16',
     title: 'Correction : pastille des mises à jour',
@@ -9754,9 +9766,13 @@ function buildReportHtml(p) {
           (p.realName ? '<span>' + escapeHtml(p.realName) + '</span>' : '') +
           (countryStr ? '<span style="display:inline-flex;align-items:center;gap:8px;background:#c9a45c;color:#0a0a0a;padding:4px 14px;border-radius:8px;font-size:17px;font-weight:700;letter-spacing:0.1em;">' + escapeHtml(countryStr) + '</span>' : '') +
           (realAge != null && !isNaN(realAge) ? '<span>' + realAge + ' ' + T.years + '</span>' : '') +
-          ((p.team === 'academy')
-            ? '<span style="background:#3b82f6;color:#fff;padding:4px 14px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:0.1em;">' + (reportOptions.lang === 'en' ? 'ACADEMY' : 'ACADÉMIE') + '</span>'
-            : '<span style="background:rgba(201,164,92,0.2);color:#c9a45c;padding:4px 14px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:0.1em;">MAIN</span>') +
+          ((function() {
+            // Report team chip — one style per structure
+            const t = p.team || 'main';
+            if (t === 'academy') return '<span style="background:#3b82f6;color:#fff;padding:4px 14px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:0.1em;">' + (reportOptions.lang === 'en' ? 'ACADEMY' : 'ACADÉMIE') + '</span>';
+            if (t === 'cdf') return '<span style="background:#a855f7;color:#fff;padding:4px 14px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:0.1em;">FLC FUTURE</span>';
+            return '<span style="background:rgba(201,164,92,0.2);color:#c9a45c;padding:4px 14px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:0.1em;">MAIN</span>';
+          })()) +
         '</div>' +
       '</div>' +
       '<div style="text-align:right;">' +
@@ -10246,7 +10262,7 @@ async function savePlayer(e) {
     logActivity('roster', (wasNew ? 'Ajout' : 'Modification') + ' du joueur ' + data.pseudo);
     await pushNotification('roster', (wasNew ? 'Nouveau joueur ajouté au roster : ' : 'Joueur modifié : ') + data.pseudo, 'info');
     if (wasNew) {
-      const teamLabel = (data.team === 'academy') ? 'Académie' : 'Main';
+      const teamLabel = teamLabelFull(data.team);
       sendDiscordNotification('newPlayer', {
         title: '🆕 Nouveau joueur',
         description: '**' + data.pseudo + '** rejoint le roster',
@@ -10521,15 +10537,25 @@ function statusBadge(status) {
   return '<span class="badge badge-' + s.tone + '">' + s.label + '</span>';
 }
 
-// Team target badge (Main / Academy / undefined)
+// Plain-text team name (Discord, reports, anywhere a badge isn't suitable)
+function teamLabelFull(team, lang) {
+  const en = (lang === 'en');
+  if (team === 'academy') return en ? 'Academy' : 'Académie';
+  if (team === 'cdf') return en ? 'FLC Future (CDF)' : 'FLC Future (CDF)';
+  if (team === 'undecided') return en ? 'Undecided' : 'Non défini';
+  return 'Main';
+}
+
+// Team target badge (Main / Academy / CDF / undefined)
 function teamBadge(team) {
   const map = {
     main:      { label: 'MAIN',     bg: 'rgba(201,164,92,0.15)',  color: 'var(--red-bright)' },
     academy:   { label: 'ACADÉMIE', bg: 'rgba(59,130,246,0.15)', color: 'var(--blue)' },
+    cdf:       { label: 'CDF',      bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
     undecided: { label: 'NON DÉFINI', bg: 'var(--bg-3)',          color: 'var(--text-mute)' }
   };
   const t = map[team] || map.main;
-  return '<span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.12em;padding:2px 8px;border-radius:6px;background:' + t.bg + ';color:' + t.color + ';">' + t.label + '</span>';
+  return '<span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.12em;padding:2px 8px;border-radius:6px;background:' + t.bg + ';color:' + t.color + ';" title="' + (team === 'cdf' ? 'FLC Future — centre de formation' : '') + '">' + t.label + '</span>';
 }
 
 function prospectCardHtml(p) {
@@ -10905,7 +10931,7 @@ async function promoteToPlayer(id) {
     title: '✍️ Nouvelle signature !',
     description: '**' + p.pseudo + '** signe avec FLC et rejoint le roster',
     fields: [
-      { name: 'Équipe', value: (newPlayer.team === 'academy') ? 'Académie' : 'Main', inline: true }
+      { name: 'Équipe', value: teamLabelFull(newPlayer.team), inline: true }
     ],
     thumbnail: p.photo || null
   });
