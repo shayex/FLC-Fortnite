@@ -2693,6 +2693,127 @@
   .kanban-card.card-stale {
     border-color: rgba(245,158,11,0.35);
   }
+
+  /* Follow-up reminder due */
+  .followup-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(201,164,92,0.18);
+    color: var(--red-bright);
+    white-space: nowrap;
+  }
+  .card.card-followup,
+  .kanban-card.card-followup {
+    border-color: var(--red);
+    box-shadow: 0 0 0 1px rgba(201,164,92,0.25);
+  }
+
+  /* Follow-up reminder controls (prospect modal) */
+  .followup-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .followup-controls .fu-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .followup-controls .fu-input {
+    width: 70px;
+    flex: 0 0 auto;
+    text-align: center;
+  }
+  .followup-controls .fu-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 2px;
+  }
+  .followup-controls .report-toggle { flex: 0 0 auto; }
+  @media (max-width: 520px) {
+    .followup-controls .fu-sep { display: none; }
+  }
+
+  /* === Roster table view === */
+  .rt-wrap {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+  .roster-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 860px;
+  }
+  .rt-th {
+    padding: 12px 14px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .rt-th:hover { color: var(--text); }
+  .rt-th.active { color: var(--red-bright); }
+  .rt-arrow { font-size: 8px; }
+  .rt-row {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .rt-row:last-child { border-bottom: none; }
+  .rt-row:hover { background: var(--bg-2); }
+  .rt-row td { padding: 10px 14px; color: var(--text-dim); vertical-align: middle; }
+  .rt-player { display: flex; align-items: center; gap: 10px; }
+  .rt-avatar {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .rt-avatar-fallback {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-3);
+    color: var(--red-bright);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .rt-name { font-weight: 700; color: var(--text); white-space: nowrap; }
+  .rt-sub { font-size: 11px; color: var(--text-mute); white-space: nowrap; }
+  .rt-btn {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 7px;
+    cursor: pointer;
+    font-size: 11px;
+    margin-left: 4px;
+    transition: border-color 0.15s;
+  }
+  .rt-btn:hover { border-color: var(--red); }
+  .rt-foot {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.05em;
+  }
   .kanban-card-actions {
     display: flex;
     gap: 6px;
@@ -4439,6 +4560,14 @@ window.addEventListener('DOMContentLoaded', function() {
       <button class="filter-chip team-chip" data-rteamfilter="main" onclick="setRosterTeamFilter('main')">Main</button>
       <button class="filter-chip team-chip" data-rteamfilter="academy" onclick="setRosterTeamFilter('academy')">Académie</button>
       <input type="text" class="search-input" placeholder="Rechercher un joueur..." id="rosterSearch" oninput="renderRoster()" />
+      <div class="scouting-view-toggle">
+        <button class="sv-toggle-btn active" data-rview="grid" onclick="setRosterView('grid')" title="Vue cartes">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="sv-toggle-btn" data-rview="table" onclick="setRosterView('table')" title="Vue tableau">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
     </div>
     <div id="rosterList"></div>
   </div>
@@ -4839,6 +4968,22 @@ window.addEventListener('DOMContentLoaded', function() {
           <input type="text" id="sp_currentTeam" placeholder="Free agent, autre org... (tape 'free agent' ou 'FA' pour le badge F/A)" />
         </div>
         <div class="form-group"><label>Contact</label><input type="text" id="sp_contact" placeholder="La personne contactée" /></div>
+      </div>
+
+      <div class="form-group">
+        <label>Rappel de relance</label>
+        <div class="followup-controls">
+          <span class="fu-text">Relancer dans</span>
+          <input type="number" id="sp_followUpDays" min="1" max="365" placeholder="7" class="fu-input" oninput="updateFollowUpPreview()" />
+          <span class="fu-text">jours</span>
+          <span class="fu-sep"></span>
+          <button type="button" class="report-toggle" onclick="setFollowUpDays(3)">+3j</button>
+          <button type="button" class="report-toggle" onclick="setFollowUpDays(7)">+7j</button>
+          <button type="button" class="report-toggle" onclick="setFollowUpDays(14)">+14j</button>
+          <button type="button" class="report-toggle" onclick="clearFollowUp()">Aucun</button>
+        </div>
+        <div id="sp_followUpPreview" style="font-size:11px;color:var(--text-mute);margin-top:8px;"></div>
+        <input type="hidden" id="sp_followUpDate" />
       </div>
 
       <div class="form-section">
@@ -5571,6 +5716,7 @@ let currentTab = 'dashboard';
 
 let rosterFilter = 'all';
 let rosterTeamFilter = 'all';  // 'all' | 'main' | 'academy'
+let rosterView = 'grid';       // 'grid' | 'table'
 let scoutingFilter = 'all';
 let scoutingTeamFilter = 'all';  // 'all' | 'main' | 'academy'
 let scoutingView = 'grid';  // 'grid' | 'kanban'
@@ -5638,6 +5784,35 @@ function isProspectStale(p) {
   const last = p.updatedAt || p.createdAt;
   const d = daysSince(last);
   return d != null && d >= PROSPECT_STALE_DAYS;
+}
+
+/* ============================================================
+   FOLLOW-UP REMINDERS (prospects)
+   followUpDate is stored as a local YYYY-MM-DD string.
+   ============================================================ */
+
+// Is this prospect's follow-up due (today or overdue)? Closed statuses never are.
+function isFollowUpDue(p) {
+  if (!p || !p.followUpDate) return false;
+  if (p.status === 'rejected' || p.status === 'signed' || p.status === 'not_interesting') return false;
+  return p.followUpDate <= todayISO();
+}
+
+// Whole days until the follow-up: 0 = today, negative = overdue
+function followUpDaysLeft(p) {
+  if (!p || !p.followUpDate) return null;
+  const target = new Date(p.followUpDate + 'T00:00:00').getTime();
+  const today = new Date(todayISO() + 'T00:00:00').getTime();
+  return Math.round((target - today) / 86400000);
+}
+
+// Short human label for the reminder ("aujourd'hui", "dans 3 j", "en retard de 2 j")
+function followUpLabel(p) {
+  const d = followUpDaysLeft(p);
+  if (d == null) return null;
+  if (d === 0) return "aujourd'hui";
+  if (d < 0) return 'en retard de ' + Math.abs(d) + ' j';
+  return 'dans ' + d + ' j';
 }
 
 function formatDate(iso) {
@@ -6075,6 +6250,40 @@ async function checkContractsForDiscord() {
   }
 }
 
+// Raise an in-app notification for each prospect whose follow-up is due.
+// Deduped per prospect per day so reloading doesn't spam the bell.
+async function checkFollowUpsForNotifications() {
+  const todayKey = todayISO();
+
+  let sentKeys = {};
+  try {
+    const r = await appStorage.get('sovereign_followup_notified');
+    if (r && r.value) {
+      const parsed = typeof r.value === 'string' ? JSON.parse(r.value) : r.value;
+      if (parsed.day === todayKey) sentKeys = parsed.keys || {};
+    }
+  } catch (e) { /* start fresh */ }
+
+  let changed = false;
+  for (const p of prospects) {
+    if (!isFollowUpDue(p)) continue;
+    const key = 'fu_' + p.id;
+    if (sentKeys[key]) continue;
+
+    const left = followUpDaysLeft(p);
+    const msg = left < 0
+      ? '🔔 Relance en retard de ' + Math.abs(left) + ' j : ' + p.pseudo
+      : '🔔 Relance prévue aujourd\'hui : ' + p.pseudo;
+    await pushNotification('scouting', msg, left < 0 ? 'warn' : 'info');
+    sentKeys[key] = true;
+    changed = true;
+  }
+
+  if (changed) {
+    await appStorage.set('sovereign_followup_notified', JSON.stringify({ day: todayKey, keys: sentKeys }));
+  }
+}
+
 // Send a message to Discord. eventType must be enabled in config.
 // Colors: green win, gold prize, blue info, orange warning.
 async function sendDiscordNotification(eventType, payload) {
@@ -6299,8 +6508,24 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 2;  // bump this when you add an entry
+const CHANGELOG_VERSION = 4;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-16',
+    title: 'Correction : pastille des mises à jour',
+    items: [
+      'La pastille signalant une nouvelle mise à jour ne s\'affichait plus depuis la remise à zéro du journal.'
+    ]
+  },
+  {
+    date: '2026-07-16',
+    title: 'Rappels de relance & vue tableau du roster',
+    items: [
+      'Scouting : programme un rappel "Relancer dans X jours" sur un prospect (raccourcis +3j / +7j / +14j), depuis sa fiche.',
+      'Un badge "🔔 À relancer" apparaît sur la carte le jour venu, et une notification est envoyée dans la cloche.',
+      'Roster : nouveau bouton de bascule cartes / tableau, avec tri par colonne (PR, cups, gains, contrat...).'
+    ]
+  },
   {
     date: '2026-07-15',
     title: 'Couleurs cohérentes sur le dashboard',
@@ -6331,7 +6556,11 @@ function markChangelogSeen() {
 function updateChangelogBadge() {
   const badge = document.getElementById('changelogBadge');
   if (!badge) return;
-  badge.style.display = (getSeenChangelogVersion() < CHANGELOG_VERSION) ? 'flex' : 'none';
+  // Nothing to announce -> no badge.
+  if (!CHANGELOG || CHANGELOG.length === 0) { badge.style.display = 'none'; return; }
+  // Use "!==" (not "<") so the badge still appears after the counter is reset
+  // to a lower number: a stored "seen" of 21 vs a current 3 must still notify.
+  badge.style.display = (getSeenChangelogVersion() !== CHANGELOG_VERSION) ? 'flex' : 'none';
 }
 
 function openChangelog() {
@@ -6732,6 +6961,7 @@ function showApp() {
   updateChangelogBadge();
   // Fire Discord reminders for contracts expiring soon (deduped per day)
   checkContractsForDiscord();
+  checkFollowUpsForNotifications();
 }
 
 /* ============================================================
@@ -9648,7 +9878,8 @@ async function downloadPlayerReport() {
   }
 }
 
-function renderRoster() {
+// Returns the roster filtered by the active chips + search (shared by both views)
+function getFilteredRoster() {
   const search = (document.getElementById('rosterSearch')?.value || '').toLowerCase().trim();
   let list = players.slice();
 
@@ -9679,7 +9910,19 @@ function renderRoster() {
       (p.game || '').toLowerCase().includes(search)
     );
   }
+  return list;
+}
 
+function setRosterView(view) {
+  rosterView = view;
+  document.querySelectorAll('[data-rview]').forEach(b => b.classList.toggle('active', b.dataset.rview === view));
+  renderRoster();
+}
+
+function renderRoster() {
+  if (rosterView === 'table') { renderRosterTable(); return; }
+
+  const list = getFilteredRoster();
   list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
   const container = document.getElementById('rosterList');
@@ -9690,6 +9933,118 @@ function renderRoster() {
   }
 
   container.innerHTML = '<div class="grid">' + list.map(p => playerCardHtml(p)).join('') + '</div>';
+}
+
+/* ============================================================
+   ROSTER TABLE VIEW — dense, sortable alternative to the cards
+   ============================================================ */
+let rosterSort = { key: 'pr', dir: 'desc' };
+
+function setRosterSort(key) {
+  if (rosterSort.key === key) {
+    rosterSort.dir = rosterSort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    rosterSort.key = key;
+    // Text sorts default ascending, numeric sorts default descending
+    rosterSort.dir = (key === 'pseudo' || key === 'country' || key === 'team') ? 'asc' : 'desc';
+  }
+  renderRosterTable();
+}
+
+function renderRosterTable() {
+  const container = document.getElementById('rosterList');
+  const list = getFilteredRoster();
+
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty"><h3>Roster vide</h3><p>Aucun joueur ne correspond aux critères.</p>' +
+      '<button class="btn btn-primary" onclick="openPlayerModal()">Ajouter joueur</button></div>';
+    return;
+  }
+
+  // Precompute sortable values once per player
+  const rows = list.map(p => {
+    const cur = currentPR(p);
+    const cups = (p.cups || []).length;
+    const gains = totalGains(p);
+    let daysLeft = null;
+    if (!p.contractIndefinite && p.contractEnd) {
+      daysLeft = Math.ceil((new Date(p.contractEnd + 'T00:00:00').getTime() - Date.now()) / 86400000);
+    }
+    return {
+      p,
+      pseudo: p.pseudo || '',
+      team: p.team || 'main',
+      country: p.country || '',
+      age: Number(ageFromBirthdate(p.birthdate) || p.age || 0),
+      pr: cur ? Number(cur.points) : 0,
+      cups, gains, daysLeft
+    };
+  });
+
+  const dir = rosterSort.dir === 'asc' ? 1 : -1;
+  rows.sort((a, b) => {
+    const k = rosterSort.key;
+    let va = a[k], vb = b[k];
+    if (k === 'contract') { va = a.daysLeft ?? 999999; vb = b.daysLeft ?? 999999; }
+    if (typeof va === 'string') return va.localeCompare(vb, 'fr') * dir;
+    return ((va || 0) - (vb || 0)) * dir;
+  });
+
+  function th(key, label, align) {
+    const active = rosterSort.key === key;
+    const arrow = active ? (rosterSort.dir === 'asc' ? ' ▲' : ' ▼') : '';
+    return '<th class="rt-th' + (active ? ' active' : '') + '" style="text-align:' + (align || 'left') + ';" onclick="setRosterSort(\'' + key + '\')">' +
+      label + '<span class="rt-arrow">' + arrow + '</span></th>';
+  }
+
+  const head = '<thead><tr>' +
+    th('pseudo', 'Joueur') +
+    th('team', 'Équipe') +
+    th('country', 'Pays') +
+    th('age', 'Âge', 'right') +
+    th('pr', 'PR', 'right') +
+    th('cups', 'Cups', 'right') +
+    th('gains', 'Gains', 'right') +
+    th('contract', 'Contrat') +
+    '<th class="rt-th" style="text-align:right;">Actions</th>' +
+  '</tr></thead>';
+
+  const body = rows.map(r => {
+    const p = r.p;
+    const avatar = p.photo
+      ? '<img src="' + escapeAttr(p.photo) + '" class="rt-avatar" />'
+      : '<span class="rt-avatar rt-avatar-fallback">' + (p.pseudo || '?').charAt(0).toUpperCase() + '</span>';
+    const flag = p.country ? flagImg(p.country, 16) : '—';
+    let contractCell = '<span style="color:var(--text-mute);">—</span>';
+    if (p.contractIndefinite) {
+      contractCell = '<span style="color:var(--green);font-size:11px;">Indéterminé</span>';
+    } else if (p.contractEnd) {
+      const tone = r.daysLeft < 0 ? 'var(--text-mute)' : (r.daysLeft < 30 ? 'var(--amber)' : 'var(--text-dim)');
+      const suffix = r.daysLeft < 0 ? ' (expiré)' : ' (J-' + r.daysLeft + ')';
+      contractCell = '<span style="color:' + tone + ';font-size:11px;">' + fmtDateFR(p.contractEnd) + suffix + '</span>';
+    }
+    return '<tr class="rt-row" onclick="openPlayerModal(\'' + p.id + '\')">' +
+      '<td><div class="rt-player">' + avatar +
+        '<div style="min-width:0;">' +
+          '<div class="rt-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
+          (p.realName ? '<div class="rt-sub">' + escapeHtml(p.realName) + '</div>' : '') +
+        '</div></div></td>' +
+      '<td>' + teamBadge(r.team) + '</td>' +
+      '<td>' + flag + '</td>' +
+      '<td style="text-align:right;">' + (r.age > 0 ? r.age : '—') + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);color:var(--white);font-weight:700;">' + (r.pr > 0 ? fmtNumber(r.pr) : '—') + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);">' + r.cups + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);color:' + (r.gains > 0 ? 'var(--green)' : 'var(--text-mute)') + ';">' + (r.gains > 0 ? fmtNumber(r.gains) + ' €' : '—') + '</td>' +
+      '<td>' + contractCell + '</td>' +
+      '<td style="text-align:right;white-space:nowrap;">' +
+        '<button class="rt-btn" onclick="event.stopPropagation();openPlayerReport(\'' + p.id + '\')" title="Rapport">📊</button>' +
+        '<button class="rt-btn" onclick="event.stopPropagation();openPlayerModal(\'' + p.id + '\')" title="Éditer">✏️</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  container.innerHTML = '<div class="rt-wrap"><table class="roster-table">' + head + '<tbody>' + body + '</tbody></table></div>' +
+    '<div class="rt-foot">' + rows.length + ' joueur' + (rows.length > 1 ? 's' : '') + ' · clique sur une colonne pour trier</div>';
 }
 
 function playerCardHtml(p) {
@@ -10050,16 +10405,18 @@ function kanbanCard(p) {
   const stale = isProspectStale(p);
   const lastTs = p.updatedAt || p.createdAt;
   const ago = timeAgo(lastTs);
+  const due = isFollowUpDue(p);
 
   const tags = [];
   tags.push(teamBadge(p.targetTeam || 'main'));
+  if (due) tags.push('<span class="followup-badge" title="Relance prévue le ' + fmtDateFR(p.followUpDate) + '">🔔 À relancer</span>');
   if (stale) tags.push('<span class="stale-badge" title="Pas mis à jour depuis ' + daysSince(lastTs) + ' jours">⏳ Négligé</span>');
   if (isFA) tags.push('<span class="kanban-card-tag fa">F/A</span>');
   else if (teamRaw) tags.push('<span class="kanban-card-tag">' + escapeHtml(teamRaw) + '</span>');
   if (p.age) tags.push('<span class="kanban-card-tag">' + p.age + ' ans</span>');
   if (negoCount > 0) tags.push('<span class="kanban-card-tag nego">📋 ' + negoCount + '</span>');
 
-  return '<div class="kanban-card' + (stale ? ' card-stale' : '') + '" draggable="true" data-id="' + p.id + '" ' +
+  return '<div class="kanban-card' + (stale ? ' card-stale' : '') + (due ? ' card-followup' : '') + '" draggable="true" data-id="' + p.id + '" ' +
     'ondragstart="kanbanDragStart(event,\'' + p.id + '\')" ondragend="kanbanDragEnd(event)" ' +
     'onclick="openProspectModal(\'' + p.id + '\')">' +
     '<div class="kanban-card-head">' +
@@ -10198,8 +10555,10 @@ function prospectCardHtml(p) {
   const stale = isProspectStale(p);
   const lastTs = p.updatedAt || p.createdAt;
   const ago = timeAgo(lastTs);
+  const due = isFollowUpDue(p);
+  const fuLabel = followUpLabel(p);
 
-  return '<div class="card' + (stale ? ' card-stale' : '') + '" onclick="openProspectModal(\'' + p.id + '\')">' +
+  return '<div class="card' + (stale ? ' card-stale' : '') + (due ? ' card-followup' : '') + '" onclick="openProspectModal(\'' + p.id + '\')">' +
     '<div class="card-header">' +
       '<div class="card-avatar">' + avatar + '</div>' +
       '<div class="card-id">' +
@@ -10211,6 +10570,7 @@ function prospectCardHtml(p) {
         '</div>' +
         '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
           teamBadge(p.targetTeam || 'main') +
+          (due ? '<span class="followup-badge" title="Relance prévue le ' + fmtDateFR(p.followUpDate) + '">🔔 À relancer</span>' : '') +
           (stale ? '<span class="stale-badge" title="Pas mis à jour depuis ' + daysSince(lastTs) + ' jours">⏳ Négligé</span>' : '') +
         '</div>' +
       '</div>' +
@@ -10227,6 +10587,7 @@ function prospectCardHtml(p) {
         const count = Array.isArray(p.negoThread) ? p.negoThread.length : 1;
         return '<div class="info-row"><span class="lbl">Nego</span><span class="val" style="color:var(--amber);font-size:11px;font-style:italic;">📋 ' + count + ' note' + (count > 1 ? 's' : '') + '</span></div>';
       })()) +
+      (fuLabel ? '<div class="info-row"><span class="lbl">Relance</span><span class="val" style="font-size:11px;color:' + (due ? 'var(--red-bright)' : 'var(--text-dim)') + ';">🔔 ' + fmtDateFR(p.followUpDate) + ' (' + fuLabel + ')</span></div>' : '') +
       (ago ? '<div class="info-row"><span class="lbl">Modifié</span><span class="val" style="font-size:11px;color:' + (stale ? 'var(--amber)' : 'var(--text-mute)') + ';">' + ago + '</span></div>' : '') +
     '</div>' +
     socialsHtml +
@@ -10250,6 +10611,63 @@ function isFreeAgent(s) {
 
 // Working copy of the nego thread while the prospect modal is open
 let editingNegoThread = [];
+
+// --- Follow-up form controls -------------------------------------------
+// The user picks a delay in days; we store the resolved date.
+function setFollowUpDays(n) {
+  const input = document.getElementById('sp_followUpDays');
+  if (input) input.value = n;
+  updateFollowUpPreview();
+}
+
+function clearFollowUp() {
+  const input = document.getElementById('sp_followUpDays');
+  const hidden = document.getElementById('sp_followUpDate');
+  if (input) input.value = '';
+  if (hidden) hidden.value = '';
+  const prev = document.getElementById('sp_followUpPreview');
+  if (prev) prev.innerHTML = '<span style="color:var(--text-mute);">Aucun rappel programmé.</span>';
+}
+
+function updateFollowUpPreview() {
+  const input = document.getElementById('sp_followUpDays');
+  const hidden = document.getElementById('sp_followUpDate');
+  const prev = document.getElementById('sp_followUpPreview');
+  if (!input || !hidden || !prev) return;
+  const n = parseInt(input.value, 10);
+  if (!n || isNaN(n) || n < 1) {
+    hidden.value = '';
+    prev.innerHTML = '<span style="color:var(--text-mute);">Aucun rappel programmé.</span>';
+    return;
+  }
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  const iso = dateToLocalISO(d);
+  hidden.value = iso;
+  prev.innerHTML = '🔔 Relance prévue le <strong style="color:var(--red-bright);">' + fmtDateFR(iso) + '</strong>';
+}
+
+// Fill the follow-up controls when opening an existing prospect
+function fillFollowUpForm(p) {
+  const input = document.getElementById('sp_followUpDays');
+  const hidden = document.getElementById('sp_followUpDate');
+  const prev = document.getElementById('sp_followUpPreview');
+  if (!input || !hidden || !prev) return;
+  if (p && p.followUpDate) {
+    hidden.value = p.followUpDate;
+    const left = followUpDaysLeft(p);
+    // Show remaining days so editing keeps the existing date unless changed
+    input.value = left > 0 ? left : '';
+    const lbl = followUpLabel(p);
+    const overdue = left != null && left <= 0;
+    prev.innerHTML = '🔔 Relance prévue le <strong style="color:' + (overdue ? 'var(--amber)' : 'var(--red-bright)') + ';">' +
+      fmtDateFR(p.followUpDate) + '</strong> <span style="color:' + (overdue ? 'var(--amber)' : 'var(--text-mute)') + ';">(' + lbl + ')</span>';
+  } else {
+    input.value = '';
+    hidden.value = '';
+    prev.innerHTML = '<span style="color:var(--text-mute);">Aucun rappel programmé.</span>';
+  }
+}
 
 function openProspectModal(id) {
   editingProspectId = id || null;
@@ -10289,12 +10707,14 @@ function openProspectModal(id) {
     formPhoto = p.photo || '';
     if (formPhoto) document.getElementById('prospectPhotoPreview').innerHTML = '<img src="' + formPhoto + '" />';
     else clearPhotoPreview('prospect');
+    fillFollowUpForm(p);
   } else {
     document.getElementById('prospectModalTitle').textContent = 'Ajouter un prospect';
     document.getElementById('prospectForm').reset();
     document.getElementById('sp_targetTeam').value = 'main';
     mountCountrySelect('sp_country_wrapper', 'sp_country', '');
     clearPhotoPreview('prospect');
+    fillFollowUpForm(null);
   }
   document.getElementById('sp_negoNewEntry').value = '';
   renderNegoThread();
@@ -10385,6 +10805,7 @@ async function saveProspect(e) {
     age: document.getElementById('sp_age').value,
     status: document.getElementById('sp_status').value,
     targetTeam: document.getElementById('sp_targetTeam').value,
+    followUpDate: document.getElementById('sp_followUpDate').value || '',
     currentTeam: document.getElementById('sp_currentTeam').value.trim(),
     contact: document.getElementById('sp_contact').value.trim(),
     twitter: document.getElementById('sp_twitter').value.trim(),
