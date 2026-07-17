@@ -3978,6 +3978,12 @@
     transition: all 0.15s;
   }
   /* --- merge tool --- */
+  .tags-help {
+    font-size: 11px;
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
   .cup-tag .tag-count {
     font-size: 10px;
     font-family: var(--font-mono);
@@ -5301,25 +5307,31 @@ window.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
-      <!-- Saved competition names (tags) -->
+      <!-- Saved competition names (collapsed by default — the input has autocomplete) -->
       <div class="data-tags-section">
         <div class="data-tags-header">
           <span class="data-tags-label">Compétitions enregistrées</span>
           <div style="display:flex;align-items:center;gap:10px;">
             <span class="data-tags-count" id="cupTagsCount">0 enregistrée</span>
+            <button type="button" class="report-toggle" id="cupTagsToggle" onclick="toggleCupTagsPanel()">Gérer</button>
+          </div>
+        </div>
+        <div id="cupTagsPanel" style="display:none;">
+          <div class="tags-help">Ces noms sont proposés automatiquement quand tu tapes dans « Nom de la cup ». Utilise « Fusionner » pour regrouper des noms qui désignent la même compétition.</div>
+          <div style="margin-bottom:10px;">
             <button type="button" class="report-toggle" id="cupMergeToggle" onclick="toggleCupMergeMode()">Fusionner</button>
           </div>
-        </div>
-        <div id="cupMergeBar" class="cup-merge-bar" style="display:none;">
-          <span class="cmb-hint">Sélectionne les noms qui désignent la même compétition, puis choisis le nom à conserver.</span>
-          <div class="cmb-row">
-            <span id="cupMergeCount" class="cmb-count">0 sélectionné</span>
-            <select id="cupMergeTarget" class="cmb-select"><option value="">— Nom à conserver —</option></select>
-            <button type="button" class="btn btn-primary btn-sm" onclick="executeCupMerge()">Fusionner</button>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="toggleCupMergeMode()">Annuler</button>
+          <div id="cupMergeBar" class="cup-merge-bar" style="display:none;">
+            <span class="cmb-hint">Sélectionne les noms qui désignent la même compétition, puis choisis le nom à conserver.</span>
+            <div class="cmb-row">
+              <span id="cupMergeCount" class="cmb-count">0 sélectionné</span>
+              <select id="cupMergeTarget" class="cmb-select"><option value="">— Nom à conserver —</option></select>
+              <button type="button" class="btn btn-primary btn-sm" onclick="executeCupMerge()">Fusionner</button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="toggleCupMergeMode()">Annuler</button>
+            </div>
           </div>
+          <div class="data-tags-list" id="cupTagsList"></div>
         </div>
-        <div class="data-tags-list" id="cupTagsList"></div>
       </div>
 
       <div class="data-block-list" id="cupHistoryList"></div>
@@ -6647,8 +6659,17 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 7;  // bump this when you add an entry
+const CHANGELOG_VERSION = 8;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-17',
+    title: 'Saisie des cups allégée',
+    items: [
+      'La liste des compétitions enregistrées est désormais repliée : le champ « Nom de la cup » propose déjà les noms existants quand tu tapes.',
+      'Les suggestions sont classées par usage réel (les plus courantes en premier).',
+      'Un bouton « Gérer » déplie la liste complète et l\'outil de fusion.'
+    ]
+  },
   {
     date: '2026-07-17',
     title: 'Comparaison des structures',
@@ -7302,11 +7323,17 @@ async function unregisterCupName(name) {
   }
 }
 
-// Rebuild the <datalist> attached to the cup name input
+// Rebuild the <datalist> attached to the cup name input.
+// Sorted by real usage so the most relevant suggestions come first.
 function refreshCupNameDatalist() {
   const dl = document.getElementById('cupNameDatalist');
   if (!dl) return;
-  dl.innerHTML = cupNamesGlobal.map(n => '<option value="' + escapeAttr(n) + '"></option>').join('');
+  const counts = cupNameUsageCounts();
+  const names = cupNamesGlobal.slice().sort((a, b) => {
+    const d = (counts[b] || 0) - (counts[a] || 0);
+    return d !== 0 ? d : a.localeCompare(b, 'fr');
+  });
+  dl.innerHTML = names.map(n => '<option value="' + escapeAttr(n) + '"></option>').join('');
 }
 
 /* ============================================================
@@ -11518,6 +11545,11 @@ function openDataModal(playerId) {
   // Always start with the merge tool closed
   cupMergeMode = false;
   cupMergeSelection.clear();
+  cupTagsExpanded = false;
+  const tp = document.getElementById('cupTagsPanel');
+  const tt = document.getElementById('cupTagsToggle');
+  if (tp) tp.style.display = 'none';
+  if (tt) { tt.textContent = 'Gérer'; tt.classList.remove('active'); }
   const mb = document.getElementById('cupMergeBar');
   const mt = document.getElementById('cupMergeToggle');
   if (mb) mb.style.display = 'none';
@@ -11658,6 +11690,22 @@ function renderCupHistoryList(p) {
    ============================================================ */
 let cupMergeMode = false;
 let cupMergeSelection = new Set();
+let cupTagsExpanded = false;
+
+// Show/hide the name-management panel. Collapsed by default: the input
+// already autocompletes, so the full list is only needed for housekeeping.
+function toggleCupTagsPanel() {
+  cupTagsExpanded = !cupTagsExpanded;
+  const panel = document.getElementById('cupTagsPanel');
+  const btn = document.getElementById('cupTagsToggle');
+  if (panel) panel.style.display = cupTagsExpanded ? 'block' : 'none';
+  if (btn) {
+    btn.textContent = cupTagsExpanded ? 'Masquer' : 'Gérer';
+    btn.classList.toggle('active', cupTagsExpanded);
+  }
+  // Leaving the panel also exits merge mode
+  if (!cupTagsExpanded && cupMergeMode) toggleCupMergeMode();
+}
 
 // How many cups (across ALL players) use each name
 function cupNameUsageCounts() {
@@ -11793,6 +11841,7 @@ async function executeCupMerge() {
   cupMergeSelection.clear();
   updateCupMergeBar();
   refreshDataModalView();
+  refreshCupNameDatalist();   // merged names must disappear from autocomplete
   renderData();
   renderRoster();
   renderDashboard();
