@@ -2097,6 +2097,74 @@
     background: var(--border);
   }
   .dash-section-title:first-of-type { margin-top: 8px; }
+
+  /* === Comparaison des structures === */
+  .ts-card {
+    border-top: 3px solid var(--ts-color);
+    display: flex;
+    flex-direction: column;
+  }
+  .ts-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ts-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ts-color);
+  }
+  .ts-count {
+    font-size: 11px;
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .ts-row:last-child { border-bottom: none; }
+  .ts-lbl {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .ts-val {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ts-row.ts-best .ts-val { color: var(--green); }
+  .ts-crown { font-size: 11px; color: var(--green); }
+  .ts-empty { opacity: 0.65; }
+  .ts-none {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-mute);
+    font-style: italic;
+    padding: 24px 8px;
+    line-height: 1.5;
+  }
   .dash-card-header {
     display: flex;
     justify-content: space-between;
@@ -3909,6 +3977,57 @@
     cursor: pointer;
     transition: all 0.15s;
   }
+  /* --- merge tool --- */
+  .cup-tag .tag-count {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-mute);
+    background: var(--bg-3);
+    padding: 1px 6px;
+    border-radius: 999px;
+  }
+  .cup-tag.selectable { border-style: dashed; }
+  .cup-tag.selectable:hover { border-color: var(--red); border-style: solid; }
+  .cup-tag.selected {
+    background: rgba(201,164,92,0.15);
+    border-color: var(--red);
+    border-style: solid;
+    color: var(--red-bright);
+    font-weight: 700;
+  }
+  .cup-tag.selected .tag-count { background: rgba(201,164,92,0.25); color: var(--red-bright); }
+  .report-toggle.active { background: var(--red); border-color: var(--red); color: #0a0a0a; font-weight: 700; }
+  .cup-merge-bar {
+    background: var(--bg-2);
+    border: 1px solid var(--red);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .cup-merge-bar .cmb-hint {
+    display: block;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-bottom: 10px;
+  }
+  .cup-merge-bar .cmb-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cup-merge-bar .cmb-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--red-bright);
+    white-space: nowrap;
+  }
+  .cup-merge-bar .cmb-select {
+    flex: 1;
+    min-width: 180px;
+    max-width: 340px;
+  }
+
   .cup-tag:hover {
     border-color: var(--red);
     color: var(--red-bright);
@@ -4359,6 +4478,10 @@ window.addEventListener('DOMContentLoaded', function() {
         <div id="dashLeaderboard"></div>
       </div>
     </div>
+
+    <!-- ============ COMPARAISON DES STRUCTURES ============ -->
+    <div class="dash-section-title">Comparaison des structures</div>
+    <div class="dash-grid" id="teamCompareRow"></div>
 
     <!-- ============ PERFORMANCE & RÉSULTATS ============ -->
     <div class="dash-section-title">Performance &amp; résultats</div>
@@ -5182,7 +5305,19 @@ window.addEventListener('DOMContentLoaded', function() {
       <div class="data-tags-section">
         <div class="data-tags-header">
           <span class="data-tags-label">Compétitions enregistrées</span>
-          <span class="data-tags-count" id="cupTagsCount">0 enregistrée</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="data-tags-count" id="cupTagsCount">0 enregistrée</span>
+            <button type="button" class="report-toggle" id="cupMergeToggle" onclick="toggleCupMergeMode()">Fusionner</button>
+          </div>
+        </div>
+        <div id="cupMergeBar" class="cup-merge-bar" style="display:none;">
+          <span class="cmb-hint">Sélectionne les noms qui désignent la même compétition, puis choisis le nom à conserver.</span>
+          <div class="cmb-row">
+            <span id="cupMergeCount" class="cmb-count">0 sélectionné</span>
+            <select id="cupMergeTarget" class="cmb-select"><option value="">— Nom à conserver —</option></select>
+            <button type="button" class="btn btn-primary btn-sm" onclick="executeCupMerge()">Fusionner</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="toggleCupMergeMode()">Annuler</button>
+          </div>
         </div>
         <div class="data-tags-list" id="cupTagsList"></div>
       </div>
@@ -6512,8 +6647,26 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 5;  // bump this when you add an entry
+const CHANGELOG_VERSION = 7;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-17',
+    title: 'Comparaison des structures',
+    items: [
+      'Nouvelle section sur le dashboard : une carte par structure (Main, Académie, FLC Future).',
+      'Compare le nombre de joueurs, le PR moyen et total, la place moyenne, les gains et les Top 10.',
+      'La meilleure structure sur chaque critère est marquée d\'une étoile.'
+    ]
+  },
+  {
+    date: '2026-07-16',
+    title: 'Nettoyage des noms de compétitions',
+    items: [
+      'La liste des compétitions enregistrées est désormais triée par usage réel (les plus courantes en premier).',
+      'Nouvel outil "Fusionner" : sélectionne plusieurs noms qui désignent la même compétition et regroupe-les sous un seul nom — toutes les cups concernées sont renommées.',
+      'Le nombre d\'utilisations de chaque nom apparaît au survol.'
+    ]
+  },
   {
     date: '2026-07-16',
     title: 'Nouvelle structure : FLC Future (CDF)',
@@ -7303,6 +7456,7 @@ function playerColor(p, idx) {
 
 function renderDashboard() {
   renderKPIs();
+  renderTeamComparison();
   renderPRChart();
   renderDashLeaderboard();
   renderCupDistribution();
@@ -7319,6 +7473,97 @@ function renderDashboard() {
   renderHallOfFame();
   renderManagerActivity();
   renderActivity();
+}
+
+// ============================================================
+// ============================================================
+// COMPARAISON DES STRUCTURES (Main / Académie / CDF)
+// ============================================================
+const TEAM_STRUCTURES = [
+  { key: 'main',    label: 'Main',        color: 'var(--red)',       accent: 'var(--red-bright)' },
+  { key: 'academy', label: 'Académie',    color: 'var(--blue)',      accent: 'var(--blue)' },
+  { key: 'cdf',     label: 'FLC Future',  color: '#a855f7',          accent: '#c084fc' }
+];
+
+// Aggregate stats for one structure
+function teamStructureStats(teamKey) {
+  const members = players.filter(p => (p.team || 'main') === teamKey);
+  let prSum = 0, prCount = 0, cupsTotal = 0, gains = 0;
+  let placeSum = 0, placeCount = 0, top10 = 0;
+
+  members.forEach(p => {
+    const cur = currentPR(p);
+    if (cur && !isNaN(Number(cur.points))) { prSum += Number(cur.points); prCount++; }
+    (p.cups || []).forEach(c => {
+      cupsTotal++;
+      gains += Number(c.prize) || 0;
+      const m = String(c.position || '').match(/(\d+)/);
+      if (m) {
+        const n = parseInt(m[1], 10);
+        if (!isNaN(n)) { placeSum += n; placeCount++; if (n <= 10) top10++; }
+      }
+    });
+  });
+
+  return {
+    count: members.length,
+    prTotal: prSum,
+    prAvg: prCount > 0 ? Math.round(prSum / prCount) : null,
+    avgPlace: placeCount > 0 ? (placeSum / placeCount) : null,
+    gains, top10, cupsTotal
+  };
+}
+
+function renderTeamComparison() {
+  const container = document.getElementById('teamCompareRow');
+  if (!container) return;
+
+  const stats = TEAM_STRUCTURES.map(s => ({ ...s, ...teamStructureStats(s.key) }));
+
+  // Work out the best structure per metric so it can be highlighted.
+  // Only structures with players compete; for avgPlace, LOWER is better.
+  const active = stats.filter(s => s.count > 0);
+  function bestOf(key, lowerIsBetter) {
+    const vals = active.map(s => s[key]).filter(v => v != null);
+    if (vals.length < 2) return null;   // no point highlighting a single competitor
+    return lowerIsBetter ? Math.min(...vals) : Math.max(...vals);
+  }
+  const best = {
+    prAvg:    bestOf('prAvg', false),
+    prTotal:  bestOf('prTotal', false),
+    avgPlace: bestOf('avgPlace', true),
+    gains:    bestOf('gains', false),
+    top10:    bestOf('top10', false)
+  };
+
+  container.innerHTML = stats.map(s => {
+    const empty = s.count === 0;
+    function row(label, value, isBest) {
+      return '<div class="ts-row' + (isBest ? ' ts-best' : '') + '">' +
+        '<span class="ts-lbl">' + label + '</span>' +
+        '<span class="ts-val">' + value + (isBest ? '<span class="ts-crown" title="Meilleure structure sur ce critère">★</span>' : '') + '</span>' +
+      '</div>';
+    }
+
+    if (empty) {
+      return '<div class="dash-card span-4 ts-card ts-empty" style="--ts-color:' + s.color + ';">' +
+        '<div class="ts-head"><span class="ts-name">' + s.label + '</span><span class="ts-count">0 joueur</span></div>' +
+        '<div class="ts-none">Aucun joueur dans cette structure.<br>Assigne-les depuis leur fiche.</div>' +
+      '</div>';
+    }
+
+    return '<div class="dash-card span-4 ts-card" style="--ts-color:' + s.color + ';">' +
+      '<div class="ts-head">' +
+        '<span class="ts-name">' + s.label + '</span>' +
+        '<span class="ts-count">' + s.count + ' joueur' + (s.count > 1 ? 's' : '') + '</span>' +
+      '</div>' +
+      row('PR moyen',    s.prAvg != null ? fmtNumber(s.prAvg) : '—',            s.prAvg != null && s.prAvg === best.prAvg) +
+      row('PR total',    fmtNumber(s.prTotal),                                   s.prTotal === best.prTotal) +
+      row('Place moy.',  s.avgPlace != null ? '#' + s.avgPlace.toFixed(1) : '—', s.avgPlace != null && s.avgPlace === best.avgPlace) +
+      row('Gains',       fmtNumber(s.gains) + ' €',                              s.gains === best.gains && s.gains > 0) +
+      row('Top 10',      s.top10,                                                s.top10 === best.top10 && s.top10 > 0) +
+    '</div>';
+  }).join('');
 }
 
 // ============================================================
@@ -11270,6 +11515,13 @@ function openDataModal(playerId) {
   editingDataPlayerId = playerId;
   editingPrEntryId = null;
   editingCupEntryId = null;
+  // Always start with the merge tool closed
+  cupMergeMode = false;
+  cupMergeSelection.clear();
+  const mb = document.getElementById('cupMergeBar');
+  const mt = document.getElementById('cupMergeToggle');
+  if (mb) mb.style.display = 'none';
+  if (mt) { mt.textContent = 'Fusionner'; mt.classList.remove('active'); }
   migratePlayerPRIfNeeded(p);
 
   document.getElementById('dataModalTitle').textContent = p.pseudo;
@@ -11401,29 +11653,149 @@ function renderCupHistoryList(p) {
   }).join('');
 }
 
+/* ============================================================
+   CUP NAME TAGS — sorted by real usage, with a merge tool
+   ============================================================ */
+let cupMergeMode = false;
+let cupMergeSelection = new Set();
+
+// How many cups (across ALL players) use each name
+function cupNameUsageCounts() {
+  const counts = {};
+  players.forEach(p => {
+    (p.cups || []).forEach(c => {
+      const n = (c.name || '').trim();
+      if (!n) return;
+      counts[n] = (counts[n] || 0) + 1;
+    });
+  });
+  return counts;
+}
+
 function renderCupTagsList(p) {
-  // Now uses the GLOBAL list of cup names (shared across all players)
-  // — names get registered when any player adds/edits a cup
-  const names = cupNamesGlobal.slice().sort((a, b) => a.localeCompare(b, 'fr'));
+  const counts = cupNameUsageCounts();
+  // Sort by usage (most used first), then alphabetically for ties
+  const names = cupNamesGlobal.slice().sort((a, b) => {
+    const d = (counts[b] || 0) - (counts[a] || 0);
+    return d !== 0 ? d : a.localeCompare(b, 'fr');
+  });
+
   document.getElementById('cupTagsCount').textContent = names.length + ' enregistrée' + (names.length > 1 ? 's' : '') + ' (global)';
   const container = document.getElementById('cupTagsList');
   if (names.length === 0) {
     container.innerHTML = '<div class="tags-empty">Aucune compétition enregistrée. Ajoute une cup pour qu\'elle apparaisse ici.</div>';
     return;
   }
-  // For each global name, count how many entries exist for THIS player (highlight if used)
   const usedByPlayer = new Set((p.cups || []).map(c => (c.name || '').trim().toLowerCase()).filter(Boolean));
 
   container.innerHTML = names.map(n => {
     const safe = escapeAttr(n).replace(/'/g, "\\'");
     const used = usedByPlayer.has(n.toLowerCase());
-    return '<span class="cup-tag' + (used ? ' used' : '') + '" onclick="prefillCupName(\'' + safe + '\')" title="' + (used ? 'Déjà utilisée par ce joueur — clic pour préremplir' : 'Clic pour préremplir le nom') + '">' +
+    const cnt = counts[n] || 0;
+
+    if (cupMergeMode) {
+      const sel = cupMergeSelection.has(n);
+      return '<span class="cup-tag selectable' + (sel ? ' selected' : '') + '" onclick="toggleCupTagSelect(\'' + safe + '\')" ' +
+        'title="Utilisée ' + cnt + ' fois">' +
+        (sel ? '✓ ' : '') + escapeHtml(n) +
+        '<span class="tag-count">' + cnt + '</span>' +
+      '</span>';
+    }
+
+    return '<span class="cup-tag' + (used ? ' used' : '') + '" onclick="prefillCupName(\'' + safe + '\')" ' +
+      'title="Utilisée ' + cnt + ' fois' + (used ? ' — déjà utilisée par ce joueur' : '') + ' · clic pour préremplir">' +
       escapeHtml(n) +
       '<span class="tag-x" onclick="event.stopPropagation();removeGlobalCupName(\'' + safe + '\')" title="Retirer de la liste partagée">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
       '</span>' +
     '</span>';
   }).join('');
+}
+
+function toggleCupMergeMode() {
+  cupMergeMode = !cupMergeMode;
+  cupMergeSelection.clear();
+  const bar = document.getElementById('cupMergeBar');
+  const btn = document.getElementById('cupMergeToggle');
+  if (bar) bar.style.display = cupMergeMode ? 'block' : 'none';
+  if (btn) {
+    btn.textContent = cupMergeMode ? 'Quitter' : 'Fusionner';
+    btn.classList.toggle('active', cupMergeMode);
+  }
+  updateCupMergeBar();
+  const p = players.find(x => x.id === editingDataPlayerId);
+  if (p) renderCupTagsList(p);
+}
+
+function toggleCupTagSelect(name) {
+  if (cupMergeSelection.has(name)) cupMergeSelection.delete(name);
+  else cupMergeSelection.add(name);
+  updateCupMergeBar();
+  const p = players.find(x => x.id === editingDataPlayerId);
+  if (p) renderCupTagsList(p);
+}
+
+function updateCupMergeBar() {
+  const cnt = document.getElementById('cupMergeCount');
+  const sel = document.getElementById('cupMergeTarget');
+  if (!cnt || !sel) return;
+  const n = cupMergeSelection.size;
+  cnt.textContent = n + ' sélectionné' + (n > 1 ? 's' : '');
+  const counts = cupNameUsageCounts();
+  const arr = Array.from(cupMergeSelection).sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Nom à conserver —</option>' +
+    arr.map(x => '<option value="' + escapeAttr(x) + '">' + escapeHtml(x) + ' (' + (counts[x] || 0) + ')</option>').join('');
+  if (arr.includes(prev)) sel.value = prev;
+  else if (arr.length > 0) sel.value = arr[0];   // default: most used
+}
+
+// Merge every selected name into the chosen one, across ALL players.
+async function executeCupMerge() {
+  const target = document.getElementById('cupMergeTarget').value;
+  if (cupMergeSelection.size < 2) { showToast('Sélectionne au moins 2 noms', 'error'); return; }
+  if (!target) { showToast('Choisis le nom à conserver', 'error'); return; }
+
+  const sources = Array.from(cupMergeSelection).filter(n => n !== target);
+  if (sources.length === 0) { showToast('Sélectionne un autre nom que celui à conserver', 'error'); return; }
+
+  const counts = cupNameUsageCounts();
+  const affected = sources.reduce((s, n) => s + (counts[n] || 0), 0);
+  const msg = 'Fusionner ' + sources.length + ' nom' + (sources.length > 1 ? 's' : '') + ' en « ' + target + ' » ?\n\n' +
+    affected + ' cup' + (affected > 1 ? 's' : '') + ' ser' + (affected > 1 ? 'ont' : 'a') + ' renommée' + (affected > 1 ? 's' : '') + '.\n' +
+    'Fusionnés : ' + sources.join(', ');
+  if (!confirm(msg)) return;
+
+  const srcSet = new Set(sources);
+  let renamed = 0;
+  players.forEach(p => {
+    let changed = false;
+    (p.cups || []).forEach(c => {
+      if (srcSet.has((c.name || '').trim())) {
+        c.name = target;
+        renamed++;
+        changed = true;
+      }
+    });
+    if (changed) p.updatedAt = Date.now();
+  });
+
+  // Drop merged names from the shared list
+  cupNamesGlobal = cupNamesGlobal.filter(n => !srcSet.has(n));
+  if (!cupNamesGlobal.includes(target)) cupNamesGlobal.push(target);
+
+  await persistPlayers();
+  await persistCupNames();
+
+  logActivity('data', 'Fusion de ' + sources.length + ' nom(s) de compétition en "' + target + '"');
+  showToast(renamed + ' cup' + (renamed > 1 ? 's' : '') + ' renommée' + (renamed > 1 ? 's' : '') + ' en « ' + target + ' »', 'success');
+
+  cupMergeSelection.clear();
+  updateCupMergeBar();
+  refreshDataModalView();
+  renderData();
+  renderRoster();
+  renderDashboard();
 }
 
 function prefillCupName(name) {
