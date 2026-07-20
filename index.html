@@ -377,6 +377,199 @@
     line-height: 1;
     margin-bottom: 2px;
   }
+  /* === Toutes les cups (plein écran) === */
+  .allcups-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: var(--bg-0);
+    display: flex;
+    flex-direction: column;
+  }
+  .allcups-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .allcups-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .allcups-count {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--red-bright);
+    letter-spacing: 0.05em;
+  }
+  .allcups-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .allcups-tools .search-input { max-width: 220px; }
+  .allcups-tools .compare-select { max-width: 170px; }
+  .allcups-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+  .allcups-body .rt-row td { padding: 8px 14px; }
+
+  /* === Comparateur de joueurs === */
+  .compare-pickers {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .compare-select {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    max-width: 150px;
+  }
+  .cmp-table { margin-top: 16px; }
+  .cmp-row {
+    display: grid;
+    grid-template-columns: 1.2fr repeat(var(--cmp-cols), 1fr);
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .cmp-row:last-child { border-bottom: none; }
+  .cmp-head-row { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 4px; }
+  .cmp-col { padding: 9px 10px; }
+  .cmp-label-col {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .cmp-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .cmp-avatar {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .cmp-avatar-fb {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-3);
+    color: var(--red-bright);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .cmp-pseudo { font-size: 13px; font-weight: 700; color: var(--text); }
+  .cmp-cell {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .cmp-cell.cmp-best { color: var(--green); font-weight: 700; }
+  .cmp-star { font-size: 10px; color: var(--green); }
+
+  /* === Upcoming competitions banner === */
+  .upcoming-comps {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .upcoming-comps.upcoming-empty {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .uc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .uc-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red-bright);
+  }
+  .uc-empty-text { font-size: 12px; color: var(--text-mute); }
+  .uc-add-link {
+    background: none;
+    border: none;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.05em;
+  }
+  .uc-add-link:hover { text-decoration: underline; }
+  .uc-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .uc-card {
+    flex: 0 0 auto;
+    min-width: 170px;
+    max-width: 220px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.12s;
+  }
+  .uc-card:hover { border-color: var(--red); transform: translateY(-2px); }
+  .uc-card.uc-urgent { border-left-color: var(--amber); }
+  .uc-countdown {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red-bright);
+    margin-bottom: 5px;
+  }
+  .uc-card.uc-urgent .uc-countdown { color: var(--amber); }
+  .uc-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .uc-meta { font-size: 11px; color: var(--text-mute); }
+
   .cal-event-chip {
     font-size: 10px;
     padding: 2px 6px;
@@ -4489,6 +4682,21 @@ window.addEventListener('DOMContentLoaded', function() {
     <div class="dash-section-title">Comparaison des structures</div>
     <div class="dash-grid" id="teamCompareRow"></div>
 
+    <!-- ============ COMPARATEUR DE JOUEURS ============ -->
+    <div class="dash-section-title">Comparateur de joueurs</div>
+    <div class="dash-grid">
+      <div class="dash-card span-12">
+        <div class="dash-card-header">
+          <div>
+            <div class="dash-card-title">Comparer des joueurs</div>
+            <div class="dash-card-sub">Sélectionne 2 ou 3 joueurs pour les comparer côte à côte</div>
+          </div>
+          <div id="comparePickers" class="compare-pickers"></div>
+        </div>
+        <div id="compareBody"></div>
+      </div>
+    </div>
+
     <!-- ============ PERFORMANCE & RÉSULTATS ============ -->
     <div class="dash-section-title">Performance &amp; résultats</div>
     <!-- Row: Forme du moment + Meilleure perf all-time -->
@@ -4711,11 +4919,42 @@ window.addEventListener('DOMContentLoaded', function() {
         <h2>Données</h2>
         <p>Clique sur un joueur pour saisir son power ranking et ses cups</p>
       </div>
+      <div class="section-actions">
+        <button class="btn btn-ghost" onclick="openAllCupsView()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          Toutes les cups
+        </button>
+      </div>
     </div>
     <div class="filters-bar">
       <input type="text" class="search-input" placeholder="Rechercher un joueur..." id="dataSearch" oninput="renderData()" />
     </div>
     <div id="dataList"></div>
+  </div>
+
+  <!-- Fullscreen: all cups across all players -->
+  <div class="allcups-overlay" id="allCupsOverlay" style="display:none;">
+    <div class="allcups-topbar">
+      <div class="allcups-title">
+        <span>Toutes les cups</span>
+        <span class="allcups-count" id="allCupsCount"></span>
+      </div>
+      <div class="allcups-tools">
+        <input type="text" class="search-input" id="allCupsSearch" placeholder="Rechercher (cup, joueur)..." oninput="renderAllCups()" />
+        <select id="allCupsPlayer" class="compare-select" onchange="renderAllCups()"><option value="">Tous les joueurs</option></select>
+        <select id="allCupsPlace" class="compare-select" onchange="renderAllCups()">
+          <option value="">Toutes places</option>
+          <option value="1">🥇 Victoires (#1)</option>
+          <option value="3">Top 3</option>
+          <option value="10">Top 10</option>
+          <option value="prized">Avec gains</option>
+        </select>
+        <button class="icon-btn" onclick="closeAllCupsView()" title="Fermer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="allcups-body" id="allCupsBody"></div>
   </div>
 
   <!-- ============================================================
@@ -4755,6 +4994,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
     <!-- Filters -->
     <div class="filters-bar" id="calFiltersBar"></div>
+
+    <!-- Upcoming competitions banner -->
+    <div id="upcomingCompsBanner"></div>
 
     <!-- Calendar views -->
     <div id="calMonthView"></div>
@@ -5353,9 +5595,10 @@ window.addEventListener('DOMContentLoaded', function() {
     <p class="modal-sub">Sera visible sur le calendrier partagé</p>
     <form id="calendarEventForm" onsubmit="saveCalendarEvent(event)">
       <input type="hidden" id="ce_id" />
-      <div class="form-group">
+      <div class="form-group" id="ce_typeGroup">
         <label>Type *</label>
         <select id="ce_type" required onchange="onCalendarEventTypeChange()">
+          <option value="tournament_upcoming">🏆 Compétition à venir</option>
           <option value="meeting">👥 Réunion</option>
           <option value="absence">🏖️ Absence / Vacances</option>
           <option value="reminder">📌 Rappel</option>
@@ -6659,8 +6902,24 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 8;  // bump this when you add an entry
+const CHANGELOG_VERSION = 10;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-20',
+    title: 'Ajout direct d\'une compétition',
+    items: [
+      'Le bouton « Ajouter » des compétitions à venir ouvre désormais un formulaire dédié, sans avoir à choisir le type d\'événement.'
+    ]
+  },
+  {
+    date: '2026-07-20',
+    title: 'Comparateur, tableau global et compétitions à venir',
+    items: [
+      'Dashboard : nouveau comparateur de joueurs (2 à 3 côte à côte) avec PR, cups, victoires, Top 3/10, place moyenne et gains.',
+      'Onglet Données : bouton « Toutes les cups » qui ouvre une vue plein écran filtrable et triable (par date, joueur, place, gain).',
+      'Calendrier : bandeau « Compétitions à venir » avec compte à rebours sur les prochains tournois.'
+    ]
+  },
   {
     date: '2026-07-17',
     title: 'Saisie des cups allégée',
@@ -7484,6 +7743,7 @@ function playerColor(p, idx) {
 function renderDashboard() {
   renderKPIs();
   renderTeamComparison();
+  renderPlayerComparator();
   renderPRChart();
   renderDashLeaderboard();
   renderCupDistribution();
@@ -7591,6 +7851,120 @@ function renderTeamComparison() {
       row('Top 10',      s.top10,                                                s.top10 === best.top10 && s.top10 > 0) +
     '</div>';
   }).join('');
+}
+
+// ============================================================
+// COMPARATEUR DE JOUEURS
+// ============================================================
+let compareSlots = [null, null, null];  // up to 3 player ids
+
+function comparePlayerStats(p) {
+  const cur = currentPR(p);
+  let gains = 0, placeSum = 0, placeCount = 0, top10 = 0, top3 = 0, wins = 0;
+  (p.cups || []).forEach(c => {
+    gains += Number(c.prize) || 0;
+    const m = String(c.position || '').match(/(\d+)/);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (!isNaN(n)) {
+        placeSum += n; placeCount++;
+        if (n <= 10) top10++;
+        if (n <= 3) top3++;
+        if (n === 1) wins++;
+      }
+    }
+  });
+  return {
+    pr: cur ? Number(cur.points) : null,
+    cups: (p.cups || []).length,
+    gains,
+    avgPlace: placeCount > 0 ? placeSum / placeCount : null,
+    top10, top3, wins,
+    age: ageFromBirthdate(p.birthdate) || p.age || null
+  };
+}
+
+function renderPlayerComparator() {
+  const pickers = document.getElementById('comparePickers');
+  const body = document.getElementById('compareBody');
+  if (!pickers || !body) return;
+
+  // Default: preselect the top 2 players by PR on first render
+  if (compareSlots.every(s => s === null) && players.length >= 2) {
+    const byPR = players.slice().sort((a, b) => {
+      const pa = currentPR(a), pb = currentPR(b);
+      return (pb ? Number(pb.points) : -1) - (pa ? Number(pa.points) : -1);
+    });
+    compareSlots[0] = byPR[0].id;
+    compareSlots[1] = byPR[1].id;
+  }
+
+  // Build the 3 selectors
+  pickers.innerHTML = [0, 1, 2].map(i => {
+    const opts = '<option value="">— Joueur ' + (i + 1) + (i === 2 ? ' (option.)' : '') + ' —</option>' +
+      players.map(p => '<option value="' + p.id + '"' + (compareSlots[i] === p.id ? ' selected' : '') + '>' + escapeHtml(p.pseudo) + '</option>').join('');
+    return '<select class="compare-select" onchange="setCompareSlot(' + i + ', this.value)">' + opts + '</select>';
+  }).join('');
+
+  const chosen = compareSlots.map(id => id ? players.find(p => p.id === id) : null).filter(Boolean);
+  if (chosen.length < 2) {
+    body.innerHTML = '<div class="dash-empty">Sélectionne au moins 2 joueurs pour lancer la comparaison.</div>';
+    return;
+  }
+
+  const stats = chosen.map(p => ({ p, s: comparePlayerStats(p) }));
+
+  // Metric rows: label, accessor, formatter, "higher is better" (null = neutral)
+  const metrics = [
+    { label: 'Équipe', get: x => x.p.team || 'main', fmt: v => teamBadge(v), better: null, raw: true },
+    { label: 'Âge', get: x => x.s.age, fmt: v => v ? v + ' ans' : '—', better: null },
+    { label: 'Power Ranking', get: x => x.s.pr, fmt: v => v != null ? fmtNumber(v) : '—', better: 'high' },
+    { label: 'Cups jouées', get: x => x.s.cups, fmt: v => v, better: 'high' },
+    { label: 'Victoires', get: x => x.s.wins, fmt: v => v, better: 'high' },
+    { label: 'Top 3', get: x => x.s.top3, fmt: v => v, better: 'high' },
+    { label: 'Top 10', get: x => x.s.top10, fmt: v => v, better: 'high' },
+    { label: 'Place moyenne', get: x => x.s.avgPlace, fmt: v => v != null ? '#' + v.toFixed(1) : '—', better: 'low' },
+    { label: 'Gains', get: x => x.s.gains, fmt: v => fmtNumber(v) + ' €', better: 'high' }
+  ];
+
+  // Header with avatars
+  const head = '<div class="cmp-col cmp-label-col"></div>' +
+    stats.map(({ p }) => {
+      const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" class="cmp-avatar" />'
+        : '<span class="cmp-avatar cmp-avatar-fb">' + (p.pseudo || '?').charAt(0).toUpperCase() + '</span>';
+      return '<div class="cmp-col cmp-head">' + av + '<span class="cmp-pseudo">' + escapeHtml(p.pseudo) + '</span></div>';
+    }).join('');
+
+  // Metric rows with best-value highlight
+  const rows = metrics.map(m => {
+    const vals = stats.map(x => m.get(x));
+    let bestVal = null;
+    if (m.better === 'high') {
+      const nums = vals.filter(v => typeof v === 'number');
+      if (nums.length) bestVal = Math.max(...nums);
+    } else if (m.better === 'low') {
+      const nums = vals.filter(v => typeof v === 'number' && v != null);
+      if (nums.length) bestVal = Math.min(...nums);
+    }
+    const cells = stats.map((x, i) => {
+      const v = vals[i];
+      const isBest = bestVal != null && v === bestVal && stats.length > 1 &&
+        vals.filter(z => z === bestVal).length < stats.length;  // don't highlight ties across all
+      return '<div class="cmp-col cmp-cell' + (isBest ? ' cmp-best' : '') + '">' +
+        (m.raw ? m.fmt(v) : '<span>' + m.fmt(v) + '</span>') +
+        (isBest ? '<span class="cmp-star">★</span>' : '') +
+      '</div>';
+    }).join('');
+    return '<div class="cmp-row"><div class="cmp-col cmp-label-col">' + m.label + '</div>' + cells + '</div>';
+  }).join('');
+
+  body.innerHTML = '<div class="cmp-table" style="--cmp-cols:' + stats.length + ';">' +
+    '<div class="cmp-row cmp-head-row">' + head + '</div>' + rows + '</div>';
+}
+
+function setCompareSlot(i, value) {
+  compareSlots[i] = value || null;
+  renderPlayerComparator();
 }
 
 // ============================================================
@@ -11466,6 +11840,112 @@ function cupPodiumClass(pos) {
   return '';
 }
 
+// ============================================================
+// TOUTES LES CUPS — vue plein écran, filtrable et triable
+// ============================================================
+let allCupsSort = { key: 'date', dir: 'desc' };
+
+function openAllCupsView() {
+  const sel = document.getElementById('allCupsPlayer');
+  if (sel) {
+    sel.innerHTML = '<option value="">Tous les joueurs</option>' +
+      players.slice().sort((a, b) => (a.pseudo || '').localeCompare(b.pseudo || '', 'fr'))
+        .map(p => '<option value="' + p.id + '">' + escapeHtml(p.pseudo) + '</option>').join('');
+  }
+  document.getElementById('allCupsOverlay').style.display = 'flex';
+  renderAllCups();
+}
+
+function closeAllCupsView() {
+  document.getElementById('allCupsOverlay').style.display = 'none';
+}
+
+function setAllCupsSort(key) {
+  if (allCupsSort.key === key) allCupsSort.dir = allCupsSort.dir === 'asc' ? 'desc' : 'asc';
+  else { allCupsSort.key = key; allCupsSort.dir = (key === 'name' || key === 'player') ? 'asc' : 'desc'; }
+  renderAllCups();
+}
+
+function renderAllCups() {
+  const body = document.getElementById('allCupsBody');
+  if (!body) return;
+  const search = (document.getElementById('allCupsSearch')?.value || '').toLowerCase().trim();
+  const fPlayer = document.getElementById('allCupsPlayer')?.value || '';
+  const fPlace = document.getElementById('allCupsPlace')?.value || '';
+
+  // Flatten every cup with its player
+  let rows = [];
+  players.forEach(p => {
+    if (fPlayer && p.id !== fPlayer) return;
+    (p.cups || []).forEach(c => {
+      const m = String(c.position || '').match(/(\d+)/);
+      const pos = m ? parseInt(m[1], 10) : null;
+      const prize = Number(c.prize) || 0;
+      rows.push({
+        player: p.pseudo || '—', playerId: p.id, photo: p.photo,
+        name: c.name || '—', date: c.date || '', pos, prize
+      });
+    });
+  });
+
+  // Filters
+  if (fPlace === '1') rows = rows.filter(r => r.pos === 1);
+  else if (fPlace === '3') rows = rows.filter(r => r.pos != null && r.pos <= 3);
+  else if (fPlace === '10') rows = rows.filter(r => r.pos != null && r.pos <= 10);
+  else if (fPlace === 'prized') rows = rows.filter(r => r.prize > 0);
+  if (search) rows = rows.filter(r =>
+    r.name.toLowerCase().includes(search) || r.player.toLowerCase().includes(search));
+
+  // Sort
+  const dir = allCupsSort.dir === 'asc' ? 1 : -1;
+  rows.sort((a, b) => {
+    let va = a[allCupsSort.key], vb = b[allCupsSort.key];
+    if (allCupsSort.key === 'pos') { va = va ?? 999999; vb = vb ?? 999999; }
+    if (typeof va === 'string') return va.localeCompare(vb, 'fr') * dir;
+    return ((va || 0) - (vb || 0)) * dir;
+  });
+
+  const totalPrize = rows.reduce((s, r) => s + r.prize, 0);
+  document.getElementById('allCupsCount').textContent =
+    rows.length + ' cup' + (rows.length > 1 ? 's' : '') + ' · ' + fmtNumber(totalPrize) + ' €';
+
+  if (rows.length === 0) {
+    body.innerHTML = '<div class="dash-empty" style="margin:40px;">Aucune cup ne correspond aux filtres.</div>';
+    return;
+  }
+
+  function th(key, label, align) {
+    const active = allCupsSort.key === key;
+    const arrow = active ? (allCupsSort.dir === 'asc' ? ' ▲' : ' ▼') : '';
+    return '<th class="rt-th' + (active ? ' active' : '') + '" style="text-align:' + (align || 'left') + ';" onclick="setAllCupsSort(\'' + key + '\')">' + label + arrow + '</th>';
+  }
+
+  const head = '<thead><tr>' +
+    th('date', 'Date') + th('player', 'Joueur') + th('name', 'Compétition') +
+    th('pos', 'Place', 'right') + th('prize', 'Gain', 'right') +
+    '</tr></thead>';
+
+  const bodyRows = rows.map(r => {
+    const posCell = r.pos != null
+      ? (r.pos === 1 ? '<span style="color:#ffd700;font-weight:700;">🥇 #1</span>'
+        : r.pos <= 3 ? '<span style="color:#cd7f32;font-weight:700;">#' + r.pos + '</span>'
+        : r.pos <= 10 ? '<span style="color:var(--green);">#' + r.pos + '</span>'
+        : '#' + r.pos)
+      : '—';
+    const av = r.photo ? '<img src="' + escapeAttr(r.photo) + '" class="rt-avatar" style="width:24px;height:24px;" />'
+      : '<span class="rt-avatar rt-avatar-fallback" style="width:24px;height:24px;font-size:11px;">' + r.player.charAt(0).toUpperCase() + '</span>';
+    return '<tr class="rt-row" onclick="closeAllCupsView();openDataModal(\'' + r.playerId + '\')">' +
+      '<td style="white-space:nowrap;color:var(--text-dim);">' + (r.date ? fmtDateFR(r.date) : '—') + '</td>' +
+      '<td><div class="rt-player">' + av + '<span class="rt-name">' + escapeHtml(r.player) + '</span></div></td>' +
+      '<td>' + escapeHtml(r.name) + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);">' + posCell + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);color:' + (r.prize > 0 ? 'var(--green)' : 'var(--text-mute)') + ';">' + (r.prize > 0 ? fmtNumber(r.prize) + ' €' : '—') + '</td>' +
+    '</tr>';
+  }).join('');
+
+  body.innerHTML = '<div class="rt-wrap" style="border:none;border-radius:0;"><table class="roster-table"><colgroup><col style="width:120px"><col style="width:180px"><col><col style="width:90px"><col style="width:110px"></colgroup>' + head + '<tbody>' + bodyRows + '</tbody></table></div>';
+}
+
 function renderData() {
   const container = document.getElementById('dataList');
   if (!container) return;
@@ -12843,6 +13323,7 @@ function renderCalendar() {
     monthLabel.textContent = calCurrentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
   }
   renderCalendarFilters();
+  renderUpcomingComps();
   if (calView === 'month') {
     document.getElementById('calMonthView').style.display = '';
     document.getElementById('calListView').style.display = 'none';
@@ -12851,6 +13332,82 @@ function renderCalendar() {
     document.getElementById('calMonthView').style.display = 'none';
     document.getElementById('calListView').style.display = '';
     renderCalendarListView();
+  }
+}
+
+// =============== UPCOMING COMPETITIONS BANNER ===============
+// Highlights the next "tournament_upcoming" events with a countdown,
+// so upcoming cups are actionable instead of buried in the grid.
+function renderUpcomingComps() {
+  const container = document.getElementById('upcomingCompsBanner');
+  if (!container) return;
+
+  const today = todayISO();
+  const upcoming = calendarEvents
+    .filter(e => e.type === 'tournament_upcoming' && (e.dateStart || '') >= today)
+    .sort((a, b) => (a.dateStart || '').localeCompare(b.dateStart || ''))
+    .slice(0, 6);
+
+  if (upcoming.length === 0) {
+    container.innerHTML = '<div class="upcoming-comps upcoming-empty">' +
+      '<span class="uc-title">🏆 Compétitions à venir</span>' +
+      '<span class="uc-empty-text">Aucune compétition programmée. ' +
+      '<button class="uc-add-link" onclick="openCalendarEventModalForTournament()">+ En ajouter une</button></span>' +
+    '</div>';
+    return;
+  }
+
+  const cards = upcoming.map(e => {
+    const days = followUpDaysLike(e.dateStart, today);
+    let countdown, urgent = false;
+    if (days === 0) { countdown = "Aujourd'hui"; urgent = true; }
+    else if (days === 1) { countdown = 'Demain'; urgent = true; }
+    else if (days <= 7) { countdown = 'Dans ' + days + ' j'; urgent = true; }
+    else countdown = 'Dans ' + days + ' j';
+
+    const player = e.playerId ? players.find(p => p.id === e.playerId) : null;
+    const timeStr = (!e.allDay && e.timeStart) ? ' · ' + e.timeStart : '';
+
+    return '<div class="uc-card' + (urgent ? ' uc-urgent' : '') + '" onclick="openCalendarEventModal(\'' + e.id + '\')">' +
+      '<div class="uc-countdown">' + countdown + '</div>' +
+      '<div class="uc-name">' + escapeHtml(e.title) + '</div>' +
+      '<div class="uc-meta">' + fmtDateFR(e.dateStart) + timeStr +
+        (player ? ' · ' + escapeHtml(player.pseudo) : '') + '</div>' +
+    '</div>';
+  }).join('');
+
+  container.innerHTML = '<div class="upcoming-comps">' +
+    '<div class="uc-header">' +
+      '<span class="uc-title">🏆 Compétitions à venir</span>' +
+      '<button class="uc-add-link" onclick="openCalendarEventModalForTournament()">+ Ajouter</button>' +
+    '</div>' +
+    '<div class="uc-scroll">' + cards + '</div>' +
+  '</div>';
+}
+
+// Days between an ISO date and a reference ISO date (both local)
+function followUpDaysLike(iso, refIso) {
+  const a = new Date(iso + 'T00:00:00').getTime();
+  const b = new Date(refIso + 'T00:00:00').getTime();
+  return Math.round((a - b) / 86400000);
+}
+
+// Open the event modal pre-set to "tournament_upcoming"
+function openCalendarEventModalForTournament(prefillDate) {
+  openCalendarEventModal(null, prefillDate);
+  // Lock the modal to "compétition à venir": hide the type picker entirely
+  const sel = document.getElementById('ce_type');
+  const grp = document.getElementById('ce_typeGroup');
+  if (sel) sel.value = 'tournament_upcoming';
+  if (grp) grp.style.display = 'none';
+  const title = document.getElementById('calendarEventModalTitle');
+  const sub = document.querySelector('#calendarEventModal .modal-sub');
+  if (title) title.textContent = 'Nouvelle compétition';
+  if (sub) sub.textContent = 'Ajoute un tournoi à venir au calendrier';
+  const titleInput = document.getElementById('ce_title');
+  if (titleInput) {
+    titleInput.placeholder = 'Ex: FNCS Major 2 - Day 1';
+    setTimeout(() => titleInput.focus(), 50);
   }
 }
 
@@ -13042,6 +13599,14 @@ function onCalendarAllDayChange() {
 
 function openCalendarEventModal(eventId, prefillDate) {
   editingCalendarEventId = eventId || null;
+  // Reset any "tournament-only" customisation from a previous open
+  const typeGrp = document.getElementById('ce_typeGroup');
+  if (typeGrp) typeGrp.style.display = '';
+  const subEl = document.querySelector('#calendarEventModal .modal-sub');
+  if (subEl) subEl.textContent = 'Sera visible sur le calendrier partagé';
+  const titleInput0 = document.getElementById('ce_title');
+  if (titleInput0) titleInput0.placeholder = 'Ex: FNCS Major 1 - Quarter Finals';
+
   const playerSel = document.getElementById('ce_playerId');
   playerSel.innerHTML = '<option value="">— Aucun (événement général) —</option>' +
     players.map(p => '<option value="' + p.id + '">' + escapeHtml(p.pseudo) + '</option>').join('');
