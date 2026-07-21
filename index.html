@@ -6678,6 +6678,54 @@ async function checkFollowUpsForNotifications() {
   }
 }
 
+// Raise an in-app notification for upcoming competitions at J-3, J-1 and D-day.
+// Dedup key includes the milestone so a single comp can notify at each step,
+// and includes the event date so a rescheduled comp re-notifies correctly.
+async function checkUpcomingCompsForNotifications() {
+  const todayKey = todayISO();
+
+  let sentKeys = {};
+  try {
+    const r = await appStorage.get('sovereign_comp_notified');
+    if (r && r.value) {
+      const parsed = typeof r.value === 'string' ? JSON.parse(r.value) : r.value;
+      sentKeys = parsed.keys || {};
+    }
+  } catch (e) { /* start fresh */ }
+
+  // Prune keys older than 30 days so the store doesn't grow forever
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+  const cutoffKey = dateToLocalISO(cutoff);
+  Object.keys(sentKeys).forEach(k => { if ((sentKeys[k] || '') < cutoffKey) delete sentKeys[k]; });
+
+  let changed = false;
+  for (const e of calendarEvents) {
+    if (e.type !== 'tournament_upcoming' || !e.dateStart) continue;
+    const days = followUpDaysLike(e.dateStart, todayKey);
+    // Only these milestones fire a reminder
+    if (days !== 3 && days !== 1 && days !== 0) continue;
+
+    // Key ties the notification to comp + date + milestone (idempotent)
+    const key = 'comp_' + e.id + '_' + e.dateStart + '_d' + days;
+    if (sentKeys[key]) continue;
+
+    const player = e.playerId ? players.find(p => p.id === e.playerId) : null;
+    const who = player ? ' (' + player.pseudo + ')' : '';
+    let msg;
+    if (days === 0) msg = '🏆 Compétition aujourd\'hui : ' + e.title + who;
+    else if (days === 1) msg = '🏆 Compétition demain : ' + e.title + who;
+    else msg = '🏆 Compétition dans 3 jours : ' + e.title + who;
+
+    await pushNotification('calendar', msg, days === 0 ? 'warn' : 'info');
+    sentKeys[key] = todayKey;   // store the day it was sent (for pruning)
+    changed = true;
+  }
+
+  if (changed) {
+    await appStorage.set('sovereign_comp_notified', JSON.stringify({ keys: sentKeys }));
+  }
+}
+
 // Send a message to Discord. eventType must be enabled in config.
 // Colors: green win, gold prize, blue info, orange warning.
 async function sendDiscordNotification(eventType, payload) {
@@ -6902,8 +6950,16 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 10;  // bump this when you add an entry
+const CHANGELOG_VERSION = 11;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-21',
+    title: 'Rappels des compétitions à venir',
+    items: [
+      'Notification automatique dans la cloche à J-3, J-1 et le jour même de chaque compétition à venir.',
+      'Le rappel du jour même est mis en évidence. Chaque palier ne notifie qu\'une fois.'
+    ]
+  },
   {
     date: '2026-07-20',
     title: 'Ajout direct d\'une compétition',
@@ -7407,6 +7463,7 @@ function showApp() {
   // Fire Discord reminders for contracts expiring soon (deduped per day)
   checkContractsForDiscord();
   checkFollowUpsForNotifications();
+  checkUpcomingCompsForNotifications();
 }
 
 /* ============================================================
