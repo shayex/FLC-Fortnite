@@ -377,6 +377,66 @@
     line-height: 1;
     margin-bottom: 2px;
   }
+  /* === Onglet Suivi (observations + besoins) === */
+  .tracking-forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 800px) { .tracking-forms { grid-template-columns: 1fr; } }
+  .tk-block {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--red);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .tk-block.tk-block-besoin { border-top-color: var(--amber); }
+  .tk-block-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .tk-block-sub {
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .tk-block textarea { min-height: 76px; }
+  .tk-type {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .tk-type-suivi  { background: rgba(201,164,92,0.15); color: var(--red-bright); }
+  .tk-type-besoin { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .tk-text {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-width: 220px;
+  }
+  .tk-status-select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  .tk-status-select option { background: var(--bg-2); color: var(--text); }
+
   /* === Toutes les cups (plein écran) === */
   .allcups-overlay {
     position: fixed;
@@ -4610,6 +4670,10 @@ window.addEventListener('DOMContentLoaded', function() {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/><circle cx="7" cy="14" r="1.5" fill="currentColor"/><circle cx="11" cy="10" r="1.5" fill="currentColor"/><circle cx="15" cy="14" r="1.5" fill="currentColor"/><circle cx="20" cy="9" r="1.5" fill="currentColor"/></svg>
       Données
     </button>
+    <button class="tab" data-tab="tracking" onclick="switchTab('tracking')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Suivi <span class="count" id="countTracking" title="Besoins en attente">0</span>
+    </button>
     <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Calendrier
@@ -5071,6 +5135,73 @@ window.addEventListener('DOMContentLoaded', function() {
   <!-- ============================================================
        ADMIN TAB (visible uniquement pour admin)
        ============================================================ -->
+  <!-- ============================================================
+       SUIVI TAB — journal de suivi + besoins des joueurs
+       ============================================================ -->
+  <div class="tab-content" id="tabTracking">
+    <div class="section-header">
+      <div class="section-title-block">
+        <h2>Suivi des joueurs</h2>
+        <p>Observations de suivi et besoins matériels ou humains, historisés par joueur</p>
+      </div>
+    </div>
+
+    <div class="tracking-forms">
+      <!-- Bloc 1 : suivi (observation) -->
+      <div class="tk-block">
+        <div class="tk-block-title">📝 Nouveau suivi</div>
+        <div class="tk-block-sub">Observation, point avec le joueur, état d'esprit, progression...</div>
+        <div class="form-group">
+          <label>Joueur *</label>
+          <select id="tk_playerSuivi"></select>
+        </div>
+        <div class="form-group">
+          <label>Note *</label>
+          <textarea id="tk_textSuivi" placeholder="Ex: Point mental fait ce soir, motivé pour la FNCS mais fatigue en fin de session..."></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="addTrackingEntry('suivi')">Enregistrer le suivi</button>
+        </div>
+      </div>
+
+      <!-- Bloc 2 : besoin (actionnable) -->
+      <div class="tk-block tk-block-besoin">
+        <div class="tk-block-title">🎯 Nouveau besoin</div>
+        <div class="tk-block-sub">Matériel, accompagnement, administratif... Un besoin reste « à traiter » jusqu'à sa résolution.</div>
+        <div class="form-group">
+          <label>Joueur *</label>
+          <select id="tk_playerBesoin"></select>
+        </div>
+        <div class="form-group">
+          <label>Besoin *</label>
+          <textarea id="tk_textBesoin" placeholder="Ex: Souhaite une nouvelle manette, la sienne drift. Voir budget."></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="addTrackingEntry('besoin')">Enregistrer le besoin</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <button class="filter-chip active" data-tkfilter="all" onclick="setTrackingFilter('all')">Tout</button>
+      <button class="filter-chip" data-tkfilter="suivi" onclick="setTrackingFilter('suivi')">📝 Suivis</button>
+      <button class="filter-chip" data-tkfilter="besoin" onclick="setTrackingFilter('besoin')">🎯 Besoins</button>
+      <span style="width:1px;height:24px;background:var(--border);margin:0 4px;"></span>
+      <select id="tk_filterPlayer" class="compare-select" onchange="renderTracking()">
+        <option value="">Tous les joueurs</option>
+      </select>
+      <select id="tk_filterStatus" class="compare-select" onchange="renderTracking()">
+        <option value="">Tous statuts</option>
+        <option value="todo">À traiter</option>
+        <option value="in_progress">En cours</option>
+        <option value="resolved">Résolu</option>
+      </select>
+      <input type="text" class="search-input" id="tk_search" placeholder="Rechercher dans les notes..." oninput="renderTracking()" />
+    </div>
+
+    <div id="trackingTable"></div>
+  </div>
+
   <div class="tab-content" id="tabAdminContent">
     <div class="section-header">
       <div class="section-title-block">
@@ -6066,6 +6197,8 @@ let notifications = [];   // user-specific notifications (read state per-user)
 let cupNamesGlobal = [];  // shared list of cup names (autocomplete + tags)
 let notes = [];            // [{ id, groupId, title, content, tags[], priority, pinned, authorId, authorPseudo, createdAt, updatedAt }]
 let noteGroups = [];       // [{ id, name, description, color, createdAt }]
+let trackingEntries = [];  // [{ id, playerId, type:'suivi'|'besoin', text, status('todo'|'in_progress'|'resolved', besoins seulement), author, createdAt }]
+let trackingTypeFilter = 'all';   // 'all' | 'suivi' | 'besoin'
 let calendarEvents = [];   // manual events
 let currentNoteGroupFilter = 'all';   // 'all' | groupId
 let editingNoteId = null;
@@ -6950,8 +7083,18 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 11;  // bump this when you add an entry
+const CHANGELOG_VERSION = 12;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-27',
+    title: 'Nouvel onglet Suivi des joueurs',
+    items: [
+      'Deux carnets séparés par joueur : les suivis (observations, points individuels) et les besoins (matériel, accompagnement...).',
+      'Chaque besoin a un statut — À traiter, En cours, Résolu — modifiable directement dans le tableau.',
+      'Tout est historisé dans un tableau filtrable : par joueur, par type, par statut, avec recherche. L\'auteur de chaque entrée est enregistré.',
+      'Le compteur de l\'onglet indique le nombre de besoins en attente.'
+    ]
+  },
   {
     date: '2026-07-21',
     title: 'Rappels des compétitions à venir',
@@ -7563,6 +7706,11 @@ async function loadAll() {
     const r = await appStorage.get('sovereign_note_groups');
     if (r && r.value) noteGroups = JSON.parse(r.value);
   } catch (e) { noteGroups = []; }
+  // Suivi des joueurs (observations + besoins)
+  try {
+    const r = await appStorage.get('sovereign_tracking');
+    if (r && r.value) trackingEntries = JSON.parse(r.value);
+  } catch (e) { trackingEntries = []; }
   // Default groups if none
   if (noteGroups.length === 0) {
     noteGroups = [
@@ -7613,6 +7761,7 @@ async function persistStaff() { await appStorage.set('sovereign_staff', JSON.str
 async function persistNotifications() { await appStorage.set('sovereign_notifications', JSON.stringify(notifications)); }
 async function persistCupNames() { await appStorage.set('sovereign_cup_names', JSON.stringify(cupNamesGlobal)); }
 async function persistNotes() { await appStorage.set('sovereign_notes', JSON.stringify(notes)); }
+async function persistTracking() { await appStorage.set('sovereign_tracking', JSON.stringify(trackingEntries)); }
 async function persistNoteGroups() { await appStorage.set('sovereign_note_groups', JSON.stringify(noteGroups)); }
 async function persistCalendarEvents() { await appStorage.set('sovereign_calendar_events', JSON.stringify(calendarEvents)); }
 
@@ -7696,6 +7845,10 @@ async function reloadDataFromSupabase() {
     if (ng && ng.value) noteGroups = JSON.parse(ng.value);
   } catch (e) {}
   try {
+    const tk = await appStorage.get('sovereign_tracking');
+    if (tk && tk.value) trackingEntries = JSON.parse(tk.value);
+  } catch (e) {}
+  try {
     const ce = await appStorage.get('sovereign_calendar_events');
     if (ce && ce.value) calendarEvents = JSON.parse(ce.value);
   } catch (e) {}
@@ -7751,6 +7904,7 @@ function switchTab(tab) {
     calendar: 'tabCalendar',
     scouting: 'tabScouting',
     notes: 'tabNotes',
+    tracking: 'tabTracking',
     admin: 'tabAdminContent'
   };
   document.getElementById(map[tab]).classList.add('active');
@@ -7765,6 +7919,7 @@ function renderAll() {
   renderScouting();
   renderStaff();
   renderNotes();
+  renderTracking();
   renderCalendar();
   renderActivity();
   renderNotifications();
@@ -7778,6 +7933,14 @@ function updateCounts() {
   if (cs) cs.textContent = staff.length;
   const cn = document.getElementById('countNotes');
   if (cn) cn.textContent = notes.length;
+  // Compteur de l'onglet Suivi = besoins non traités (pas le total d'entrées)
+  const ct = document.getElementById('countTracking');
+  if (ct) {
+    const n = openNeedsCount();
+    ct.textContent = n;
+    ct.style.background = n > 0 ? 'rgba(245,158,11,0.2)' : '';
+    ct.style.color = n > 0 ? 'var(--amber)' : '';
+  }
 }
 
 /* ============================================================
@@ -10654,9 +10817,6 @@ function renderRoster() {
   container.innerHTML = '<div class="grid">' + list.map(p => playerCardHtml(p)).join('') + '</div>';
 }
 
-/* ============================================================
-   ROSTER TABLE VIEW — dense, sortable alternative to the cards
-   ============================================================ */
 let rosterSort = { key: 'pr', dir: 'desc' };
 
 function setRosterSort(key) {
@@ -11866,6 +12026,7 @@ function currentPR(p) {
   return sorted[0];
 }
 
+
 function totalGains(p) {
   if (!Array.isArray(p.cups)) return 0;
   return p.cups.reduce((sum, c) => {
@@ -12457,7 +12618,6 @@ async function addPrEntry() {
   }
   showToast('Power ranking enregistré', 'success');
 }
-
 function startEditPrEntry(entryId) {
   editingPrEntryId = entryId;
   editingCupEntryId = null;
@@ -13374,6 +13534,173 @@ function renderCalendarFilters() {
 }
 
 // =============== MAIN RENDER ===============
+/* ============================================================
+   SUIVI DES JOUEURS — observations + besoins, historisés
+   ============================================================ */
+const TK_STATUS = {
+  todo:        { label: 'À traiter', color: 'var(--amber)',  bg: 'rgba(245,158,11,0.15)' },
+  in_progress: { label: 'En cours',  color: 'var(--blue)',   bg: 'rgba(59,130,246,0.15)' },
+  resolved:    { label: 'Résolu',    color: 'var(--green)',  bg: 'rgba(34,197,94,0.15)' }
+};
+
+// Nombre de besoins non résolus (compteur d'onglet)
+function openNeedsCount() {
+  return trackingEntries.filter(e => e.type === 'besoin' && e.status !== 'resolved').length;
+}
+
+function setTrackingFilter(t) {
+  trackingTypeFilter = t;
+  document.querySelectorAll('[data-tkfilter]').forEach(b => b.classList.toggle('active', b.dataset.tkfilter === t));
+  renderTracking();
+}
+
+// Remplit un <select> de joueurs en préservant la sélection courante
+function fillTrackingPlayerSelect(id, includeAll) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const prev = sel.value;
+  const sorted = players.slice().sort((a, b) => (a.pseudo || '').localeCompare(b.pseudo || '', 'fr'));
+  sel.innerHTML = (includeAll ? '<option value="">Tous les joueurs</option>' : '<option value="">— Choisir un joueur —</option>') +
+    sorted.map(p => '<option value="' + p.id + '">' + escapeHtml(p.pseudo || '—') + '</option>').join('');
+  if (prev && sorted.some(p => p.id === prev)) sel.value = prev;
+}
+
+async function addTrackingEntry(type) {
+  const selId = type === 'besoin' ? 'tk_playerBesoin' : 'tk_playerSuivi';
+  const txtId = type === 'besoin' ? 'tk_textBesoin' : 'tk_textSuivi';
+  const playerId = document.getElementById(selId)?.value || '';
+  const text = (document.getElementById(txtId)?.value || '').trim();
+
+  if (!playerId) { showToast('Choisis un joueur', 'error'); return; }
+  if (!text) { showToast(type === 'besoin' ? 'Décris le besoin' : 'Écris la note de suivi', 'error'); return; }
+  const p = players.find(x => x.id === playerId);
+  if (!p) { showToast('Joueur introuvable', 'error'); return; }
+
+  const entry = {
+    id: 'tk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    playerId,
+    type,
+    text,
+    author: (currentUser && currentUser.pseudo) || '—',
+    createdAt: Date.now()
+  };
+  if (type === 'besoin') entry.status = 'todo';
+
+  trackingEntries.push(entry);
+  await persistTracking();
+
+  document.getElementById(txtId).value = '';
+  renderTracking();
+  updateCounts();
+  logActivity('roster', (type === 'besoin' ? 'Besoin ajouté pour ' : 'Suivi ajouté pour ') + p.pseudo);
+  showToast(type === 'besoin' ? 'Besoin enregistré' : 'Suivi enregistré', 'success');
+}
+
+async function setTrackingStatus(id, status) {
+  const e = trackingEntries.find(x => x.id === id);
+  if (!e || !TK_STATUS[status]) return;
+  e.status = status;
+  e.updatedAt = Date.now();
+  await persistTracking();
+  renderTracking();
+  updateCounts();
+  if (status === 'resolved') {
+    const p = players.find(x => x.id === e.playerId);
+    logActivity('roster', 'Besoin résolu' + (p ? ' pour ' + p.pseudo : ''));
+  }
+}
+
+async function deleteTrackingEntry(id) {
+  const e = trackingEntries.find(x => x.id === id);
+  if (!e) return;
+  if (!confirm('Supprimer cette entrée ?')) return;
+  trackingEntries = trackingEntries.filter(x => x.id !== id);
+  await persistTracking();
+  renderTracking();
+  updateCounts();
+  showToast('Entrée supprimée', 'success');
+}
+
+function renderTracking() {
+  const container = document.getElementById('trackingTable');
+  if (!container) return;
+
+  // Sélecteurs de saisie + filtre joueur
+  fillTrackingPlayerSelect('tk_playerSuivi', false);
+  fillTrackingPlayerSelect('tk_playerBesoin', false);
+  fillTrackingPlayerSelect('tk_filterPlayer', true);
+
+  const fPlayer = document.getElementById('tk_filterPlayer')?.value || '';
+  const fStatus = document.getElementById('tk_filterStatus')?.value || '';
+  const search = (document.getElementById('tk_search')?.value || '').toLowerCase().trim();
+
+  let list = trackingEntries.slice();
+  if (trackingTypeFilter !== 'all') list = list.filter(e => e.type === trackingTypeFilter);
+  if (fPlayer) list = list.filter(e => e.playerId === fPlayer);
+  if (fStatus) list = list.filter(e => e.type === 'besoin' && (e.status || 'todo') === fStatus);
+  if (search) {
+    list = list.filter(e => {
+      const p = players.find(x => x.id === e.playerId);
+      return (e.text || '').toLowerCase().includes(search) ||
+             (p && (p.pseudo || '').toLowerCase().includes(search)) ||
+             (e.author || '').toLowerCase().includes(search);
+    });
+  }
+  list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  if (list.length === 0) {
+    const hasAny = trackingEntries.length > 0;
+    container.innerHTML = '<div class="empty"><h3>' + (hasAny ? 'Aucune entrée ne correspond aux filtres' : 'Aucune entrée pour l\'instant') + '</h3>' +
+      '<p>' + (hasAny ? 'Modifie les filtres ci-dessus.' : 'Enregistre un premier suivi ou besoin avec les formulaires ci-dessus.') + '</p></div>';
+    return;
+  }
+
+  const rows = list.map(e => {
+    const p = players.find(x => x.id === e.playerId);
+    const d = new Date(e.createdAt || 0);
+    const dateStr = fmtDateFR(dateToLocalISO(d)) +
+      ' <span style="color:var(--text-mute);font-size:10px;">' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + '</span>';
+
+    const typeBadge = e.type === 'besoin'
+      ? '<span class="tk-type tk-type-besoin">🎯 Besoin</span>'
+      : '<span class="tk-type tk-type-suivi">📝 Suivi</span>';
+
+    let statusCell = '<span style="color:var(--text-mute);">—</span>';
+    if (e.type === 'besoin') {
+      const st = e.status || 'todo';
+      statusCell = '<select class="tk-status-select" style="color:' + TK_STATUS[st].color + ';background:' + TK_STATUS[st].bg + ';" onchange="setTrackingStatus(\'' + e.id + '\', this.value)">' +
+        Object.keys(TK_STATUS).map(k =>
+          '<option value="' + k + '"' + (k === st ? ' selected' : '') + '>' + TK_STATUS[k].label + '</option>').join('') +
+      '</select>';
+    }
+
+    return '<tr class="rt-row" style="cursor:default;">' +
+      '<td style="white-space:nowrap;color:var(--text-dim);font-size:12px;">' + dateStr + '</td>' +
+      '<td style="white-space:nowrap;font-weight:700;color:var(--text);">' + escapeHtml(p ? p.pseudo : 'Joueur supprimé') + '</td>' +
+      '<td style="white-space:nowrap;">' + typeBadge + '</td>' +
+      '<td class="tk-text">' + escapeHtml(e.text || '') + '</td>' +
+      '<td style="white-space:nowrap;">' + statusCell + '</td>' +
+      '<td style="white-space:nowrap;color:var(--text-mute);font-size:11px;">' + escapeHtml(e.author || '—') + '</td>' +
+      '<td style="text-align:right;"><button class="rt-btn" onclick="deleteTrackingEntry(\'' + e.id + '\')" title="Supprimer">🗑</button></td>' +
+    '</tr>';
+  }).join('');
+
+  const openNeeds = openNeedsCount();
+  container.innerHTML =
+    '<div class="rt-wrap"><table class="roster-table" style="min-width:760px;"><colgroup><col style="width:120px"><col style="width:120px"><col style="width:100px"><col><col style="width:120px"><col style="width:90px"><col style="width:50px"></colgroup>' +
+    '<thead><tr>' +
+      '<th class="rt-th" style="cursor:default;">Date</th>' +
+      '<th class="rt-th" style="cursor:default;">Joueur</th>' +
+      '<th class="rt-th" style="cursor:default;">Type</th>' +
+      '<th class="rt-th" style="cursor:default;">Note</th>' +
+      '<th class="rt-th" style="cursor:default;">Statut</th>' +
+      '<th class="rt-th" style="cursor:default;">Auteur</th>' +
+      '<th class="rt-th" style="cursor:default;"></th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="rt-foot">' + list.length + ' entrée' + (list.length > 1 ? 's' : '') +
+      (openNeeds > 0 ? ' · <span style="color:var(--amber);">' + openNeeds + ' besoin' + (openNeeds > 1 ? 's' : '') + ' en attente</span>' : '') + '</div>';
+}
+
 function renderCalendar() {
   const monthLabel = document.getElementById('calCurrentMonth');
   if (monthLabel) {
