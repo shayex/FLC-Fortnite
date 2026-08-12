@@ -377,6 +377,89 @@
     line-height: 1;
     margin-bottom: 2px;
   }
+  /* === Suivi dans la fiche Données === */
+  .dtk-needs {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .dtk-needs-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+  .dtk-need-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .dtk-need-row:last-child { border-bottom: none; }
+  .dtk-need-status {
+    flex: 0 0 auto;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .dtk-need-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .dtk-need-date {
+    flex: 0 0 auto;
+    font-size: 10px;
+    color: var(--text-mute);
+    white-space: nowrap;
+  }
+  .dtk-recent-title {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 8px;
+  }
+  .dtk-entry {
+    background: var(--bg-2);
+    border-left: 2px solid var(--red-deep);
+    border-radius: 0 6px 6px 0;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+  }
+  .dtk-entry-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .dtk-entry-date { font-size: 10px; color: var(--red-bright); font-weight: 700; }
+  .dtk-entry-author { font-size: 10px; color: var(--text-mute); }
+  .dtk-entry-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .dtk-more {
+    font-size: 11px;
+    color: var(--text-mute);
+    font-style: italic;
+    text-align: center;
+    padding-top: 4px;
+  }
+
   /* === Onglet Suivi (observations + besoins) === */
   .tracking-forms {
     display: grid;
@@ -5645,6 +5728,15 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
+    <!-- SUIVI block (observations + besoins du joueur) -->
+    <div class="data-block" id="dTrackingBlock" style="display:none;">
+      <div class="data-block-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Suivi du joueur</span>
+        <button type="button" class="report-toggle" onclick="goToTrackingForPlayer()">Ouvrir l'onglet Suivi</button>
+      </div>
+      <div id="dTrackingContent"></div>
+    </div>
+
     <!-- POWER RANKING block -->
     <div class="data-block">
       <div class="data-block-title">Power Ranking</div>
@@ -7084,8 +7176,16 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 12;  // bump this when you add an entry
+const CHANGELOG_VERSION = 13;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-07-28',
+    title: 'Suivi visible dans la fiche du joueur',
+    items: [
+      'La fiche Données d\'un joueur affiche désormais ses besoins en attente et ses 3 derniers suivis.',
+      'Un bouton permet de sauter directement à l\'onglet Suivi filtré sur ce joueur.'
+    ]
+  },
   {
     date: '2026-07-27',
     title: 'Nouvel onglet Suivi des joueurs',
@@ -12290,6 +12390,7 @@ function refreshDataModalView() {
   renderPrHistoryList(p);
   renderCupHistoryList(p);
   renderCupTagsList(p);
+  renderPlayerTrackingSummary(p.id);
 }
 
 function renderPrHistoryList(p) {
@@ -13700,6 +13801,70 @@ function renderTracking() {
     '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
     '<div class="rt-foot">' + list.length + ' entrée' + (list.length > 1 ? 's' : '') +
       (openNeeds > 0 ? ' · <span style="color:var(--amber);">' + openNeeds + ' besoin' + (openNeeds > 1 ? 's' : '') + ' en attente</span>' : '') + '</div>';
+}
+
+// Résumé du suivi d'un joueur, affiché dans sa fiche Données
+function renderPlayerTrackingSummary(playerId) {
+  const block = document.getElementById('dTrackingBlock');
+  const content = document.getElementById('dTrackingContent');
+  if (!block || !content) return;
+
+  const all = trackingEntries
+    .filter(e => e.playerId === playerId)
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  // Bloc masqué tant qu'il n'y a rien à montrer
+  if (all.length === 0) { block.style.display = 'none'; return; }
+  block.style.display = '';
+
+  const openNeeds = all.filter(e => e.type === 'besoin' && e.status !== 'resolved');
+  const suivis = all.filter(e => e.type === 'suivi');
+
+  // Bandeau des besoins en attente en premier : c'est ce qui appelle une action
+  let html = '';
+  if (openNeeds.length > 0) {
+    html += '<div class="dtk-needs">' +
+      '<div class="dtk-needs-title">🎯 ' + openNeeds.length + ' besoin' + (openNeeds.length > 1 ? 's' : '') + ' en attente</div>' +
+      openNeeds.map(e => {
+        const st = TK_STATUS[e.status || 'todo'];
+        return '<div class="dtk-need-row">' +
+          '<span class="dtk-need-status" style="color:' + st.color + ';background:' + st.bg + ';">' + st.label + '</span>' +
+          '<span class="dtk-need-text">' + escapeHtml(e.text) + '</span>' +
+          '<span class="dtk-need-date">' + timeAgo(e.createdAt) + '</span>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  }
+
+  // Puis les 3 derniers suivis
+  const recent = suivis.slice(0, 3);
+  if (recent.length > 0) {
+    html += '<div class="dtk-recent">' +
+      '<div class="dtk-recent-title">Derniers suivis</div>' +
+      recent.map(e =>
+        '<div class="dtk-entry">' +
+          '<div class="dtk-entry-head">' +
+            '<span class="dtk-entry-date">' + fmtDateFR(dateToLocalISO(new Date(e.createdAt))) + '</span>' +
+            '<span class="dtk-entry-author">' + escapeHtml(e.author || '—') + '</span>' +
+          '</div>' +
+          '<div class="dtk-entry-text">' + escapeHtml(e.text) + '</div>' +
+        '</div>').join('') +
+      (suivis.length > 3 ? '<div class="dtk-more">+ ' + (suivis.length - 3) + ' autre' + (suivis.length - 3 > 1 ? 's' : '') + ' suivi' + (suivis.length - 3 > 1 ? 's' : '') + ' dans l\'onglet Suivi</div>' : '') +
+    '</div>';
+  }
+
+  content.innerHTML = html;
+}
+
+// Depuis la fiche Données : basculer vers l'onglet Suivi filtré sur ce joueur
+function goToTrackingForPlayer() {
+  const pid = editingDataPlayerId;
+  closeModal('dataModal');
+  switchTab('tracking');
+  setTimeout(() => {
+    const sel = document.getElementById('tk_filterPlayer');
+    if (sel) { sel.value = pid; renderTracking(); }
+  }, 100);
 }
 
 function renderCalendar() {
