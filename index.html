@@ -5606,7 +5606,7 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
       <div class="section-actions">
         <button class="btn btn-ghost" onclick="openFgpScaleModal()">📖 Barème</button>
-        <button class="btn btn-primary" onclick="openGrinderModal()">
+        <button class="btn btn-primary" id="grAddBtn" onclick="openGrinderModal()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Inscrire un grinder
         </button>
@@ -6220,8 +6220,8 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-ghost" onclick="closeModal('grinderDetailModal')">Fermer</button>
-      <button type="button" class="btn btn-ghost" onclick="openOnboardingFromDetail()">✅ Checklist d'accueil</button>
-      <button type="button" class="btn btn-primary" onclick="editGrinderFromDetail()">Modifier la fiche</button>
+      <button type="button" class="btn btn-ghost" id="grDetailOnbBtn" onclick="openOnboardingFromDetail()">✅ Checklist d'accueil</button>
+      <button type="button" class="btn btn-primary" id="grDetailEditBtn" onclick="editGrinderFromDetail()">Modifier la fiche</button>
     </div>
   </div>
 </div>
@@ -6542,6 +6542,7 @@ window.addEventListener('DOMContentLoaded', function() {
           <option value="ceo">CEO</option>
           <option value="esport_director">Directeur esport</option>
           <option value="hof">HOF (Head of)</option>
+          <option value="grinder_view">Grinder View (accès limité à l'onglet Grinder)</option>
           <option value="admin">Admin (accès complet)</option>
         </select>
         <div id="u_staffHint" style="display:none;font-size:11px;color:var(--amber);margin-top:6px;letter-spacing:0.05em;">
@@ -7873,8 +7874,17 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 18;  // bump this when you add an entry
+const CHANGELOG_VERSION = 20;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-08-13',
+    title: 'R\u00f4le \u00ab Grinder View \u00bb',
+    items: [
+      'Nouveau r\u00f4le \u00e0 acc\u00e8s restreint : le compte ne voit que l\'onglet Grinder, sans acc\u00e8s au roster, aux donn\u00e9es ni au scouting.',
+      'Il peut g\u00e9rer le programme normalement : inscrire, modifier et supprimer des grinders, attribuer des FGP, g\u00e9rer les checklists.',
+      'La cloche de notifications est masqu\u00e9e pour ne rien r\u00e9v\u00e9ler du reste de l\'organisation.'
+    ]
+  },
   {
     date: '2026-08-13',
     title: 'Accueil grinder : version anglaise et infos \u00e0 collecter',
@@ -8437,16 +8447,39 @@ async function skipOnboarding() {
   showApp();
 }
 
+// Rôle à accès restreint : ne voit que l'onglet Grinder.
+// Pratique pour donner un accès de démonstration (vidéo, présentation)
+// sans exposer le roster, les données joueurs ou le scouting.
+function isGrinderViewOnly() {
+  return currentUser && currentUser.role === 'grinder_view';
+}
+
+// Applique la visibilité des onglets selon le rôle
+function applyTabVisibility() {
+  const restricted = isGrinderViewOnly();
+  document.querySelectorAll('.tab').forEach(t => {
+    const tab = t.dataset.tab;
+    if (tab === 'admin') {
+      t.style.display = (currentUser.role === 'admin') ? 'flex' : 'none';
+    } else if (restricted) {
+      t.style.display = (tab === 'grinder') ? 'flex' : 'none';
+    } else {
+      t.style.display = 'flex';
+    }
+  });
+  // La cloche révèle l'activité de toute l'org : masquée pour l'accès restreint
+  const bell = document.getElementById('notifWrapper');
+  if (bell) bell.style.display = restricted ? 'none' : '';
+}
+
 function showApp() {
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'block';
   document.getElementById('userBarName').textContent = currentUser.displayName || currentUser.pseudo;
   document.getElementById('userBarRole').textContent = getRoleShortLabel(currentUser.role);
-  if (currentUser.role === 'admin') {
-    document.getElementById('tabAdmin').style.display = 'flex';
-  } else {
-    document.getElementById('tabAdmin').style.display = 'none';
-  }
+  applyTabVisibility();
+  // Un compte restreint arrive directement sur son seul onglet
+  if (isGrinderViewOnly()) switchTab('grinder');
   renderAll();
   updateChangelogBadge();
   // Fire Discord reminders for contracts expiring soon (deduped per day)
@@ -8759,6 +8792,8 @@ function setupRealtimeSubscriptions() {
    ============================================================ */
 function switchTab(tab) {
   if (tab === 'admin' && currentUser.role !== 'admin') return;
+  // Rôle restreint : seule la vue Grinder est autorisée
+  if (isGrinderViewOnly() && tab !== 'grinder') return;
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -13775,8 +13810,8 @@ async function saveUser(e) {
       currentUser = userObj;
       document.getElementById('userBarName').textContent = userObj.displayName || userObj.pseudo;
       document.getElementById('userBarRole').textContent = getRoleShortLabel(role);
-      // Hide admin tab if user demoted themselves
-      document.getElementById('tabAdmin').style.display = (role === 'admin') ? 'flex' : 'none';
+      // Réapplique la visibilité complète des onglets (admin + restrictions)
+      applyTabVisibility();
     }
   } else {
     userObj = {
@@ -13856,6 +13891,7 @@ function getRoleShortLabel(role) {
     ceo: 'CEO',
     esport_director: 'DIR. ESPORT',
     hof: 'HOF',
+    grinder_view: 'GRINDER VIEW',
     member: 'MEMBRE'
   };
   return labels[role] || role.toUpperCase();
