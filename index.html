@@ -377,6 +377,187 @@
     line-height: 1;
     margin-bottom: 2px;
   }
+  /* === Programme Grinder === */
+  .gr-entry-panel {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--red);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .gr-entry-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .gr-entry-sub { font-size: 11px; color: var(--text-mute); margin: 4px 0 14px; }
+  .gr-entry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .gr-preview {
+    margin-top: 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .gr-formula { font-family: var(--font-mono); color: var(--text-dim); font-size: 12px; }
+  .gr-formula .gr-op { color: var(--text-mute); margin: 0 2px; }
+  .gr-formula .gr-dim { color: var(--text-mute); font-size: 11px; }
+  .gr-result {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--red-bright);
+    white-space: nowrap;
+  }
+  .gr-quick-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 800px) { .gr-quick-panel { grid-template-columns: 1fr; } }
+  .gr-quick-col {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .gr-quick-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .gr-quick-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .gr-quick-btn {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .gr-quick-btn:hover { border-color: var(--red); color: var(--text); }
+  .gr-quick-pts {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .gr-hl-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 10px;
+  }
+  .gr-hl-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .gr-hl-fgp { font-family: var(--font-mono); font-size: 14px; color: var(--green); margin-top: 4px; }
+  .gr-hl-sub { font-size: 11px; color: var(--text-mute); margin-top: 4px; }
+  .gr-hl-empty { font-size: 12px; color: var(--text-mute); font-style: italic; padding: 12px 0; }
+  .gr-rank { font-size: 16px; text-align: center; color: var(--text-mute); font-family: var(--font-mono); }
+  .gr-div-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(201,164,92,0.15);
+    color: var(--red-bright);
+  }
+  .gr-status-tag {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(245,158,11,0.15);
+    color: var(--amber);
+    margin-left: 6px;
+  }
+  .gr-status-tag.left { background: var(--bg-3); color: var(--text-mute); }
+  .gr-rating-grid { display: flex; flex-direction: column; gap: 8px; }
+  .gr-rating-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .gr-rating-label { font-size: 12px; color: var(--text-dim); }
+  .gr-stars { display: inline-flex; align-items: center; gap: 3px; }
+  .gr-star { font-size: 17px; color: var(--bg-3); cursor: pointer; line-height: 1; transition: color 0.12s, transform 0.12s; }
+  .gr-star:hover { transform: scale(1.15); }
+  .gr-star.filled { color: var(--red-bright); }
+  .gr-star-clear { font-size: 11px; color: var(--text-mute); cursor: pointer; margin-left: 6px; }
+  .gr-detail-ratings {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+  .gr-dr-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--text-dim);
+    padding: 4px 0;
+  }
+  .gr-dr-stars { color: var(--red-bright); letter-spacing: 2px; }
+  .gr-ev-fgp {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--green);
+    font-size: 14px;
+    white-space: nowrap;
+    margin-right: 8px;
+  }
+  .fgp-scale-block { margin-bottom: 18px; }
+  .fgp-scale-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red-bright);
+    margin-bottom: 8px;
+  }
+  .fgp-scale-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 6px;
+  }
+  .fgp-scale-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 11px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .fgp-scale-item strong { color: var(--text); font-family: var(--font-mono); }
+  .fgp-note { font-size: 11px; color: var(--text-mute); font-style: italic; margin-top: 8px; }
+
   /* === Suivi dans la fiche Données === */
   .dtk-needs {
     background: rgba(245,158,11,0.07);
@@ -4765,6 +4946,10 @@ window.addEventListener('DOMContentLoaded', function() {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       Scouting <span class="count" id="countScouting">0</span>
     </button>
+    <button class="tab" data-tab="grinder" onclick="switchTab('grinder')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      Grinder <span class="count" id="countGrinder">0</span>
+    </button>
     <button class="tab" data-tab="notes" onclick="switchTab('notes')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
       Notes <span class="count" id="countNotes">0</span>
@@ -5285,6 +5470,99 @@ window.addEventListener('DOMContentLoaded', function() {
     <div id="trackingTable"></div>
   </div>
 
+  <!-- ============================================================
+       GRINDER TAB — Programme Grinder FLC (FGP)
+       ============================================================ -->
+  <div class="tab-content" id="tabGrinder">
+    <div class="section-header">
+      <div class="section-title-block">
+        <h2>Programme Grinder</h2>
+        <p>Suivi, classement et valorisation des grinders FLC via les FGP</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn btn-ghost" onclick="openFgpScaleModal()">📖 Barème</button>
+        <button class="btn btn-primary" onclick="openGrinderModal()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Inscrire un grinder
+        </button>
+      </div>
+    </div>
+
+    <!-- Mises en avant : grinder de la semaine / du mois -->
+    <div class="dash-grid" id="grinderHighlights"></div>
+
+    <!-- Saisie d'un résultat : les FGP se calculent seuls -->
+    <div class="gr-entry-panel">
+      <div class="gr-entry-title">⚡ Enregistrer une performance</div>
+      <div class="gr-entry-sub">Sélectionne le joueur et son résultat : les FGP sont calculés automatiquement par le barème.</div>
+      <div class="gr-entry-grid">
+        <div class="form-group">
+          <label>Grinder *</label>
+          <select id="gr_ev_grinder" onchange="updateFgpPreview()"></select>
+        </div>
+        <div class="form-group">
+          <label>Type de cup *</label>
+          <select id="gr_ev_cupType" onchange="updateFgpPreview()"></select>
+        </div>
+        <div class="form-group">
+          <label>Division *</label>
+          <select id="gr_ev_division" onchange="updateFgpPreview()"></select>
+        </div>
+        <div class="form-group">
+          <label>Placement *</label>
+          <input type="number" id="gr_ev_placement" min="1" placeholder="Ex: 42" oninput="updateFgpPreview()" />
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="gr_ev_date" />
+        </div>
+      </div>
+      <div class="gr-preview" id="gr_preview">Renseigne un placement pour voir les FGP.</div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="addGrinderPerf()">Attribuer les FGP</button>
+      </div>
+    </div>
+
+    <!-- Actions rapides : implication + progression -->
+    <div class="gr-quick-panel">
+      <div class="gr-quick-col">
+        <div class="gr-quick-title">🤝 Points d'implication</div>
+        <div class="form-group"><label>Grinder</label><select id="gr_imp_grinder"></select></div>
+        <div class="gr-quick-btns" id="gr_implicationBtns"></div>
+      </div>
+      <div class="gr-quick-col">
+        <div class="gr-quick-title">📈 Montée de division (bonus FNCS)</div>
+        <div class="form-group"><label>Grinder</label><select id="gr_prog_grinder"></select></div>
+        <div class="gr-quick-btns" id="gr_progressionBtns"></div>
+      </div>
+    </div>
+
+    <!-- Classement général -->
+    <div class="dash-section-title">Classement général</div>
+    <div class="filters-bar">
+      <button class="filter-chip active" data-grfilter="active" onclick="setGrinderFilter('active')">Actifs</button>
+      <button class="filter-chip" data-grfilter="paused" onclick="setGrinderFilter('paused')">En pause</button>
+      <button class="filter-chip" data-grfilter="all" onclick="setGrinderFilter('all')">Tous</button>
+      <input type="text" class="search-input" id="gr_search" placeholder="Rechercher un grinder..." oninput="renderGrinderLeaderboard()" />
+    </div>
+    <div id="grinderLeaderboard"></div>
+
+    <!-- Courbe de progression -->
+    <div class="dash-section-title">Progression des FGP</div>
+    <div class="dash-grid">
+      <div class="dash-card span-12">
+        <div class="dash-card-header">
+          <div>
+            <div class="dash-card-title">Évolution cumulée</div>
+            <div class="dash-card-sub">Cumul des FGP dans le temps, par grinder</div>
+          </div>
+        </div>
+        <div id="grinderChart"></div>
+        <div id="grinderChartLegend" class="chart-legend"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="tab-content" id="tabAdminContent">
     <div class="section-header">
       <div class="section-title-block">
@@ -5701,6 +5979,105 @@ window.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Player Data / Performance Modal -->
+<!-- GRINDER : fiche d'inscription / édition -->
+<div class="modal-overlay" id="grinderModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('grinderModal')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 id="grinderModalTitle">Inscrire un grinder</h2>
+    <p class="modal-sub">Le joueur n'a rien à remplir : le staff renseigne sa fiche et les FGP suivent.</p>
+    <form id="grinderForm" onsubmit="saveGrinder(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Pseudo *</label><input type="text" id="gr_pseudo" required /></div>
+        <div class="form-group"><label>Vrai nom</label><input type="text" id="gr_realName" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Pays</label>
+          <div id="gr_country_wrapper"></div>
+          <input type="hidden" id="gr_country" />
+        </div>
+        <div class="form-group"><label>Âge</label><input type="number" id="gr_age" min="0" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Division actuelle</label>
+          <select id="gr_division"></select>
+        </div>
+        <div class="form-group">
+          <label>Statut</label>
+          <select id="gr_status">
+            <option value="active">Actif</option>
+            <option value="paused">En pause</option>
+            <option value="left">A quitté le programme</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>X / Twitter</label><input type="text" id="gr_twitter" placeholder="Lien du profil (éligibilité)" /></div>
+        <div class="form-group"><label>Epic / Tracker</label><input type="text" id="gr_tracker" placeholder="Lien Fortnite Tracker" /></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Appréciation manager</div>
+        <p style="font-size:11px;color:var(--text-mute);margin:-4px 0 12px;">Évaluation qualitative, indépendante des FGP automatiques. Note sur 5.</p>
+        <div class="gr-rating-grid" id="gr_ratingGrid"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="gr_notes" placeholder="Observations, contexte, points d'attention..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="gr_deleteBtn" class="btn btn-danger" style="display:none;margin-right:auto;" onclick="deleteGrinder()">Supprimer</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('grinderModal')">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- GRINDER : fiche détaillée (historique FGP) -->
+<div class="modal-overlay" id="grinderDetailModal">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('grinderDetailModal')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 id="grDetailTitle">Fiche grinder</h2>
+    <p class="modal-sub" id="grDetailSub"></p>
+    <div class="data-stat-row">
+      <div class="data-stat"><div class="data-stat-label">Total FGP</div><div class="data-stat-value" id="grDetailTotal">0</div></div>
+      <div class="data-stat"><div class="data-stat-label">Ce mois</div><div class="data-stat-value" id="grDetailMonth" style="color:var(--green);">0</div></div>
+    </div>
+    <div id="grDetailRatings"></div>
+    <div class="data-block">
+      <div class="data-block-title">Historique des FGP</div>
+      <div class="data-block-list" id="grDetailHistory"></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('grinderDetailModal')">Fermer</button>
+      <button type="button" class="btn btn-primary" onclick="editGrinderFromDetail()">Modifier la fiche</button>
+    </div>
+  </div>
+</div>
+
+<!-- GRINDER : barème de référence -->
+<div class="modal-overlay" id="fgpScaleModal">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('fgpScaleModal')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2>Barème FGP</h2>
+    <p class="modal-sub">FGP = points de placement × coefficient de division × coefficient de type de cup</p>
+    <div id="fgpScaleContent"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="closeModal('fgpScaleModal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="dataModal">
   <div class="modal" style="max-width:780px;">
     <button class="modal-close" onclick="closeModal('dataModal')">
@@ -6291,6 +6668,105 @@ let notes = [];            // [{ id, groupId, title, content, tags[], priority, 
 let noteGroups = [];       // [{ id, name, description, color, createdAt }]
 let trackingEntries = [];  // [{ id, playerId, type:'suivi'|'besoin', text, status('todo'|'in_progress'|'resolved', besoins seulement), author, createdAt }]
 let trackingTypeFilter = 'all';   // 'all' | 'suivi' | 'besoin'
+
+/* ============================================================
+   PROGRAMME GRINDER — FGP (FLC Grinder Points)
+   FGP = points de placement × coeff. division × coeff. type de cup
+   Toutes les valeurs sont paramétrables depuis l'Admin (phase de calibrage).
+   ============================================================ */
+let grinders = [];        // [{ id, pseudo, realName, country, epic, socials, division, status, photo, notes, ratings:{serieux,implication,comportement}, createdAt, updatedAt }]
+let grinderEvents = [];   // [{ id, grinderId, kind:'perf'|'bonus'|'implication', fgp, date, author, createdAt, ...détails }]
+let grinderFilter = 'active';   // 'active' | 'all' | 'paused'
+
+// Barème de placement : seuil (place <=) -> points. Ordre croissant obligatoire.
+const FGP_PLACEMENT_SCALE = [
+  { max: 1,   pts: 100 },
+  { max: 5,   pts: 80 },
+  { max: 10,  pts: 75 },
+  { max: 25,  pts: 65 },
+  { max: 50,  pts: 55 },
+  { max: 100, pts: 35 },
+  { max: 150, pts: 25 },
+  { max: 200, pts: 15 },
+  { max: 250, pts: 10 }
+];
+
+const FGP_DIVISIONS = [
+  { key: 'D1', label: 'Division 1', coeff: 1.00 },
+  { key: 'D2', label: 'Division 2', coeff: 0.92 },
+  { key: 'D3', label: 'Division 3', coeff: 0.84 },
+  { key: 'D4', label: 'Division 4', coeff: 0.76 },
+  { key: 'D5', label: 'Division 5', coeff: 0.68 }
+];
+
+const FGP_CUP_TYPES = [
+  { key: 'division',    label: 'Division Cup',      coeff: 1.00 },
+  { key: 'performance', label: 'Performance Cup',   coeff: 0.80 },
+  { key: 'solo',        label: 'Solo Victory Cup',  coeff: 0.65 }
+];
+
+// Bonus de progression FNCS : montée de division
+const FGP_PROGRESSION = [
+  { from: 'D5', to: 'D4', fgp: 15 },
+  { from: 'D4', to: 'D3', fgp: 25 },
+  { from: 'D3', to: 'D2', fgp: 35 },
+  { from: 'D2', to: 'D1', fgp: 50 }
+];
+
+// Points d'implication (hors performance)
+const FGP_IMPLICATION = [
+  { key: 'social',  label: 'Soutien aux réseaux FLC',   fgp: 2 },
+  { key: 'sharing', label: 'Partage de ses performances', fgp: 2 },
+  { key: 'event',   label: 'Participation à un événement FLC', fgp: 5 }
+];
+
+// Critères d'évaluation manager (appréciation qualitative)
+const GRINDER_CRITERIA = [
+  { key: 'serieux',     label: 'Sérieux' },
+  { key: 'implication', label: 'Implication' },
+  { key: 'comportement', label: 'Comportement' }
+];
+
+// Points de placement bruts (avant coefficients) — 0 hors barème
+function fgpPlacementPoints(placement) {
+  const n = parseInt(placement, 10);
+  if (isNaN(n) || n < 1) return 0;
+  for (const tier of FGP_PLACEMENT_SCALE) {
+    if (n <= tier.max) return tier.pts;
+  }
+  return 0;   // au-delà du dernier palier : pas de FGP
+}
+
+function divisionCoeff(key) {
+  const d = FGP_DIVISIONS.find(x => x.key === key);
+  return d ? d.coeff : 1;
+}
+function cupTypeCoeff(key) {
+  const c = FGP_CUP_TYPES.find(x => x.key === key);
+  return c ? c.coeff : 1;
+}
+
+// Calcul central : renvoie le détail pour pouvoir l'expliquer à l'écran
+function computeFGP(placement, division, cupType) {
+  const base = fgpPlacementPoints(placement);
+  const cd = divisionCoeff(division);
+  const cc = cupTypeCoeff(cupType);
+  return {
+    base, coeffDivision: cd, coeffCup: cc,
+    total: Math.round(base * cd * cc)
+  };
+}
+
+// Cumul FGP d'un grinder
+function grinderTotalFGP(id) {
+  return grinderEvents.filter(e => e.grinderId === id).reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+}
+// Cumul sur une fenêtre glissante (semaine / mois)
+function grinderFGPSince(id, sinceTs) {
+  return grinderEvents
+    .filter(e => e.grinderId === id && (e.createdAt || 0) >= sinceTs)
+    .reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+}
 let calendarEvents = [];   // manual events
 let currentNoteGroupFilter = 'all';   // 'all' | groupId
 let editingNoteId = null;
@@ -7176,8 +7652,19 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 13;  // bump this when you add an entry
+const CHANGELOG_VERSION = 14;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-08-13',
+    title: 'Programme Grinder (FGP)',
+    items: [
+      'Nouvel onglet Grinder : inscription des joueurs au programme et suivi automatique de leurs FLC Grinder Points.',
+      'Les FGP sont calculés seuls — placement × coefficient de division × coefficient de type de cup. Aucun calcul manuel.',
+      'Boutons rapides pour les points d\'implication et les bonus de montée de division (la division du joueur se met à jour toute seule).',
+      'Classement général, grinder de la semaine et du mois, courbe de progression cumulée et fiche détaillée par joueur.',
+      'Appréciation manager en étoiles (sérieux, implication, comportement), indépendante des FGP automatiques.'
+    ]
+  },
   {
     date: '2026-07-28',
     title: 'Suivi visible dans la fiche du joueur',
@@ -7812,6 +8299,15 @@ async function loadAll() {
     const r = await appStorage.get('sovereign_tracking');
     if (r && r.value) trackingEntries = JSON.parse(r.value);
   } catch (e) { trackingEntries = []; }
+  // Programme Grinder
+  try {
+    const r = await appStorage.get('sovereign_grinders');
+    if (r && r.value) grinders = JSON.parse(r.value);
+  } catch (e) { grinders = []; }
+  try {
+    const r = await appStorage.get('sovereign_grinder_events');
+    if (r && r.value) grinderEvents = JSON.parse(r.value);
+  } catch (e) { grinderEvents = []; }
   // Default groups if none
   if (noteGroups.length === 0) {
     noteGroups = [
@@ -7863,6 +8359,8 @@ async function persistNotifications() { await appStorage.set('sovereign_notifica
 async function persistCupNames() { await appStorage.set('sovereign_cup_names', JSON.stringify(cupNamesGlobal)); }
 async function persistNotes() { await appStorage.set('sovereign_notes', JSON.stringify(notes)); }
 async function persistTracking() { await appStorage.set('sovereign_tracking', JSON.stringify(trackingEntries)); }
+async function persistGrinders() { await appStorage.set('sovereign_grinders', JSON.stringify(grinders)); }
+async function persistGrinderEvents() { await appStorage.set('sovereign_grinder_events', JSON.stringify(grinderEvents)); }
 async function persistNoteGroups() { await appStorage.set('sovereign_note_groups', JSON.stringify(noteGroups)); }
 async function persistCalendarEvents() { await appStorage.set('sovereign_calendar_events', JSON.stringify(calendarEvents)); }
 
@@ -7950,6 +8448,14 @@ async function reloadDataFromSupabase() {
     if (tk && tk.value) trackingEntries = JSON.parse(tk.value);
   } catch (e) {}
   try {
+    const g = await appStorage.get('sovereign_grinders');
+    if (g && g.value) grinders = JSON.parse(g.value);
+  } catch (e) {}
+  try {
+    const ge = await appStorage.get('sovereign_grinder_events');
+    if (ge && ge.value) grinderEvents = JSON.parse(ge.value);
+  } catch (e) {}
+  try {
     const ce = await appStorage.get('sovereign_calendar_events');
     if (ce && ce.value) calendarEvents = JSON.parse(ce.value);
   } catch (e) {}
@@ -8006,6 +8512,7 @@ function switchTab(tab) {
     scouting: 'tabScouting',
     notes: 'tabNotes',
     tracking: 'tabTracking',
+    grinder: 'tabGrinder',
     admin: 'tabAdminContent'
   };
   document.getElementById(map[tab]).classList.add('active');
@@ -8021,6 +8528,7 @@ function renderAll() {
   renderStaff();
   renderNotes();
   renderTracking();
+  renderGrinder();
   renderCalendar();
   renderActivity();
   renderNotifications();
@@ -8034,6 +8542,8 @@ function updateCounts() {
   if (cs) cs.textContent = staff.length;
   const cn = document.getElementById('countNotes');
   if (cn) cn.textContent = notes.length;
+  const cg = document.getElementById('countGrinder');
+  if (cg) cg.textContent = grinders.filter(g => (g.status || 'active') === 'active').length;
   // Compteur de l'onglet Suivi = besoins non traités (pas le total d'entrées)
   const ct = document.getElementById('countTracking');
   if (ct) {
@@ -13865,6 +14375,533 @@ function goToTrackingForPlayer() {
     const sel = document.getElementById('tk_filterPlayer');
     if (sel) { sel.value = pid; renderTracking(); }
   }, 100);
+}
+
+/* ============================================================
+   PROGRAMME GRINDER — interface
+   ============================================================ */
+let editingGrinderId = null;
+let detailGrinderId = null;
+let editingGrinderRatings = {};
+
+function setGrinderFilter(f) {
+  grinderFilter = f;
+  document.querySelectorAll('[data-grfilter]').forEach(b => b.classList.toggle('active', b.dataset.grfilter === f));
+  renderGrinderLeaderboard();
+}
+
+function getFilteredGrinders() {
+  const search = (document.getElementById('gr_search')?.value || '').toLowerCase().trim();
+  let list = grinders.slice();
+  if (grinderFilter === 'active') list = list.filter(g => (g.status || 'active') === 'active');
+  else if (grinderFilter === 'paused') list = list.filter(g => g.status === 'paused');
+  if (search) list = list.filter(g =>
+    (g.pseudo || '').toLowerCase().includes(search) || (g.realName || '').toLowerCase().includes(search));
+  return list;
+}
+
+// Remplit un select de grinders en conservant la sélection
+function fillGrinderSelect(id) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const prev = sel.value;
+  const list = grinders.filter(g => (g.status || 'active') !== 'left')
+    .sort((a, b) => (a.pseudo || '').localeCompare(b.pseudo || '', 'fr'));
+  sel.innerHTML = '<option value="">— Choisir un grinder —</option>' +
+    list.map(g => '<option value="' + g.id + '">' + escapeHtml(g.pseudo || '—') + '</option>').join('');
+  if (prev && list.some(g => g.id === prev)) sel.value = prev;
+}
+
+// ---------- Fiche grinder ----------
+function openGrinderModal(id) {
+  editingGrinderId = id || null;
+  const divSel = document.getElementById('gr_division');
+  divSel.innerHTML = FGP_DIVISIONS.map(d => '<option value="' + d.key + '">' + d.label + '</option>').join('');
+
+  const g = id ? grinders.find(x => x.id === id) : null;
+  editingGrinderRatings = g && g.ratings ? Object.assign({}, g.ratings) : {};
+  renderGrinderRatingInputs();
+
+  if (g) {
+    document.getElementById('grinderModalTitle').textContent = 'Modifier ' + g.pseudo;
+    document.getElementById('gr_pseudo').value = g.pseudo || '';
+    document.getElementById('gr_realName').value = g.realName || '';
+    document.getElementById('gr_age').value = g.age || '';
+    document.getElementById('gr_division').value = g.division || 'D5';
+    document.getElementById('gr_status').value = g.status || 'active';
+    document.getElementById('gr_twitter').value = g.twitter || '';
+    document.getElementById('gr_tracker').value = g.tracker || '';
+    document.getElementById('gr_notes').value = g.notes || '';
+    mountCountrySelect('gr_country_wrapper', 'gr_country', g.country || '');
+    document.getElementById('gr_deleteBtn').style.display = '';
+  } else {
+    document.getElementById('grinderModalTitle').textContent = 'Inscrire un grinder';
+    document.getElementById('grinderForm').reset();
+    document.getElementById('gr_division').value = 'D5';
+    mountCountrySelect('gr_country_wrapper', 'gr_country', '');
+    document.getElementById('gr_deleteBtn').style.display = 'none';
+  }
+  document.getElementById('grinderModal').classList.add('active');
+}
+
+function renderGrinderRatingInputs() {
+  const el = document.getElementById('gr_ratingGrid');
+  if (!el) return;
+  el.innerHTML = GRINDER_CRITERIA.map(c => {
+    const val = editingGrinderRatings[c.key] || 0;
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+      stars += '<span class="gr-star' + (i <= val ? ' filled' : '') + '" onclick="setGrinderRating(\'' + c.key + '\',' + i + ')">★</span>';
+    }
+    return '<div class="gr-rating-row"><span class="gr-rating-label">' + c.label + '</span>' +
+      '<span class="gr-stars">' + stars +
+      '<span class="gr-star-clear" onclick="setGrinderRating(\'' + c.key + '\',0)"' + (val ? '' : ' style="visibility:hidden;"') + '>✕</span>' +
+      '</span></div>';
+  }).join('');
+}
+
+function setGrinderRating(key, val) {
+  if (editingGrinderRatings[key] === val) val = 0;
+  editingGrinderRatings[key] = val;
+  renderGrinderRatingInputs();
+}
+
+async function saveGrinder(e) {
+  e.preventDefault();
+  const pseudo = document.getElementById('gr_pseudo').value.trim();
+  if (!pseudo) { showToast('Le pseudo est obligatoire', 'error'); return; }
+
+  const data = {
+    pseudo,
+    realName: document.getElementById('gr_realName').value.trim(),
+    age: document.getElementById('gr_age').value,
+    country: document.getElementById('gr_country').value,
+    division: document.getElementById('gr_division').value,
+    status: document.getElementById('gr_status').value,
+    twitter: document.getElementById('gr_twitter').value.trim(),
+    tracker: document.getElementById('gr_tracker').value.trim(),
+    notes: document.getElementById('gr_notes').value.trim(),
+    ratings: Object.assign({}, editingGrinderRatings),
+    updatedAt: Date.now()
+  };
+
+  const wasNew = !editingGrinderId;
+  if (editingGrinderId) {
+    const i = grinders.findIndex(x => x.id === editingGrinderId);
+    if (i >= 0) grinders[i] = Object.assign({}, grinders[i], data, { id: grinders[i].id, createdAt: grinders[i].createdAt });
+  } else {
+    data.id = 'gr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+    data.createdAt = Date.now();
+    grinders.push(data);
+  }
+  await persistGrinders();
+  closeModal('grinderModal');
+  renderGrinder();
+  updateCounts();
+  logActivity('roster', (wasNew ? 'Inscription' : 'Modification') + ' du grinder ' + pseudo);
+  showToast(wasNew ? 'Grinder inscrit' : 'Fiche mise à jour', 'success');
+}
+
+async function deleteGrinder() {
+  if (!editingGrinderId) return;
+  const g = grinders.find(x => x.id === editingGrinderId);
+  if (!g) return;
+  const nb = grinderEvents.filter(e => e.grinderId === g.id).length;
+  if (!confirm('Supprimer ' + g.pseudo + ' du programme ?\n\n' + nb + ' entrée(s) de FGP seront également supprimées.')) return;
+  grinders = grinders.filter(x => x.id !== editingGrinderId);
+  grinderEvents = grinderEvents.filter(e => e.grinderId !== editingGrinderId);
+  await persistGrinders();
+  await persistGrinderEvents();
+  closeModal('grinderModal');
+  renderGrinder();
+  updateCounts();
+  logActivity('roster', 'Suppression du grinder ' + g.pseudo);
+  showToast('Grinder supprimé', 'success');
+}
+
+// ---------- Saisie de performance ----------
+function updateFgpPreview() {
+  const el = document.getElementById('gr_preview');
+  if (!el) return;
+  const placement = document.getElementById('gr_ev_placement').value;
+  const division = document.getElementById('gr_ev_division').value;
+  const cupType = document.getElementById('gr_ev_cupType').value;
+  const n = parseInt(placement, 10);
+  if (!n || isNaN(n) || n < 1) {
+    el.innerHTML = '<span style="color:var(--text-mute);">Renseigne un placement pour voir les FGP.</span>';
+    return;
+  }
+  const r = computeFGP(n, division, cupType);
+  if (r.base === 0) {
+    el.innerHTML = '<span style="color:var(--amber);">Placement hors barème (au-delà du Top 250) — 0 FGP.</span>';
+    return;
+  }
+  const divLabel = (FGP_DIVISIONS.find(d => d.key === division) || {}).label || division;
+  const cupLabel = (FGP_CUP_TYPES.find(c => c.key === cupType) || {}).label || cupType;
+  el.innerHTML =
+    '<span class="gr-formula">' + r.base + ' pts <span class="gr-op">×</span> ' +
+    r.coeffDivision.toFixed(2) + ' <span class="gr-dim">(' + escapeHtml(divLabel) + ')</span> <span class="gr-op">×</span> ' +
+    r.coeffCup.toFixed(2) + ' <span class="gr-dim">(' + escapeHtml(cupLabel) + ')</span></span>' +
+    '<span class="gr-result">= ' + r.total + ' FGP</span>';
+}
+
+async function addGrinderPerf() {
+  const gid = document.getElementById('gr_ev_grinder').value;
+  const placement = parseInt(document.getElementById('gr_ev_placement').value, 10);
+  const division = document.getElementById('gr_ev_division').value;
+  const cupType = document.getElementById('gr_ev_cupType').value;
+  const date = document.getElementById('gr_ev_date').value || todayISO();
+
+  if (!gid) { showToast('Choisis un grinder', 'error'); return; }
+  if (!placement || isNaN(placement) || placement < 1) { showToast('Placement invalide', 'error'); return; }
+  const g = grinders.find(x => x.id === gid);
+  if (!g) return;
+
+  const r = computeFGP(placement, division, cupType);
+  grinderEvents.push({
+    id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    grinderId: gid,
+    kind: 'perf',
+    placement, division, cupType,
+    base: r.base, coeffDivision: r.coeffDivision, coeffCup: r.coeffCup,
+    fgp: r.total,
+    date,
+    author: (currentUser && currentUser.pseudo) || '—',
+    createdAt: Date.now()
+  });
+  await persistGrinderEvents();
+  document.getElementById('gr_ev_placement').value = '';
+  updateFgpPreview();
+  renderGrinder();
+  logActivity('data', r.total + ' FGP pour ' + g.pseudo + ' (top ' + placement + ')');
+  showToast('+' + r.total + ' FGP pour ' + g.pseudo, 'success');
+}
+
+// ---------- Implication & progression ----------
+function renderGrinderQuickButtons() {
+  const impEl = document.getElementById('gr_implicationBtns');
+  if (impEl) {
+    impEl.innerHTML = FGP_IMPLICATION.map(a =>
+      '<button type="button" class="gr-quick-btn" onclick="addGrinderImplication(\'' + a.key + '\')">' +
+        escapeHtml(a.label) + '<span class="gr-quick-pts">+' + a.fgp + '</span></button>').join('');
+  }
+  const progEl = document.getElementById('gr_progressionBtns');
+  if (progEl) {
+    progEl.innerHTML = FGP_PROGRESSION.map(p =>
+      '<button type="button" class="gr-quick-btn" onclick="addGrinderProgression(\'' + p.from + '\',\'' + p.to + '\')">' +
+        p.from + ' → ' + p.to + '<span class="gr-quick-pts">+' + p.fgp + '</span></button>').join('');
+  }
+}
+
+async function addGrinderImplication(key) {
+  const gid = document.getElementById('gr_imp_grinder').value;
+  if (!gid) { showToast('Choisis un grinder', 'error'); return; }
+  const g = grinders.find(x => x.id === gid);
+  const action = FGP_IMPLICATION.find(a => a.key === key);
+  if (!g || !action) return;
+  grinderEvents.push({
+    id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    grinderId: gid, kind: 'implication', label: action.label, fgp: action.fgp,
+    date: todayISO(), author: (currentUser && currentUser.pseudo) || '—', createdAt: Date.now()
+  });
+  await persistGrinderEvents();
+  renderGrinder();
+  showToast('+' + action.fgp + ' FGP · ' + action.label, 'success');
+}
+
+async function addGrinderProgression(from, to) {
+  const gid = document.getElementById('gr_prog_grinder').value;
+  if (!gid) { showToast('Choisis un grinder', 'error'); return; }
+  const g = grinders.find(x => x.id === gid);
+  const prog = FGP_PROGRESSION.find(p => p.from === from && p.to === to);
+  if (!g || !prog) return;
+  grinderEvents.push({
+    id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    grinderId: gid, kind: 'bonus', from, to, fgp: prog.fgp,
+    date: todayISO(), author: (currentUser && currentUser.pseudo) || '—', createdAt: Date.now()
+  });
+  // La montée met aussi à jour la division courante du joueur
+  g.division = to;
+  g.updatedAt = Date.now();
+  await persistGrinders();
+  await persistGrinderEvents();
+  renderGrinder();
+  logActivity('roster', g.pseudo + ' monte en ' + to + ' (+' + prog.fgp + ' FGP)');
+  showToast(g.pseudo + ' passe ' + to + ' · +' + prog.fgp + ' FGP', 'success');
+}
+
+// ---------- Classement ----------
+function renderGrinderLeaderboard() {
+  const container = document.getElementById('grinderLeaderboard');
+  if (!container) return;
+  const list = getFilteredGrinders()
+    .map(g => ({ g, total: grinderTotalFGP(g.id), events: grinderEvents.filter(e => e.grinderId === g.id).length }))
+    .sort((a, b) => b.total - a.total);
+
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty"><h3>Aucun grinder</h3><p>Inscris le premier joueur au programme pour lancer le suivi.</p>' +
+      '<button class="btn btn-primary" onclick="openGrinderModal()">Inscrire un grinder</button></div>';
+    return;
+  }
+
+  const rows = list.map((it, i) => {
+    const g = it.g;
+    const rank = i + 1;
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+    const div = FGP_DIVISIONS.find(d => d.key === g.division);
+    const ratingAvg = (function () {
+      const v = GRINDER_CRITERIA.map(c => (g.ratings || {})[c.key]).filter(x => x > 0);
+      return v.length ? (v.reduce((a, b) => a + b, 0) / v.length) : null;
+    })();
+    const statusTag = g.status === 'paused' ? '<span class="gr-status-tag">En pause</span>'
+      : g.status === 'left' ? '<span class="gr-status-tag left">Parti</span>' : '';
+    return '<tr class="rt-row" onclick="openGrinderDetail(\'' + g.id + '\')">' +
+      '<td class="gr-rank">' + medal + '</td>' +
+      '<td><div class="rt-name">' + escapeHtml(g.pseudo || '—') + ' ' + statusTag + '</div>' +
+        (g.realName ? '<div class="rt-sub">' + escapeHtml(g.realName) + '</div>' : '') + '</td>' +
+      '<td>' + (g.country ? flagImg(g.country, 16) : '—') + '</td>' +
+      '<td>' + (div ? '<span class="gr-div-badge">' + div.key + '</span>' : '—') + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);color:var(--red-bright);font-weight:700;">' + fmtNumber(it.total) + '</td>' +
+      '<td style="text-align:right;font-family:var(--font-mono);">' + it.events + '</td>' +
+      '<td style="text-align:right;">' + (ratingAvg != null ? '<span style="color:var(--red-bright);">' + ratingAvg.toFixed(1) + '/5</span>' : '<span style="color:var(--text-mute);">—</span>') + '</td>' +
+    '</tr>';
+  }).join('');
+
+  container.innerHTML = '<div class="rt-wrap"><table class="roster-table" style="min-width:640px;">' +
+    '<colgroup><col style="width:60px"><col><col style="width:60px"><col style="width:70px"><col style="width:90px"><col style="width:80px"><col style="width:80px"></colgroup>' +
+    '<thead><tr>' +
+      '<th class="rt-th" style="cursor:default;">#</th>' +
+      '<th class="rt-th" style="cursor:default;">Grinder</th>' +
+      '<th class="rt-th" style="cursor:default;">Pays</th>' +
+      '<th class="rt-th" style="cursor:default;">Div.</th>' +
+      '<th class="rt-th" style="cursor:default;text-align:right;">FGP</th>' +
+      '<th class="rt-th" style="cursor:default;text-align:right;">Entrées</th>' +
+      '<th class="rt-th" style="cursor:default;text-align:right;">Note</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="rt-foot">' + list.length + ' grinder' + (list.length > 1 ? 's' : '') + ' · clique sur une ligne pour voir le détail</div>';
+}
+
+// ---------- Grinder de la semaine / du mois ----------
+function renderGrinderHighlights() {
+  const container = document.getElementById('grinderHighlights');
+  if (!container) return;
+  const active = grinders.filter(g => (g.status || 'active') === 'active');
+  if (active.length === 0) { container.innerHTML = ''; return; }
+
+  const now = Date.now();
+  const weekAgo = now - 7 * 86400000;
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+
+  function best(sinceTs) {
+    let top = null;
+    active.forEach(g => {
+      const v = grinderFGPSince(g.id, sinceTs);
+      if (v > 0 && (!top || v > top.fgp)) top = { g, fgp: v };
+    });
+    return top;
+  }
+  const week = best(weekAgo);
+  const month = best(monthStart.getTime());
+  const totalFgp = grinderEvents.reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+
+  function card(title, sub, item, accent) {
+    if (!item) {
+      return '<div class="dash-card span-4"><div class="gr-hl-title">' + title + '</div>' +
+        '<div class="gr-hl-empty">Aucune activité sur la période</div></div>';
+    }
+    return '<div class="dash-card span-4"><div class="gr-hl-title">' + title + '</div>' +
+      '<div class="gr-hl-name" style="color:' + accent + ';">' + escapeHtml(item.g.pseudo) + '</div>' +
+      '<div class="gr-hl-fgp">+' + fmtNumber(item.fgp) + ' FGP</div>' +
+      '<div class="gr-hl-sub">' + sub + '</div></div>';
+  }
+
+  container.innerHTML =
+    card('🔥 Grinder de la semaine', '7 derniers jours', week, 'var(--red-bright)') +
+    card('👑 Grinder du mois', 'Depuis le 1er du mois', month, '#c084fc') +
+    '<div class="dash-card span-4"><div class="gr-hl-title">📊 Programme</div>' +
+      '<div class="gr-hl-name">' + active.length + '</div>' +
+      '<div class="gr-hl-fgp">' + fmtNumber(totalFgp) + ' FGP distribués</div>' +
+      '<div class="gr-hl-sub">grinder' + (active.length > 1 ? 's' : '') + ' actif' + (active.length > 1 ? 's' : '') + '</div></div>';
+}
+
+// ---------- Fiche détaillée ----------
+function openGrinderDetail(id) {
+  const g = grinders.find(x => x.id === id);
+  if (!g) return;
+  detailGrinderId = id;
+  document.getElementById('grDetailTitle').textContent = g.pseudo;
+  const div = FGP_DIVISIONS.find(d => d.key === g.division);
+  document.getElementById('grDetailSub').textContent =
+    [g.realName, div ? div.label : null, g.country || null].filter(Boolean).join(' · ') || 'Grinder FLC';
+  document.getElementById('grDetailTotal').textContent = fmtNumber(grinderTotalFGP(id));
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+  document.getElementById('grDetailMonth').textContent = '+' + fmtNumber(grinderFGPSince(id, monthStart.getTime()));
+
+  // Appréciation manager
+  const rEl = document.getElementById('grDetailRatings');
+  const hasRatings = GRINDER_CRITERIA.some(c => (g.ratings || {})[c.key] > 0);
+  rEl.innerHTML = hasRatings
+    ? '<div class="gr-detail-ratings">' + GRINDER_CRITERIA.map(c => {
+        const v = (g.ratings || {})[c.key] || 0;
+        return '<div class="gr-dr-row"><span>' + c.label + '</span>' +
+          '<span class="gr-dr-stars">' + ('★★★★★'.slice(0, v) + '☆☆☆☆☆'.slice(0, 5 - v)) + '</span></div>';
+      }).join('') + '</div>'
+    : '';
+
+  // Historique
+  const evts = grinderEvents.filter(e => e.grinderId === id).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const hEl = document.getElementById('grDetailHistory');
+  if (evts.length === 0) {
+    hEl.innerHTML = '<div class="tags-empty">Aucun FGP enregistré pour l\'instant.</div>';
+  } else {
+    hEl.innerHTML = evts.map(e => {
+      let label, detail = '';
+      if (e.kind === 'perf') {
+        const cup = FGP_CUP_TYPES.find(c => c.key === e.cupType);
+        label = 'Top ' + e.placement + ' · ' + (cup ? cup.label : e.cupType);
+        detail = e.base + ' × ' + Number(e.coeffDivision).toFixed(2) + ' (' + e.division + ') × ' + Number(e.coeffCup).toFixed(2);
+      } else if (e.kind === 'bonus') {
+        label = 'Montée ' + e.from + ' → ' + e.to;
+        detail = 'Bonus de progression FNCS';
+      } else {
+        label = e.label || 'Implication';
+        detail = 'Point d\'implication';
+      }
+      return '<div class="history-entry">' +
+        '<div class="he-date">' + fmtDateFR(e.date) + '</div>' +
+        '<div class="he-main"><div class="he-primary">' + escapeHtml(label) + '</div>' +
+          '<div class="he-tertiary">' + escapeHtml(detail) + ' · ' + escapeHtml(e.author || '—') + '</div></div>' +
+        '<div class="gr-ev-fgp">+' + e.fgp + '</div>' +
+        '<button class="rt-btn" onclick="deleteGrinderEvent(\'' + e.id + '\')" title="Supprimer">🗑</button>' +
+      '</div>';
+    }).join('');
+  }
+  document.getElementById('grinderDetailModal').classList.add('active');
+}
+
+function editGrinderFromDetail() {
+  const id = detailGrinderId;
+  closeModal('grinderDetailModal');
+  openGrinderModal(id);
+}
+
+async function deleteGrinderEvent(id) {
+  const e = grinderEvents.find(x => x.id === id);
+  if (!e) return;
+  if (!confirm('Supprimer cette entrée de ' + e.fgp + ' FGP ?')) return;
+  grinderEvents = grinderEvents.filter(x => x.id !== id);
+  await persistGrinderEvents();
+  if (detailGrinderId) openGrinderDetail(detailGrinderId);
+  renderGrinder();
+  showToast('Entrée supprimée', 'success');
+}
+
+// ---------- Barème de référence ----------
+function openFgpScaleModal() {
+  const el = document.getElementById('fgpScaleContent');
+  el.innerHTML =
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Points de placement</div>' +
+      '<div class="fgp-scale-grid">' + FGP_PLACEMENT_SCALE.map((t, i) => {
+        const prev = i === 0 ? 0 : FGP_PLACEMENT_SCALE[i - 1].max;
+        const lbl = t.max === 1 ? 'Top 1' : 'Top ' + t.max;
+        return '<div class="fgp-scale-item"><span>' + lbl + '</span><strong>' + t.pts + ' pts</strong></div>';
+      }).join('') + '</div>' +
+      '<div class="fgp-note">Au-delà du Top 250 : aucun FGP.</div></div>' +
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Coefficients de division</div>' +
+      '<div class="fgp-scale-grid">' + FGP_DIVISIONS.map(d =>
+        '<div class="fgp-scale-item"><span>' + d.label + '</span><strong>×' + d.coeff.toFixed(2) + '</strong></div>').join('') + '</div></div>' +
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Coefficients par type de cup</div>' +
+      '<div class="fgp-scale-grid">' + FGP_CUP_TYPES.map(c =>
+        '<div class="fgp-scale-item"><span>' + c.label + '</span><strong>×' + c.coeff.toFixed(2) + '</strong></div>').join('') + '</div></div>' +
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Bonus de progression FNCS</div>' +
+      '<div class="fgp-scale-grid">' + FGP_PROGRESSION.map(p =>
+        '<div class="fgp-scale-item"><span>' + p.from + ' → ' + p.to + '</span><strong>+' + p.fgp + '</strong></div>').join('') + '</div></div>' +
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Points d\'implication</div>' +
+      '<div class="fgp-scale-grid">' + FGP_IMPLICATION.map(a =>
+        '<div class="fgp-scale-item"><span>' + a.label + '</span><strong>+' + a.fgp + '</strong></div>').join('') + '</div></div>' +
+    '<div class="fgp-note" style="margin-top:14px;">Valeurs de test — à ajuster après la phase de calibrage.</div>';
+  document.getElementById('fgpScaleModal').classList.add('active');
+}
+
+// ---------- Courbe de progression ----------
+function renderGrinderChart() {
+  const container = document.getElementById('grinderChart');
+  const legendEl = document.getElementById('grinderChartLegend');
+  if (!container) return;
+
+  const active = grinders.filter(g => (g.status || 'active') !== 'left' && grinderEvents.some(e => e.grinderId === g.id));
+  if (active.length === 0) {
+    container.innerHTML = '<div class="dash-empty">Aucun FGP enregistré. La courbe apparaîtra dès la première performance.</div>';
+    if (legendEl) legendEl.innerHTML = '';
+    return;
+  }
+
+  // Série cumulée par grinder
+  const series = active.map((g, idx) => {
+    const evts = grinderEvents.filter(e => e.grinderId === g.id)
+      .sort((a, b) => new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00'));
+    let cum = 0;
+    const pts = evts.map(e => {
+      cum += Number(e.fgp) || 0;
+      return { t: new Date((e.date || '1970-01-01') + 'T00:00:00').getTime(), v: cum };
+    });
+    return { g, pts, color: playerColor(g, idx) };
+  }).filter(s => s.pts.length > 0);
+
+  const allTs = series.flatMap(s => s.pts.map(p => p.t));
+  const minT = Math.min(...allTs), maxT = Math.max(...allTs);
+  const maxV = Math.max(...series.flatMap(s => s.pts.map(p => p.v)), 1);
+  const W = 800, H = 260, PAD_L = 46, PAD_R = 16, PAD_T = 16, PAD_B = 28;
+  const spanT = Math.max(maxT - minT, 86400000);
+
+  const x = t => PAD_L + ((t - minT) / spanT) * (W - PAD_L - PAD_R);
+  const y = v => H - PAD_B - (v / maxV) * (H - PAD_T - PAD_B);
+
+  // Grille horizontale
+  let grid = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = (maxV / 4) * i;
+    const yy = y(v);
+    grid += '<line x1="' + PAD_L + '" y1="' + yy + '" x2="' + (W - PAD_R) + '" y2="' + yy + '" stroke="rgba(255,255,255,0.06)" />' +
+      '<text x="' + (PAD_L - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="10" fill="#6b7280">' + Math.round(v) + '</text>';
+  }
+
+  const paths = series.map(s => {
+    const d = s.pts.map((p, i) => (i === 0 ? 'M' : 'L') + x(p.t).toFixed(1) + ' ' + y(p.v).toFixed(1)).join(' ');
+    const dots = s.pts.map(p => '<circle cx="' + x(p.t).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="3" fill="' + s.color + '" />').join('');
+    return '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" />' + dots;
+  }).join('');
+
+  container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;">' + grid + paths + '</svg>';
+  if (legendEl) {
+    legendEl.innerHTML = series.map(s =>
+      '<span class="legend-item"><span class="legend-dot" style="background:' + s.color + ';"></span>' +
+      escapeHtml(s.g.pseudo) + ' <strong>' + fmtNumber(s.pts[s.pts.length - 1].v) + '</strong></span>').join('');
+  }
+}
+
+// ---------- Rendu global de l'onglet ----------
+function renderGrinder() {
+  // Sélecteurs
+  const cupSel = document.getElementById('gr_ev_cupType');
+  if (cupSel && !cupSel.options.length) {
+    cupSel.innerHTML = FGP_CUP_TYPES.map(c => '<option value="' + c.key + '">' + c.label + '</option>').join('');
+  }
+  const divSel = document.getElementById('gr_ev_division');
+  if (divSel && !divSel.options.length) {
+    divSel.innerHTML = FGP_DIVISIONS.map(d => '<option value="' + d.key + '">' + d.label + '</option>').join('');
+  }
+  const dateEl = document.getElementById('gr_ev_date');
+  if (dateEl && !dateEl.value) dateEl.value = todayISO();
+
+  fillGrinderSelect('gr_ev_grinder');
+  fillGrinderSelect('gr_imp_grinder');
+  fillGrinderSelect('gr_prog_grinder');
+  renderGrinderQuickButtons();
+  renderGrinderHighlights();
+  renderGrinderLeaderboard();
+  renderGrinderChart();
+  updateFgpPreview();
 }
 
 function renderCalendar() {
