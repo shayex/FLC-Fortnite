@@ -377,6 +377,108 @@
     line-height: 1;
     margin-bottom: 2px;
   }
+  /* === Checklist d'accueil grinder === */
+  .onb-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .onb-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .onb-item:hover { border-color: var(--red); }
+  .onb-item.done { background: rgba(34,197,94,0.07); border-color: rgba(34,197,94,0.3); }
+  .onb-check {
+    flex: 0 0 auto;
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    color: var(--green);
+    margin-top: 1px;
+  }
+  .onb-item.done .onb-check { border-color: var(--green); background: rgba(34,197,94,0.15); }
+  .onb-label { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.35; }
+  .onb-item.done .onb-label { color: var(--text-dim); }
+  .onb-hint { font-size: 11px; color: var(--text-mute); margin-top: 2px; line-height: 1.4; }
+  .onb-msg-block {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .onb-msg-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 10px;
+  }
+  .onb-msg {
+    width: 100%;
+    min-height: 190px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  .gr-onb-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(245,158,11,0.15);
+    color: var(--amber);
+    margin-left: 6px;
+    cursor: pointer;
+  }
+  .gr-onb-tag:hover { background: rgba(245,158,11,0.28); }
+
+  .onb-item.auto { cursor: default; }
+  .onb-item.auto:hover { border-color: var(--border); }
+  .onb-item.auto.done:hover { border-color: rgba(34,197,94,0.3); }
+  .onb-auto-tag {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--bg-3);
+    color: var(--text-mute);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 7px;
+    vertical-align: middle;
+  }
+  .onb-lang-switch {
+    display: inline-flex;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .onb-lang-btn {
+    background: none;
+    border: none;
+    color: var(--text-mute);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+  }
+  .onb-lang-btn.active { background: var(--red); color: #0a0a0a; }
+
   /* === Programme Grinder === */
   .gr-entry-panel {
     background: var(--bg-1);
@@ -557,6 +659,29 @@
   }
   .fgp-scale-item strong { color: var(--text); font-family: var(--font-mono); }
   .fgp-note { font-size: 11px; color: var(--text-mute); font-style: italic; margin-top: 8px; }
+
+  .gr-title-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1px 7px;
+    border: 1px solid;
+    border-radius: 5px;
+  }
+  .gr-title-badge.lg { font-size: 12px; padding: 4px 12px; letter-spacing: 0.12em; }
+  .gr-detail-title { margin: 4px 0 16px; }
+  .gr-title-progress { margin-top: 10px; }
+  .gr-tp-bar {
+    height: 5px;
+    background: var(--bg-3);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+  .gr-tp-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+  .gr-tp-label { font-size: 11px; color: var(--text-mute); }
 
   /* === Suivi dans la fiche Données === */
   .dtk-needs {
@@ -6018,6 +6143,11 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="form-group"><label>X / Twitter</label><input type="text" id="gr_twitter" placeholder="Lien du profil (éligibilité)" /></div>
         <div class="form-group"><label>Epic / Tracker</label><input type="text" id="gr_tracker" placeholder="Lien Fortnite Tracker" /></div>
       </div>
+      <div class="form-group">
+        <label>Parrainé par</label>
+        <select id="gr_referrer"></select>
+        <div style="font-size:11px;color:var(--text-mute);margin-top:4px;">À l'inscription, le parrain reçoit automatiquement +<span id="gr_referralPts">20</span> FGP.</div>
+      </div>
 
       <div class="form-section">
         <div class="form-section-title">Appréciation manager</div>
@@ -6040,6 +6170,37 @@ window.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- GRINDER : fiche détaillée (historique FGP) -->
+<!-- GRINDER : checklist d'accueil (rappel manager) -->
+<div class="modal-overlay" id="grinderOnboardModal">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('grinderOnboardModal')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2>✅ À faire avec <span id="onbGrinderName">le joueur</span></h2>
+    <p class="modal-sub">Coche au fur et à mesure. La fiche garde la trace de ce qui reste à valider.</p>
+
+    <div class="onb-list" id="onbChecklist"></div>
+
+    <div class="onb-msg-block">
+      <div class="onb-msg-head">
+        <span>💬 Message prêt à envoyer</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="onb-lang-switch">
+            <button type="button" class="onb-lang-btn active" data-onblang="fr" onclick="setOnboardLang('fr')">FR</button>
+            <button type="button" class="onb-lang-btn" data-onblang="en" onclick="setOnboardLang('en')">EN</button>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="copyOnboardMessage()">Copier</button>
+        </div>
+      </div>
+      <textarea id="onbMessage" class="onb-msg" readonly></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="closeModal('grinderOnboardModal')">Terminé</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="grinderDetailModal">
   <div class="modal modal-lg">
     <button class="modal-close" onclick="closeModal('grinderDetailModal')">
@@ -6047,6 +6208,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </button>
     <h2 id="grDetailTitle">Fiche grinder</h2>
     <p class="modal-sub" id="grDetailSub"></p>
+    <div id="grDetailTitleBadge" class="gr-detail-title"></div>
     <div class="data-stat-row">
       <div class="data-stat"><div class="data-stat-label">Total FGP</div><div class="data-stat-value" id="grDetailTotal">0</div></div>
       <div class="data-stat"><div class="data-stat-label">Ce mois</div><div class="data-stat-value" id="grDetailMonth" style="color:var(--green);">0</div></div>
@@ -6058,6 +6220,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-ghost" onclick="closeModal('grinderDetailModal')">Fermer</button>
+      <button type="button" class="btn btn-ghost" onclick="openOnboardingFromDetail()">✅ Checklist d'accueil</button>
       <button type="button" class="btn btn-primary" onclick="editGrinderFromDetail()">Modifier la fiche</button>
     </div>
   </div>
@@ -6720,12 +6883,69 @@ const FGP_IMPLICATION = [
   { key: 'event',   label: 'Participation à un événement FLC', fgp: 5 }
 ];
 
+
+// Checklist d'accueil : ce que le manager doit obtenir du nouveau grinder.
+// Les étapes « info » se cochent SEULES dès que le champ est rempli sur la fiche.
+const GRINDER_ONBOARDING = [
+  { key: 'age',      field: 'age',     label: 'Âge du joueur récupéré',
+    hint: 'À renseigner dans la fiche.' },
+  { key: 'country',  field: 'country', label: 'Pays récupéré',
+    hint: 'À renseigner dans la fiche.' },
+  { key: 'tracker',  field: 'tracker', label: 'Lien Fortnite Tracker récupéré',
+    hint: 'Indispensable pour vérifier ses résultats.' },
+  { key: 'twitterLink', field: 'twitter', label: 'Lien X/Twitter récupéré',
+    hint: 'Sert aussi à vérifier l\'éligibilité.' },
+  { key: 'announce', label: 'A annoncé son grind FLC sur X/Twitter',
+    hint: 'Un post public qui officialise son arrivée dans le programme.' },
+  { key: 'bio',      label: '« Grind FLC » ajouté dans la bio X/Twitter',
+    hint: 'Visible en permanence sur son profil.' },
+  { key: 'epic',     label: '« FLC » ajouté au pseudo Epic',
+    hint: 'Le tag apparaît en jeu et dans les classements des cups.' },
+  { key: 'twitter',  label: '« FLC » ajouté au nom X/Twitter',
+    hint: 'Distinct de la bio : c\'est le nom affiché.' },
+  { key: 'explained', label: 'Système FGP expliqué au joueur',
+    hint: 'Comment il gagne des points et comment il progresse.' }
+];
+
 // Critères d'évaluation manager (appréciation qualitative)
 const GRINDER_CRITERIA = [
   { key: 'serieux',     label: 'Sérieux' },
   { key: 'implication', label: 'Implication' },
   { key: 'comportement', label: 'Comportement' }
 ];
+
+// Record personnel : bonus quand un grinder bat son meilleur placement
+// sur UN type de cup donné (les records sont indépendants par type).
+const FGP_RECORD_BONUS = 10;
+
+// Parrainage : bonus versé au parrain quand son filleul rejoint le programme
+const FGP_REFERRAL_BONUS = 20;
+
+// Ancienneté : paliers automatiques depuis la date d'inscription
+const FGP_SENIORITY = [
+  { months: 3,  fgp: 15, label: '3 mois' },
+  { months: 6,  fgp: 30, label: '6 mois' },
+  { months: 12, fgp: 60, label: '1 an' }
+];
+
+// Titres honorifiques selon le cumul de FGP (pas de points, juste du statut)
+const GRINDER_TITLES = [
+  { min: 0,    label: 'Recrue',    color: '#6b7280' },
+  { min: 250,  label: 'Grinder',   color: '#3b82f6' },
+  { min: 750,  label: 'Confirmé',  color: '#22c55e' },
+  { min: 1500, label: 'Élite',     color: '#c9a45c' },
+  { min: 3000, label: 'Légende',   color: '#a855f7' }
+];
+
+function grinderTitle(total) {
+  let t = GRINDER_TITLES[0];
+  for (const x of GRINDER_TITLES) { if (total >= x.min) t = x; }
+  return t;
+}
+// Palier suivant (pour afficher la progression restante)
+function grinderNextTitle(total) {
+  return GRINDER_TITLES.find(x => total < x.min) || null;
+}
 
 // Points de placement bruts (avant coefficients) — 0 hors barème
 function fgpPlacementPoints(placement) {
@@ -6767,6 +6987,7 @@ function grinderFGPSince(id, sinceTs) {
     .filter(e => e.grinderId === id && (e.createdAt || 0) >= sinceTs)
     .reduce((s, e) => s + (Number(e.fgp) || 0), 0);
 }
+
 let calendarEvents = [];   // manual events
 let currentNoteGroupFilter = 'all';   // 'all' | groupId
 let editingNoteId = null;
@@ -7652,8 +7873,45 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 14;  // bump this when you add an entry
+const CHANGELOG_VERSION = 18;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-08-13',
+    title: 'Accueil grinder : version anglaise et infos \u00e0 collecter',
+    items: [
+      'Le message d\'accueil existe d\u00e9sormais en fran\u00e7ais et en anglais, avec un s\u00e9lecteur FR/EN.',
+      'Il d\u00e9taille toutes les fa\u00e7ons de marquer : performances, mont\u00e9e de division, record personnel, parrainage, anciennet\u00e9, implication, et les titres \u00e0 d\u00e9bloquer.',
+      'La checklist rappelle de r\u00e9cup\u00e9rer l\'\u00e2ge, le pays, le lien Tracker et le lien X \u2014 ces \u00e9tapes se cochent seules d\u00e8s que le champ est rempli.',
+      'Le Grinder de la semaine a \u00e9t\u00e9 retir\u00e9 : seul le Grinder du mois est conserv\u00e9.'
+    ]
+  },
+  {
+    date: '2026-08-13',
+    title: 'Checklist d\'accueil des grinders',
+    items: [
+      'Apr\u00e8s l\'inscription d\'un grinder, une checklist rappelle au manager ce qu\'il doit obtenir : annonce sur X, \u00ab Grind FLC \u00bb en bio, \u00ab FLC \u00bb dans le pseudo Epic et le nom X, et explication du syst\u00e8me FGP.',
+      'Un message pr\u00eat \u00e0 envoyer au joueur est g\u00e9n\u00e9r\u00e9 automatiquement, avec un bouton Copier.',
+      'Les \u00e9tapes se cochent et sont enregistr\u00e9es : un badge orange signale dans le classement les accueils incomplets.'
+    ]
+  },
+  {
+    date: '2026-08-13',
+    title: 'Courbe des FGP lisible d\u00e8s le d\u00e9but',
+    items: [
+      'La courbe de progression bascule automatiquement sur un axe par entr\u00e9e quand toutes les saisies datent du m\u00eame jour \u2014 fini la barre verticale illisible.',
+      'Ajout de l\'axe des dates, et le survol d\'un point affiche le cumul et les FGP gagn\u00e9s.'
+    ]
+  },
+  {
+    date: '2026-08-13',
+    title: 'Programme Grinder : 4 nouvelles mécaniques',
+    items: [
+      '🏅 Record personnel : bonus automatique de +10 FGP quand un grinder bat son meilleur placement — record calculé séparément pour chaque type de cup.',
+      '🤝 Parrainage : un champ « Parrainé par » sur la fiche d\'inscription verse +20 FGP au parrain.',
+      '⏳ Ancienneté : +15 / +30 / +60 FGP attribués automatiquement à 3 mois, 6 mois et 1 an de programme.',
+      '🎖️ Titres : Recrue, Grinder, Confirmé, Élite et Légende selon le cumul de FGP, avec barre de progression vers le palier suivant.'
+    ]
+  },
   {
     date: '2026-08-13',
     title: 'Programme Grinder (FGP)',
@@ -14412,6 +14670,37 @@ function fillGrinderSelect(id) {
   if (prev && list.some(g => g.id === prev)) sel.value = prev;
 }
 
+// Attribue les paliers d'ancienneté atteints (3 / 6 / 12 mois).
+// Idempotent : l'existence d'une entrée pour un palier suffit à ne pas le rejouer.
+async function checkGrinderSeniority() {
+  const now = Date.now();
+  let added = 0;
+  grinders.forEach(g => {
+    if (!g.createdAt || g.status === 'left') return;
+    const monthsElapsed = (now - g.createdAt) / (30.44 * 86400000);
+    FGP_SENIORITY.forEach(tier => {
+      if (monthsElapsed < tier.months) return;
+      const already = grinderEvents.some(e =>
+        e.grinderId === g.id && e.kind === 'seniority' && e.months === tier.months);
+      if (already) return;
+      grinderEvents.push({
+        id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6) + '_' + tier.months,
+        grinderId: g.id,
+        kind: 'seniority',
+        months: tier.months,
+        fgp: tier.fgp,
+        label: 'Ancienneté · ' + tier.label,
+        date: todayISO(),
+        author: 'Automatique',
+        createdAt: now
+      });
+      added++;
+    });
+  });
+  if (added > 0) await persistGrinderEvents();
+  return added;
+}
+
 // ---------- Fiche grinder ----------
 function openGrinderModal(id) {
   editingGrinderId = id || null;
@@ -14421,6 +14710,19 @@ function openGrinderModal(id) {
   const g = id ? grinders.find(x => x.id === id) : null;
   editingGrinderRatings = g && g.ratings ? Object.assign({}, g.ratings) : {};
   renderGrinderRatingInputs();
+
+  // Parrain : tout grinder sauf lui-même
+  const refSel = document.getElementById('gr_referrer');
+  const refPts = document.getElementById('gr_referralPts');
+  if (refPts) refPts.textContent = FGP_REFERRAL_BONUS;
+  if (refSel) {
+    const others = grinders.filter(x => x.id !== id)
+      .sort((a, b) => (a.pseudo || '').localeCompare(b.pseudo || '', 'fr'));
+    refSel.innerHTML = '<option value="">— Aucun —</option>' +
+      others.map(x => '<option value="' + x.id + '">' + escapeHtml(x.pseudo || '—') + '</option>').join('');
+    // Le parrain est figé une fois l'inscription faite (le bonus a été versé)
+    refSel.disabled = !!(g && g.referrerId);
+  }
 
   if (g) {
     document.getElementById('grinderModalTitle').textContent = 'Modifier ' + g.pseudo;
@@ -14432,6 +14734,7 @@ function openGrinderModal(id) {
     document.getElementById('gr_twitter').value = g.twitter || '';
     document.getElementById('gr_tracker').value = g.tracker || '';
     document.getElementById('gr_notes').value = g.notes || '';
+    if (refSel) refSel.value = g.referrerId || '';
     mountCountrySelect('gr_country_wrapper', 'gr_country', g.country || '');
     document.getElementById('gr_deleteBtn').style.display = '';
   } else {
@@ -14484,6 +14787,7 @@ async function saveGrinder(e) {
     ratings: Object.assign({}, editingGrinderRatings),
     updatedAt: Date.now()
   };
+  const referrerId = document.getElementById('gr_referrer')?.value || '';
 
   const wasNew = !editingGrinderId;
   if (editingGrinderId) {
@@ -14492,7 +14796,25 @@ async function saveGrinder(e) {
   } else {
     data.id = 'gr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
     data.createdAt = Date.now();
+    if (referrerId) data.referrerId = referrerId;
     grinders.push(data);
+
+    // Bonus de parrainage versé au parrain, une seule fois à l'inscription
+    const ref = referrerId ? grinders.find(x => x.id === referrerId) : null;
+    if (ref) {
+      grinderEvents.push({
+        id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+        grinderId: ref.id,
+        kind: 'referral',
+        fgp: FGP_REFERRAL_BONUS,
+        label: 'Parrainage de ' + pseudo,
+        date: todayISO(),
+        author: (currentUser && currentUser.pseudo) || '—',
+        createdAt: Date.now()
+      });
+      await persistGrinderEvents();
+      showToast('+' + FGP_REFERRAL_BONUS + ' FGP pour ' + ref.pseudo + ' (parrainage)', 'success');
+    }
   }
   await persistGrinders();
   closeModal('grinderModal');
@@ -14500,6 +14822,12 @@ async function saveGrinder(e) {
   updateCounts();
   logActivity('roster', (wasNew ? 'Inscription' : 'Modification') + ' du grinder ' + pseudo);
   showToast(wasNew ? 'Grinder inscrit' : 'Fiche mise à jour', 'success');
+  // Nouveau grinder : on enchaîne sur la checklist d'accueil, tant que
+  // le manager a le joueur en tête et s'apprête à le contacter.
+  if (wasNew) {
+    const created = grinders[grinders.length - 1];
+    if (created) setTimeout(() => openGrinderOnboarding(created.id), 250);
+  }
 }
 
 async function deleteGrinder() {
@@ -14558,6 +14886,16 @@ async function addGrinderPerf() {
   if (!g) return;
 
   const r = computeFGP(placement, division, cupType);
+
+  // Record personnel — comparé UNIQUEMENT aux perfs du même type de cup
+  const previousBest = grinderEvents
+    .filter(e => e.grinderId === gid && e.kind === 'perf' && e.cupType === cupType)
+    .reduce((best, e) => {
+      const p = parseInt(e.placement, 10);
+      return (!isNaN(p) && (best === null || p < best)) ? p : best;
+    }, null);
+  const isRecord = previousBest !== null && placement < previousBest;
+
   grinderEvents.push({
     id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
     grinderId: gid,
@@ -14569,12 +14907,35 @@ async function addGrinderPerf() {
     author: (currentUser && currentUser.pseudo) || '—',
     createdAt: Date.now()
   });
+
+  // Bonus de record, enregistré comme entrée distincte pour rester traçable
+  if (isRecord) {
+    const cupLabel = (FGP_CUP_TYPES.find(c => c.key === cupType) || {}).label || cupType;
+    grinderEvents.push({
+      id: 'ge_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+      grinderId: gid,
+      kind: 'record',
+      cupType, placement, previousBest,
+      fgp: FGP_RECORD_BONUS,
+      label: 'Record personnel · ' + cupLabel,
+      date,
+      author: (currentUser && currentUser.pseudo) || '—',
+      createdAt: Date.now() + 1
+    });
+  }
+
   await persistGrinderEvents();
   document.getElementById('gr_ev_placement').value = '';
   updateFgpPreview();
   renderGrinder();
   logActivity('data', r.total + ' FGP pour ' + g.pseudo + ' (top ' + placement + ')');
-  showToast('+' + r.total + ' FGP pour ' + g.pseudo, 'success');
+  if (isRecord) {
+    const cupLabel = (FGP_CUP_TYPES.find(c => c.key === cupType) || {}).label || cupType;
+    await pushNotification('data', '🏅 Record personnel pour ' + g.pseudo + ' en ' + cupLabel + ' : top ' + placement + ' (ancien : top ' + previousBest + ')', 'success');
+    showToast('+' + r.total + ' FGP · 🏅 Record ! +' + FGP_RECORD_BONUS + ' FGP bonus', 'success');
+  } else {
+    showToast('+' + r.total + ' FGP pour ' + g.pseudo, 'success');
+  }
 }
 
 // ---------- Implication & progression ----------
@@ -14630,6 +14991,137 @@ async function addGrinderProgression(from, to) {
   showToast(g.pseudo + ' passe ' + to + ' · +' + prog.fgp + ' FGP', 'success');
 }
 
+// ---------- Checklist d'accueil ----------
+let onboardingGrinderId = null;
+
+// Une étape est-elle satisfaite ? Les étapes « info » lisent directement la fiche.
+function isOnboardingStepDone(g, step) {
+  if (!g) return false;
+  if (step.field) return !!(g[step.field] && String(g[step.field]).trim());
+  return !!((g.onboarding || {})[step.key]);
+}
+
+// Nombre d'étapes d'accueil restantes (0 = tout est fait)
+function grinderOnboardingLeft(g) {
+  return GRINDER_ONBOARDING.filter(s => !isOnboardingStepDone(g, s)).length;
+}
+
+function openGrinderOnboarding(id) {
+  const g = grinders.find(x => x.id === id);
+  if (!g) return;
+  onboardingGrinderId = id;
+  document.getElementById('onbGrinderName').textContent = g.pseudo || 'le joueur';
+  onboardMsgLang = 'fr';
+  document.querySelectorAll('[data-onblang]').forEach(b => b.classList.toggle('active', b.dataset.onblang === 'fr'));
+  renderOnboardingChecklist();
+  buildOnboardMessage(g);
+  document.getElementById('grinderOnboardModal').classList.add('active');
+}
+
+function renderOnboardingChecklist() {
+  const g = grinders.find(x => x.id === onboardingGrinderId);
+  const el = document.getElementById('onbChecklist');
+  if (!g || !el) return;
+  el.innerHTML = GRINDER_ONBOARDING.map(s => {
+    const done = isOnboardingStepDone(g, s);
+    // Les étapes liées à un champ ne se cochent pas à la main : elles suivent la fiche
+    const auto = !!s.field;
+    return '<div class="onb-item' + (done ? ' done' : '') + (auto ? ' auto' : '') + '"' +
+      (auto ? '' : ' onclick="toggleOnboardingStep(\'' + s.key + '\')"') + '>' +
+      '<span class="onb-check">' + (done ? '✓' : '') + '</span>' +
+      '<div><div class="onb-label">' + escapeHtml(s.label) +
+        (auto ? '<span class="onb-auto-tag">auto</span>' : '') + '</div>' +
+      '<div class="onb-hint">' + escapeHtml(s.hint) +
+        (auto && !done ? ' <strong style="color:var(--amber);">Champ vide dans la fiche.</strong>' : '') + '</div></div>' +
+    '</div>';
+  }).join('');
+}
+
+async function toggleOnboardingStep(key) {
+  const g = grinders.find(x => x.id === onboardingGrinderId);
+  if (!g) return;
+  if (!g.onboarding) g.onboarding = {};
+  g.onboarding[key] = !g.onboarding[key];
+  g.updatedAt = Date.now();
+  await persistGrinders();
+  renderOnboardingChecklist();
+  renderGrinderLeaderboard();
+}
+
+// Message prêt à copier-coller — version FR et EN
+let onboardMsgLang = 'fr';
+
+function setOnboardLang(lang) {
+  onboardMsgLang = lang;
+  document.querySelectorAll('[data-onblang]').forEach(b =>
+    b.classList.toggle('active', b.dataset.onblang === lang));
+  const g = grinders.find(x => x.id === onboardingGrinderId);
+  if (g) buildOnboardMessage(g);
+}
+
+function buildOnboardMessage(g) {
+  const el = document.getElementById('onbMessage');
+  if (!el) return;
+  const name = g.pseudo || '';
+
+  const FR =
+'Salut ' + name + ', bienvenue dans le programme Grinder FLC \ud83d\udd25\n\n' +
+'\u2b50 Pour officialiser ton arriv\u00e9e :\n' +
+'\u2022 Annonce ton grind FLC dans un post sur X/Twitter\n' +
+'\u2022 Ajoute \u00ab Grind FLC \u00bb dans ta bio X/Twitter\n' +
+'\u2022 Ajoute \u00ab FLC \u00bb dans ton nom X/Twitter et dans ton pseudo Epic\n\n' +
+'\ud83c\udfaf Comment tu gagnes des FGP :\n' +
+'\u2022 Tes r\u00e9sultats en tournoi \u2014 plus tu finis haut, plus tu marques. Un Top 1 vaut 100 pts, un Top 250 en vaut 10.\n' +
+'\u2022 Ta division compte : une m\u00eame place rapporte plus en D1 qu\'en D5.\n' +
+'\u2022 Le type de cup aussi : une Division Cup rapporte plus qu\'une Solo Victory Cup.\n' +
+'\u2022 Bonus quand tu montes de division : jusqu\'\u00e0 +50 FGP.\n' +
+'\u2022 Bonus record personnel : +10 FGP d\u00e8s que tu bats ton meilleur placement sur un type de cup.\n' +
+'\u2022 Parrainage : +20 FGP si tu fais venir un autre joueur dans le programme.\n' +
+'\u2022 Anciennet\u00e9 : +15 FGP \u00e0 3 mois, +30 \u00e0 6 mois, +60 au bout d\'un an.\n' +
+'\u2022 Implication : soutien aux r\u00e9seaux FLC, partage de tes perfs, participation aux \u00e9v\u00e9nements.\n\n' +
+'\ud83c\udfc5 Tes titres, d\u00e9bloqu\u00e9s au cumul :\n' +
+'Recrue \u2192 Grinder (250) \u2192 Confirm\u00e9 (750) \u2192 \u00c9lite (1500) \u2192 L\u00e9gende (3000)\n\n' +
+'Tu n\'as rien \u00e0 saisir : on enregistre tes r\u00e9sultats, tes points montent tout seuls.\n' +
+'Un classement g\u00e9n\u00e9ral et le titre de Grinder du mois r\u00e9compensent les plus r\u00e9guliers.\n\n' +
+'Bon grind \ud83d\udcaa';
+
+  const EN =
+'Hey ' + name + ', welcome to the FLC Grinder Program \ud83d\udd25\n\n' +
+'\u2b50 To make it official:\n' +
+'\u2022 Announce your FLC grind in a post on X/Twitter\n' +
+'\u2022 Add "Grind FLC" to your X/Twitter bio\n' +
+'\u2022 Add "FLC" to your X/Twitter name and to your Epic username\n\n' +
+'\ud83c\udfaf How you earn FGP:\n' +
+'\u2022 Your tournament results \u2014 the higher you finish, the more you score. A Top 1 is worth 100 pts, a Top 250 is worth 10.\n' +
+'\u2022 Your division matters: the same placement is worth more in D1 than in D5.\n' +
+'\u2022 Cup type matters too: a Division Cup is worth more than a Solo Victory Cup.\n' +
+'\u2022 Promotion bonus when you move up a division: up to +50 FGP.\n' +
+'\u2022 Personal best bonus: +10 FGP whenever you beat your best placement on a given cup type.\n' +
+'\u2022 Referral: +20 FGP if you bring another player into the program.\n' +
+'\u2022 Seniority: +15 FGP at 3 months, +30 at 6 months, +60 after a year.\n' +
+'\u2022 Involvement: supporting FLC socials, sharing your results, joining FLC events.\n\n' +
+'\ud83c\udfc5 Titles you unlock as you go:\n' +
+'Rookie \u2192 Grinder (250) \u2192 Established (750) \u2192 Elite (1500) \u2192 Legend (3000)\n\n' +
+'You don\'t have to log anything: we record your results, your points go up on their own.\n' +
+'A global leaderboard and the Grinder of the Month title reward the most consistent players.\n\n' +
+'Good grind \ud83d\udcaa';
+
+  el.value = (onboardMsgLang === 'en') ? EN : FR;
+}
+
+function copyOnboardMessage() {
+  const el = document.getElementById('onbMessage');
+  if (!el) return;
+  el.select();
+  try {
+    document.execCommand('copy');
+    showToast('Message copié', 'success');
+  } catch (e) {
+    showToast('Copie impossible — sélectionne le texte manuellement', 'error');
+  }
+  window.getSelection().removeAllRanges();
+}
+
 // ---------- Classement ----------
 function renderGrinderLeaderboard() {
   const container = document.getElementById('grinderLeaderboard');
@@ -14655,10 +15147,16 @@ function renderGrinderLeaderboard() {
     })();
     const statusTag = g.status === 'paused' ? '<span class="gr-status-tag">En pause</span>'
       : g.status === 'left' ? '<span class="gr-status-tag left">Parti</span>' : '';
+    // Signale un accueil incomplet : le joueur n'a pas encore tout mis en place
+    const onbLeft = grinderOnboardingLeft(g);
+    const onbTag = (g.status !== 'left' && onbLeft > 0)
+      ? '<span class="gr-onb-tag" onclick="event.stopPropagation();openGrinderOnboarding(\'' + g.id + '\')" title="' + onbLeft + ' étape(s) d\'accueil à valider">⚠ ' + onbLeft + '</span>' : '';
+    const title = grinderTitle(it.total);
     return '<tr class="rt-row" onclick="openGrinderDetail(\'' + g.id + '\')">' +
       '<td class="gr-rank">' + medal + '</td>' +
-      '<td><div class="rt-name">' + escapeHtml(g.pseudo || '—') + ' ' + statusTag + '</div>' +
-        (g.realName ? '<div class="rt-sub">' + escapeHtml(g.realName) + '</div>' : '') + '</td>' +
+      '<td><div class="rt-name">' + escapeHtml(g.pseudo || '—') + ' ' + statusTag + onbTag + '</div>' +
+        '<div class="rt-sub"><span class="gr-title-badge" style="color:' + title.color + ';border-color:' + title.color + '44;">' + title.label + '</span>' +
+        (g.realName ? ' <span style="color:var(--text-mute);">' + escapeHtml(g.realName) + '</span>' : '') + '</div></td>' +
       '<td>' + (g.country ? flagImg(g.country, 16) : '—') + '</td>' +
       '<td>' + (div ? '<span class="gr-div-badge">' + div.key + '</span>' : '—') + '</td>' +
       '<td style="text-align:right;font-family:var(--font-mono);color:var(--red-bright);font-weight:700;">' + fmtNumber(it.total) + '</td>' +
@@ -14681,46 +15179,35 @@ function renderGrinderLeaderboard() {
     '<div class="rt-foot">' + list.length + ' grinder' + (list.length > 1 ? 's' : '') + ' · clique sur une ligne pour voir le détail</div>';
 }
 
-// ---------- Grinder de la semaine / du mois ----------
+// ---------- Grinder du mois ----------
 function renderGrinderHighlights() {
   const container = document.getElementById('grinderHighlights');
   if (!container) return;
   const active = grinders.filter(g => (g.status || 'active') === 'active');
   if (active.length === 0) { container.innerHTML = ''; return; }
 
-  const now = Date.now();
-  const weekAgo = now - 7 * 86400000;
   const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+  let month = null;
+  active.forEach(g => {
+    const v = grinderFGPSince(g.id, monthStart.getTime());
+    if (v > 0 && (!month || v > month.fgp)) month = { g, fgp: v };
+  });
 
-  function best(sinceTs) {
-    let top = null;
-    active.forEach(g => {
-      const v = grinderFGPSince(g.id, sinceTs);
-      if (v > 0 && (!top || v > top.fgp)) top = { g, fgp: v };
-    });
-    return top;
-  }
-  const week = best(weekAgo);
-  const month = best(monthStart.getTime());
   const totalFgp = grinderEvents.reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+  const monthName = monthStart.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
-  function card(title, sub, item, accent) {
-    if (!item) {
-      return '<div class="dash-card span-4"><div class="gr-hl-title">' + title + '</div>' +
-        '<div class="gr-hl-empty">Aucune activité sur la période</div></div>';
-    }
-    return '<div class="dash-card span-4"><div class="gr-hl-title">' + title + '</div>' +
-      '<div class="gr-hl-name" style="color:' + accent + ';">' + escapeHtml(item.g.pseudo) + '</div>' +
-      '<div class="gr-hl-fgp">+' + fmtNumber(item.fgp) + ' FGP</div>' +
-      '<div class="gr-hl-sub">' + sub + '</div></div>';
-  }
+  const monthCard = month
+    ? '<div class="dash-card span-6"><div class="gr-hl-title">\ud83d\udc51 Grinder du mois</div>' +
+        '<div class="gr-hl-name" style="color:#c084fc;">' + escapeHtml(month.g.pseudo) + '</div>' +
+        '<div class="gr-hl-fgp">+' + fmtNumber(month.fgp) + ' FGP</div>' +
+        '<div class="gr-hl-sub">' + escapeHtml(monthName) + '</div></div>'
+    : '<div class="dash-card span-6"><div class="gr-hl-title">\ud83d\udc51 Grinder du mois</div>' +
+        '<div class="gr-hl-empty">Aucun FGP enregistr\u00e9 ce mois-ci</div></div>';
 
-  container.innerHTML =
-    card('🔥 Grinder de la semaine', '7 derniers jours', week, 'var(--red-bright)') +
-    card('👑 Grinder du mois', 'Depuis le 1er du mois', month, '#c084fc') +
-    '<div class="dash-card span-4"><div class="gr-hl-title">📊 Programme</div>' +
+  container.innerHTML = monthCard +
+    '<div class="dash-card span-6"><div class="gr-hl-title">\ud83d\udcca Programme</div>' +
       '<div class="gr-hl-name">' + active.length + '</div>' +
-      '<div class="gr-hl-fgp">' + fmtNumber(totalFgp) + ' FGP distribués</div>' +
+      '<div class="gr-hl-fgp">' + fmtNumber(totalFgp) + ' FGP distribu\u00e9s</div>' +
       '<div class="gr-hl-sub">grinder' + (active.length > 1 ? 's' : '') + ' actif' + (active.length > 1 ? 's' : '') + '</div></div>';
 }
 
@@ -14733,9 +15220,27 @@ function openGrinderDetail(id) {
   const div = FGP_DIVISIONS.find(d => d.key === g.division);
   document.getElementById('grDetailSub').textContent =
     [g.realName, div ? div.label : null, g.country || null].filter(Boolean).join(' · ') || 'Grinder FLC';
-  document.getElementById('grDetailTotal').textContent = fmtNumber(grinderTotalFGP(id));
+  const totalFgp = grinderTotalFGP(id);
+  document.getElementById('grDetailTotal').textContent = fmtNumber(totalFgp);
   const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
   document.getElementById('grDetailMonth').textContent = '+' + fmtNumber(grinderFGPSince(id, monthStart.getTime()));
+
+  // Titre honorifique + progression vers le palier suivant
+  const title = grinderTitle(totalFgp);
+  const next = grinderNextTitle(totalFgp);
+  const tEl = document.getElementById('grDetailTitleBadge');
+  if (tEl) {
+    let html = '<span class="gr-title-badge lg" style="color:' + title.color + ';border-color:' + title.color + '66;background:' + title.color + '18;">' + title.label + '</span>';
+    if (next) {
+      const span = next.min - title.min;
+      const pct = Math.max(0, Math.min(100, ((totalFgp - title.min) / span) * 100));
+      html += '<div class="gr-title-progress"><div class="gr-tp-bar"><div class="gr-tp-fill" style="width:' + pct.toFixed(1) + '%;background:' + next.color + ';"></div></div>' +
+        '<span class="gr-tp-label">' + fmtNumber(next.min - totalFgp) + ' FGP avant « ' + next.label + ' »</span></div>';
+    } else {
+      html += '<div class="gr-title-progress"><span class="gr-tp-label">Palier maximum atteint 🏆</span></div>';
+    }
+    tEl.innerHTML = html;
+  }
 
   // Appréciation manager
   const rEl = document.getElementById('grDetailRatings');
@@ -14763,6 +15268,15 @@ function openGrinderDetail(id) {
       } else if (e.kind === 'bonus') {
         label = 'Montée ' + e.from + ' → ' + e.to;
         detail = 'Bonus de progression FNCS';
+      } else if (e.kind === 'record') {
+        label = '🏅 ' + (e.label || 'Record personnel');
+        detail = 'Top ' + e.placement + (e.previousBest ? ' (ancien record : top ' + e.previousBest + ')' : '');
+      } else if (e.kind === 'referral') {
+        label = '🤝 ' + (e.label || 'Parrainage');
+        detail = 'Bonus de parrainage';
+      } else if (e.kind === 'seniority') {
+        label = '⏳ ' + (e.label || 'Ancienneté');
+        detail = 'Palier d\'ancienneté atteint';
       } else {
         label = e.label || 'Implication';
         detail = 'Point d\'implication';
@@ -14777,6 +15291,12 @@ function openGrinderDetail(id) {
     }).join('');
   }
   document.getElementById('grinderDetailModal').classList.add('active');
+}
+
+function openOnboardingFromDetail() {
+  const id = detailGrinderId;
+  closeModal('grinderDetailModal');
+  setTimeout(() => openGrinderOnboarding(id), 150);
 }
 
 function editGrinderFromDetail() {
@@ -14819,6 +15339,17 @@ function openFgpScaleModal() {
     '<div class="fgp-scale-block"><div class="fgp-scale-title">Points d\'implication</div>' +
       '<div class="fgp-scale-grid">' + FGP_IMPLICATION.map(a =>
         '<div class="fgp-scale-item"><span>' + a.label + '</span><strong>+' + a.fgp + '</strong></div>').join('') + '</div></div>' +
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Bonus automatiques</div>' +
+      '<div class="fgp-scale-grid">' +
+        '<div class="fgp-scale-item"><span>🏅 Record personnel <em style="font-style:normal;color:var(--text-mute);font-size:10px;">(par type de cup)</em></span><strong>+' + FGP_RECORD_BONUS + '</strong></div>' +
+        '<div class="fgp-scale-item"><span>🤝 Parrainage d\'un grinder</span><strong>+' + FGP_REFERRAL_BONUS + '</strong></div>' +
+        FGP_SENIORITY.map(s => '<div class="fgp-scale-item"><span>⏳ Ancienneté ' + s.label + '</span><strong>+' + s.fgp + '</strong></div>').join('') +
+      '</div>' +
+      '<div class="fgp-note">Le record se calcule séparément pour chaque type de cup. L\'ancienneté et le parrainage sont attribués automatiquement.</div></div>' +
+    '<div class="fgp-scale-block"><div class="fgp-scale-title">Titres</div>' +
+      '<div class="fgp-scale-grid">' + GRINDER_TITLES.map(t =>
+        '<div class="fgp-scale-item"><span style="color:' + t.color + ';font-weight:700;">' + t.label + '</span><strong>' + fmtNumber(t.min) + '+ FGP</strong></div>').join('') + '</div>' +
+      '<div class="fgp-note">Les titres sont honorifiques : ils ne rapportent pas de FGP.</div></div>' +
     '<div class="fgp-note" style="margin-top:14px;">Valeurs de test — à ajuster après la phase de calibrage.</div>';
   document.getElementById('fgpScaleModal').classList.add('active');
 }
@@ -14831,57 +15362,94 @@ function renderGrinderChart() {
 
   const active = grinders.filter(g => (g.status || 'active') !== 'left' && grinderEvents.some(e => e.grinderId === g.id));
   if (active.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucun FGP enregistré. La courbe apparaîtra dès la première performance.</div>';
+    container.innerHTML = '<div class="dash-empty">Aucun FGP enregistr\u00e9. La courbe appara\u00eetra d\u00e8s la premi\u00e8re performance.</div>';
     if (legendEl) legendEl.innerHTML = '';
     return;
   }
 
-  // Série cumulée par grinder
+  // Cumul par grinder, tri\u00e9 par date puis par ordre de saisie
   const series = active.map((g, idx) => {
-    const evts = grinderEvents.filter(e => e.grinderId === g.id)
-      .sort((a, b) => new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00'));
+    const evts = grinderEvents.filter(e => e.grinderId === g.id).slice().sort((a, b) => {
+      const da = new Date((a.date || '1970-01-01') + 'T00:00:00').getTime();
+      const db = new Date((b.date || '1970-01-01') + 'T00:00:00').getTime();
+      if (da !== db) return da - db;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
     let cum = 0;
-    const pts = evts.map(e => {
+    const pts = evts.map((e, k) => {
       cum += Number(e.fgp) || 0;
-      return { t: new Date((e.date || '1970-01-01') + 'T00:00:00').getTime(), v: cum };
+      return { t: new Date((e.date || '1970-01-01') + 'T00:00:00').getTime(), v: cum, i: k, e };
     });
     return { g, pts, color: playerColor(g, idx) };
   }).filter(s => s.pts.length > 0);
 
   const allTs = series.flatMap(s => s.pts.map(p => p.t));
   const minT = Math.min(...allTs), maxT = Math.max(...allTs);
+  // Toutes les entr\u00e9es le m\u00eame jour ? Un axe de dates serait \u00e9cras\u00e9 :
+  // on passe alors sur un axe "par entr\u00e9e" (\u00e9tapes chronologiques).
+  const singleDay = (maxT - minT) < 86400000;
+  const maxSteps = Math.max(...series.map(s => s.pts.length));
   const maxV = Math.max(...series.flatMap(s => s.pts.map(p => p.v)), 1);
-  const W = 800, H = 260, PAD_L = 46, PAD_R = 16, PAD_T = 16, PAD_B = 28;
-  const spanT = Math.max(maxT - minT, 86400000);
 
-  const x = t => PAD_L + ((t - minT) / spanT) * (W - PAD_L - PAD_R);
+  const W = 800, H = 280, PAD_L = 52, PAD_R = 18, PAD_T = 16, PAD_B = 40;
+  const spanT = Math.max(maxT - minT, 1);
+  const x = p => singleDay
+    ? PAD_L + (maxSteps <= 1 ? 0.5 : (p.i / (maxSteps - 1))) * (W - PAD_L - PAD_R)
+    : PAD_L + ((p.t - minT) / spanT) * (W - PAD_L - PAD_R);
   const y = v => H - PAD_B - (v / maxV) * (H - PAD_T - PAD_B);
 
-  // Grille horizontale
+  // Grille + axe des ordonn\u00e9es
   let grid = '';
-  for (let i = 0; i <= 4; i++) {
-    const v = (maxV / 4) * i;
+  for (let k = 0; k <= 4; k++) {
+    const v = (maxV / 4) * k;
     const yy = y(v);
-    grid += '<line x1="' + PAD_L + '" y1="' + yy + '" x2="' + (W - PAD_R) + '" y2="' + yy + '" stroke="rgba(255,255,255,0.06)" />' +
-      '<text x="' + (PAD_L - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="10" fill="#6b7280">' + Math.round(v) + '</text>';
+    grid += '<line x1="' + PAD_L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + yy.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" />' +
+      '<text x="' + (PAD_L - 10) + '" y="' + (yy + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="#6b7280">' + Math.round(v) + '</text>';
+  }
+
+  // Axe des abscisses : dates r\u00e9elles, ou num\u00e9ro d'entr\u00e9e si tout est le m\u00eame jour
+  let xAxis = '';
+  if (singleDay) {
+    for (let k = 0; k < maxSteps; k++) {
+      const xx = PAD_L + (maxSteps <= 1 ? 0.5 : (k / (maxSteps - 1))) * (W - PAD_L - PAD_R);
+      xAxis += '<text x="' + xx.toFixed(1) + '" y="' + (H - PAD_B + 18) + '" text-anchor="middle" font-size="10" fill="#6b7280">' + (k + 1) + '</text>';
+    }
+    xAxis += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="#4b5563">Entr\u00e9es (toutes le ' + fmtDateFR(dateToLocalISO(new Date(minT))) + ')</text>';
+  } else {
+    const ticks = 5;
+    for (let k = 0; k <= ticks; k++) {
+      const t = minT + (spanT * k / ticks);
+      const xx = PAD_L + (k / ticks) * (W - PAD_L - PAD_R);
+      const d = new Date(t);
+      const lbl = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+      xAxis += '<text x="' + xx.toFixed(1) + '" y="' + (H - PAD_B + 18) + '" text-anchor="middle" font-size="10" fill="#6b7280">' + lbl + '</text>';
+    }
   }
 
   const paths = series.map(s => {
-    const d = s.pts.map((p, i) => (i === 0 ? 'M' : 'L') + x(p.t).toFixed(1) + ' ' + y(p.v).toFixed(1)).join(' ');
-    const dots = s.pts.map(p => '<circle cx="' + x(p.t).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="3" fill="' + s.color + '" />').join('');
-    return '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" />' + dots;
+    const d = s.pts.map((p, k) => (k === 0 ? 'M' : 'L') + x(p).toFixed(1) + ' ' + y(p.v).toFixed(1)).join(' ');
+    const dots = s.pts.map(p =>
+      '<circle cx="' + x(p).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="3.5" fill="' + s.color + '">' +
+        '<title>' + escapeHtml(s.g.pseudo) + ' \u00b7 ' + p.v + ' FGP (+' + (Number(p.e.fgp) || 0) + ')</title>' +
+      '</circle>').join('');
+    // Un seul point : pas de ligne \u00e0 tracer, on garde le rep\u00e8re visible
+    return (s.pts.length > 1 ? '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />' : '') + dots;
   }).join('');
 
-  container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;">' + grid + paths + '</svg>';
+  container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;">' + grid + xAxis + paths + '</svg>';
+
   if (legendEl) {
     legendEl.innerHTML = series.map(s =>
       '<span class="legend-item"><span class="legend-dot" style="background:' + s.color + ';"></span>' +
-      escapeHtml(s.g.pseudo) + ' <strong>' + fmtNumber(s.pts[s.pts.length - 1].v) + '</strong></span>').join('');
+      escapeHtml(s.g.pseudo) + ' <strong>' + fmtNumber(s.pts[s.pts.length - 1].v) + '</strong></span>').join('') +
+      (singleDay ? '<span class="legend-item" style="color:var(--text-mute);font-style:italic;">Toutes les entr\u00e9es datent du m\u00eame jour \u2014 axe par entr\u00e9e</span>' : '');
   }
 }
 
 // ---------- Rendu global de l'onglet ----------
 function renderGrinder() {
+  // Paliers d'ancienneté atteints depuis la dernière visite
+  checkGrinderSeniority().then(n => { if (n > 0) { renderGrinderLeaderboard(); renderGrinderHighlights(); } });
   // Sélecteurs
   const cupSel = document.getElementById('gr_ev_cupType');
   if (cupSel && !cupSel.options.length) {
