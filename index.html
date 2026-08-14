@@ -582,6 +582,25 @@
   .gr-hl-fgp { font-family: var(--font-mono); font-size: 14px; color: var(--green); margin-top: 4px; }
   .gr-hl-sub { font-size: 11px; color: var(--text-mute); margin-top: 4px; }
   .gr-hl-empty { font-size: 12px; color: var(--text-mute); font-style: italic; padding: 12px 0; }
+  .gr-link-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 7px;
+    margin: 0 2px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 13px;
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .gr-link-btn:hover { border-color: var(--red); color: var(--text); }
+  .gr-link-btn.gr-link-wide { padding: 0 12px; font-size: 12px; }
   .gr-rank { font-size: 16px; text-align: center; color: var(--text-mute); font-family: var(--font-mono); }
   .gr-div-badge {
     font-size: 10px;
@@ -6208,6 +6227,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </button>
     <h2 id="grDetailTitle">Fiche grinder</h2>
     <p class="modal-sub" id="grDetailSub"></p>
+    <div id="grDetailLinks" style="display:flex;gap:8px;margin:-6px 0 14px;"></div>
     <div id="grDetailTitleBadge" class="gr-detail-title"></div>
     <div class="data-stat-row">
       <div class="data-stat"><div class="data-stat-label">Total FGP</div><div class="data-stat-value" id="grDetailTotal">0</div></div>
@@ -6852,7 +6872,8 @@ const FGP_PLACEMENT_SCALE = [
   { max: 100, pts: 35 },
   { max: 150, pts: 25 },
   { max: 200, pts: 15 },
-  { max: 250, pts: 10 }
+  { max: 250, pts: 10 },
+  { max: 300, pts: 5 }
 ];
 
 const FGP_DIVISIONS = [
@@ -7874,8 +7895,25 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 20;  // bump this when you add an entry
+const CHANGELOG_VERSION = 22;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: '2026-08-14',
+    title: 'Nouveau palier Top 300',
+    items: [
+      'Le bar\u00e8me FGP s\'\u00e9tend : un placement entre le Top 251 et le Top 300 rapporte d\u00e9sormais 5 points (avant coefficients).',
+      'Bar\u00e8me, aper\u00e7u de calcul et messages d\'accueil FR/EN mis \u00e0 jour en cons\u00e9quence.'
+    ]
+  },
+  {
+    date: '2026-08-14',
+    title: 'Liens X et Tracker sur les grinders',
+    items: [
+      'Une colonne \u00ab Liens \u00bb dans le classement ouvre le profil X/Twitter et le Fortnite Tracker de chaque grinder en un clic.',
+      'Les m\u00eames boutons apparaissent en haut de la fiche d\u00e9taill\u00e9e.',
+      'Le champ accepte un lien complet, un lien sans https ou un simple @pseudo pour X.'
+    ]
+  },
   {
     date: '2026-08-13',
     title: 'R\u00f4le \u00ab Grinder View \u00bb',
@@ -14897,7 +14935,7 @@ function updateFgpPreview() {
   }
   const r = computeFGP(n, division, cupType);
   if (r.base === 0) {
-    el.innerHTML = '<span style="color:var(--amber);">Placement hors barème (au-delà du Top 250) — 0 FGP.</span>';
+    el.innerHTML = '<span style="color:var(--amber);">Placement hors barème (au-delà du Top 300) — 0 FGP.</span>';
     return;
   }
   const divLabel = (FGP_DIVISIONS.find(d => d.key === division) || {}).label || division;
@@ -15107,7 +15145,7 @@ function buildOnboardMessage(g) {
 '\u2022 Ajoute \u00ab Grind FLC \u00bb dans ta bio X/Twitter\n' +
 '\u2022 Ajoute \u00ab FLC \u00bb dans ton nom X/Twitter et dans ton pseudo Epic\n\n' +
 '\ud83c\udfaf Comment tu gagnes des FGP :\n' +
-'\u2022 Tes r\u00e9sultats en tournoi \u2014 plus tu finis haut, plus tu marques. Un Top 1 vaut 100 pts, un Top 250 en vaut 10.\n' +
+'\u2022 Tes r\u00e9sultats en tournoi \u2014 plus tu finis haut, plus tu marques. Un Top 1 vaut 100 pts, un Top 300 en vaut 5.\n' +
 '\u2022 Ta division compte : une m\u00eame place rapporte plus en D1 qu\'en D5.\n' +
 '\u2022 Le type de cup aussi : une Division Cup rapporte plus qu\'une Solo Victory Cup.\n' +
 '\u2022 Bonus quand tu montes de division : jusqu\'\u00e0 +50 FGP.\n' +
@@ -15128,7 +15166,7 @@ function buildOnboardMessage(g) {
 '\u2022 Add "Grind FLC" to your X/Twitter bio\n' +
 '\u2022 Add "FLC" to your X/Twitter name and to your Epic username\n\n' +
 '\ud83c\udfaf How you earn FGP:\n' +
-'\u2022 Your tournament results \u2014 the higher you finish, the more you score. A Top 1 is worth 100 pts, a Top 250 is worth 10.\n' +
+'\u2022 Your tournament results \u2014 the higher you finish, the more you score. A Top 1 is worth 100 pts, a Top 300 is worth 5.\n' +
 '\u2022 Your division matters: the same placement is worth more in D1 than in D5.\n' +
 '\u2022 Cup type matters too: a Division Cup is worth more than a Solo Victory Cup.\n' +
 '\u2022 Promotion bonus when you move up a division: up to +50 FGP.\n' +
@@ -15156,6 +15194,30 @@ function copyOnboardMessage() {
     showToast('Copie impossible — sélectionne le texte manuellement', 'error');
   }
   window.getSelection().removeAllRanges();
+}
+
+// URL cliquable à partir du champ libre de la fiche.
+// Accepte un lien complet, un lien sans schéma, ou un @handle (X/Twitter).
+function grExternalUrl(raw, kind) {
+  const v = String(raw || '').trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  if (kind === 'twitter') {
+    const handle = v.replace(/^@/, '');
+    if (/^[A-Za-z0-9_]{1,15}$/.test(handle)) return 'https://x.com/' + handle;
+  }
+  return 'https://' + v;
+}
+
+// Petits boutons de liens externes (X, Tracker) — stoppent la propagation
+// pour ne pas ouvrir la fiche en même temps
+function grLinkButtons(g) {
+  const tw = grExternalUrl(g.twitter, 'twitter');
+  const tr = grExternalUrl(g.tracker, 'tracker');
+  let out = '';
+  if (tw) out += '<a class="gr-link-btn" href="' + escapeAttr(tw) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();" title="Profil X/Twitter">𝕏</a>';
+  if (tr) out += '<a class="gr-link-btn" href="' + escapeAttr(tr) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();" title="Fortnite Tracker">🎯</a>';
+  return out || '<span style="color:var(--text-mute);">—</span>';
 }
 
 // ---------- Classement ----------
@@ -15198,11 +15260,12 @@ function renderGrinderLeaderboard() {
       '<td style="text-align:right;font-family:var(--font-mono);color:var(--red-bright);font-weight:700;">' + fmtNumber(it.total) + '</td>' +
       '<td style="text-align:right;font-family:var(--font-mono);">' + it.events + '</td>' +
       '<td style="text-align:right;">' + (ratingAvg != null ? '<span style="color:var(--red-bright);">' + ratingAvg.toFixed(1) + '/5</span>' : '<span style="color:var(--text-mute);">—</span>') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap;">' + grLinkButtons(g) + '</td>' +
     '</tr>';
   }).join('');
 
   container.innerHTML = '<div class="rt-wrap"><table class="roster-table" style="min-width:640px;">' +
-    '<colgroup><col style="width:60px"><col><col style="width:60px"><col style="width:70px"><col style="width:90px"><col style="width:80px"><col style="width:80px"></colgroup>' +
+    '<colgroup><col style="width:60px"><col><col style="width:60px"><col style="width:70px"><col style="width:90px"><col style="width:80px"><col style="width:80px"><col style="width:84px"></colgroup>' +
     '<thead><tr>' +
       '<th class="rt-th" style="cursor:default;">#</th>' +
       '<th class="rt-th" style="cursor:default;">Grinder</th>' +
@@ -15211,6 +15274,7 @@ function renderGrinderLeaderboard() {
       '<th class="rt-th" style="cursor:default;text-align:right;">FGP</th>' +
       '<th class="rt-th" style="cursor:default;text-align:right;">Entrées</th>' +
       '<th class="rt-th" style="cursor:default;text-align:right;">Note</th>' +
+      '<th class="rt-th" style="cursor:default;text-align:center;">Liens</th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
     '<div class="rt-foot">' + list.length + ' grinder' + (list.length > 1 ? 's' : '') + ' · clique sur une ligne pour voir le détail</div>';
 }
@@ -15257,6 +15321,16 @@ function openGrinderDetail(id) {
   document.getElementById('grDetailSub').textContent =
     [g.realName, div ? div.label : null, g.country || null].filter(Boolean).join(' · ') || 'Grinder FLC';
   const totalFgp = grinderTotalFGP(id);
+  const linksEl = document.getElementById('grDetailLinks');
+  if (linksEl) {
+    const tw = grExternalUrl(g.twitter, 'twitter');
+    const tr = grExternalUrl(g.tracker, 'tracker');
+    let lh = '';
+    if (tw) lh += '<a class="gr-link-btn gr-link-wide" href="' + escapeAttr(tw) + '" target="_blank" rel="noopener">𝕏 X/Twitter</a>';
+    if (tr) lh += '<a class="gr-link-btn gr-link-wide" href="' + escapeAttr(tr) + '" target="_blank" rel="noopener">🎯 Tracker</a>';
+    linksEl.innerHTML = lh;
+    linksEl.style.display = lh ? 'flex' : 'none';
+  }
   document.getElementById('grDetailTotal').textContent = fmtNumber(totalFgp);
   const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
   document.getElementById('grDetailMonth').textContent = '+' + fmtNumber(grinderFGPSince(id, monthStart.getTime()));
@@ -15362,7 +15436,7 @@ function openFgpScaleModal() {
         const lbl = t.max === 1 ? 'Top 1' : 'Top ' + t.max;
         return '<div class="fgp-scale-item"><span>' + lbl + '</span><strong>' + t.pts + ' pts</strong></div>';
       }).join('') + '</div>' +
-      '<div class="fgp-note">Au-delà du Top 250 : aucun FGP.</div></div>' +
+      '<div class="fgp-note">Au-delà du Top 300 : aucun FGP.</div></div>' +
     '<div class="fgp-scale-block"><div class="fgp-scale-title">Coefficients de division</div>' +
       '<div class="fgp-scale-grid">' + FGP_DIVISIONS.map(d =>
         '<div class="fgp-scale-item"><span>' + d.label + '</span><strong>×' + d.coeff.toFixed(2) + '</strong></div>').join('') + '</div></div>' +
