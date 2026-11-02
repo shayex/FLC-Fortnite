@@ -6269,6 +6269,50 @@
     .toast, .ac-box, .ac-backdrop, .pp-card, .cag-item, .pm-photo, .nc-progress i { transition: none !important; }
     .toast.show .toast-bar { animation: none; }
   }
+
+  /* --- Classement du roster (dashboard) --- */
+  .drk-wrap { overflow-x: auto; margin: 0 -4px; }
+  .drk { width: 100%; min-width: 760px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .drk th { padding: 8px 10px; font-size: 11px; font-weight: 700; color: var(--text-mute); text-align: right; white-space: nowrap; border-bottom: 1px solid var(--border); }
+  .drk th button { font: inherit; font-weight: 700; color: inherit; padding: 2px 4px; margin: 0 -4px; border-radius: 6px; transition: color 0.15s, background 0.15s; }
+  .drk th button:hover { color: var(--text); background: var(--bg-2); }
+  .drk th.on { color: var(--red-bright); }
+  .drk th.drk-l, .drk td.drk-l { text-align: left; }
+  .drk td { padding: 9px 10px; text-align: right; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .drk tbody tr { cursor: pointer; transition: background 0.15s; }
+  .drk tbody tr:hover { background: rgba(255,255,255,0.025); }
+  .drk tbody tr:last-child td { border-bottom: 0; }
+  .drk .drk-pos { width: 28px; padding-right: 0; text-align: left; font-family: var(--font-display); font-size: 18px; color: var(--text-mute); }
+  .drk tbody tr:nth-child(1) .drk-pos { color: var(--red-bright); }
+  .drk tbody tr:nth-child(2) .drk-pos { color: var(--silver); }
+  .drk tbody tr:nth-child(3) .drk-pos { color: var(--bronze); }
+  .drk-who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .drk-av { width: 32px; height: 32px; flex-shrink: 0; border-radius: 10px; overflow: hidden; display: grid; place-items: center; font-family: var(--font-display); font-size: 17px; background: var(--bg-3); border: 2px solid var(--t, var(--border-strong)); }
+  .drk-av img { width: 100%; height: 100%; object-fit: cover; }
+  .drk-name { display: block; font-weight: 700; color: var(--white); white-space: nowrap; }
+  .drk-team { display: block; font-size: 10px; color: var(--text-mute); }
+  .drk-cell { display: grid; justify-items: end; gap: 4px; }
+  .drk-cell > span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .drk-cell small { font-size: 10px; color: var(--text-mute); }
+  .drk-cell .kpi-delta { font-size: 10px; padding: 1px 6px; }
+  .drk-pos-val { color: var(--green); }
+  .drk-bar { position: relative; width: 84px; height: 5px; border-radius: 99px; background: var(--bg-4); }
+  .drk-bar i { display: block; height: 100%; border-radius: inherit; background: var(--red); }
+  .drk-bar b { position: absolute; top: -3px; width: 2px; height: 11px; margin-left: -1px; border-radius: 1px; background: var(--text-dim); opacity: 0.8; }
+  .drk-form { display: inline-flex; gap: 3px; }
+  .drk-form i { width: 10px; height: 10px; border-radius: 3px; background: var(--bg-4); }
+  .drk-form i.t10 { background: var(--green); }
+  .drk-form i.t50 { background: var(--red); }
+  .drk-form i.t100 { background: var(--red-deep); }
+  .drk-none { color: var(--text-mute); }
+  /* Petit écran : position et joueur restent visibles pendant le défilement horizontal */
+  @media (max-width: 900px) {
+    .drk th:nth-child(1), .drk td:nth-child(1) { position: sticky; left: 0; z-index: 1; background: var(--bg-1); }
+    .drk th:nth-child(2), .drk td:nth-child(2) { position: sticky; left: 28px; z-index: 1; background: var(--bg-1); box-shadow: 8px 0 12px -8px rgba(0,0,0,0.6); }
+    .drk tbody tr:hover td:nth-child(1), .drk tbody tr:hover td:nth-child(2) { background: var(--bg-2); }
+  }
+  .drk-foot { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-mute); }
+  .drk-foot b { color: var(--text-dim); font-weight: 600; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -6527,18 +6571,21 @@ window.addEventListener('DOMContentLoaded', function() {
 
     <!-- ============ PERFORMANCE & RÉSULTATS ============ -->
     <div class="dash-section-title">Performance &amp; résultats</div>
-    <!-- Row: Forme du moment + Meilleure perf all-time -->
+    <!-- Classement du roster : remplace Forme du moment, Place moyenne, Top gains et Joueur vs moyenne -->
     <div class="dash-grid">
-      <div class="dash-card span-6">
+      <div class="dash-card span-12">
         <div class="dash-card-header">
           <div>
-            <div class="dash-card-title">Forme du moment</div>
-            <div class="dash-card-sub">Score basé sur les 5 dernières cups</div>
+            <div class="dash-card-title">Classement du roster</div>
+            <div class="dash-card-sub">Clique sur une colonne pour trier · le trait sur les barres marque la moyenne du roster</div>
           </div>
         </div>
-        <div id="recentFormBlock"></div>
+        <div id="rosterRankingBlock"></div>
       </div>
+    </div>
 
+    <!-- Row: Meilleure perf all-time + Distribution des places -->
+    <div class="dash-grid">
       <div class="dash-card span-6">
         <div class="dash-card-header">
           <div>
@@ -6547,19 +6594,6 @@ window.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
         <div id="bestPerfBlock"></div>
-      </div>
-    </div>
-
-    <!-- Row: Place moyenne + Distribution des places -->
-    <div class="dash-grid">
-      <div class="dash-card span-6">
-        <div class="dash-card-header">
-          <div>
-            <div class="dash-card-title">Place moyenne</div>
-            <div class="dash-card-sub">Position moyenne sur toutes les cups</div>
-          </div>
-        </div>
-        <div id="avgPlaceBlock"></div>
       </div>
 
       <div class="dash-card span-6">
@@ -6570,19 +6604,6 @@ window.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
         <div id="cupDistribution"></div>
-      </div>
-    </div>
-
-    <!-- Row: Top earners (full width) -->
-    <div class="dash-grid">
-      <div class="dash-card span-12">
-        <div class="dash-card-header">
-          <div>
-            <div class="dash-card-title">Top gains cumulés</div>
-            <div class="dash-card-sub">5 meilleurs earners</div>
-          </div>
-        </div>
-        <div id="topEarners"></div>
       </div>
     </div>
 
@@ -6608,19 +6629,6 @@ window.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
         <div id="monthComparisonBlock"></div>
-      </div>
-    </div>
-
-    <!-- Row: Comparaison vs moyenne -->
-    <div class="dash-grid">
-      <div class="dash-card span-12">
-        <div class="dash-card-header">
-          <div>
-            <div class="dash-card-title">Joueur vs moyenne roster</div>
-            <div class="dash-card-sub">Écart de chaque joueur à la moyenne</div>
-          </div>
-        </div>
-        <div id="vsAverageBlock"></div>
       </div>
     </div>
 
@@ -10330,15 +10338,12 @@ function renderDashboard() {
   renderPRChart();
   renderDashLeaderboard();
   renderCupDistribution();
-  renderTopEarners();
   renderPayroll();
   renderBestMonth();
   renderCountryBreakdown();
-  renderRecentForm();
+  renderDashRanking();
   renderBestPerf();
-  renderAvgPlace();
   renderAgePyramid();
-  renderVsAverage();
   renderMonthComparison();
   renderHallOfFame();
   renderManagerActivity();
@@ -11281,30 +11286,6 @@ function renderCupDistribution() {
 // ============================================================
 // TOP EARNERS
 // ============================================================
-function renderTopEarners() {
-  const container = document.getElementById('topEarners');
-  if (!container) return;
-
-  const earners = players.map(p => ({
-    player: p,
-    total: (p.cups || []).reduce((s, c) => s + (Number(c.prize) || 0), 0)
-  })).filter(e => e.total > 0).sort((a, b) => b.total - a.total).slice(0, 5);
-
-  if (earners.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucun gain enregistré.<br>Ajoute des cup prizes pour voir le top.</div>';
-    return;
-  }
-
-  const medals = ['🥇', '🥈', '🥉', '', ''];
-  container.innerHTML = '<div class="podium-list">' + earners.map((e, idx) =>
-    '<div class="podium-row">' +
-      '<div class="podium-rank">#' + (idx + 1) + '</div>' +
-      '<div class="podium-medal">' + medals[idx] + '</div>' +
-      '<div class="podium-name">' + escapeHtml(e.player.pseudo) + '</div>' +
-      '<div class="podium-amount">' + fmtNumber(Math.round(e.total)) + ' €</div>' +
-    '</div>'
-  ).join('') + '</div>';
-}
 
 /* ============================================================
    MASSE SALARIALE (payroll)
@@ -11757,84 +11738,119 @@ function renderCountryBreakdown() {
 /* ============================================================
    FORME DU MOMENT — score sur les 5 dernières cups
    ============================================================ */
-function renderRecentForm() {
-  const container = document.getElementById('recentFormBlock');
-  if (!container) return;
-
-  // Human-readable tier label for a placement (matches cupQualityScore brackets)
-  function placeTier(n) {
-    if (n <= 1) return 'Victoire';
-    if (n <= 3) return 'Podium';
-    if (n <= 5) return 'Top 5';
-    if (n <= 10) return 'Top 10';
-    if (n <= 25) return 'Top 25';
-    if (n <= 50) return 'Top 50';
-    if (n <= 100) return 'Top 100';
-    if (n <= 250) return 'Top 250';
-    if (n <= 500) return 'Top 500';
-    return '+500';
-  }
-
-  const items = players.map(p => {
-    const cups = (p.cups || []).slice()
-      .filter(c => c.date)
-      .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
-      .slice(0, 5);
-    if (cups.length === 0) return null;
-    let total = 0, count = 0;
-    const detail = []; // per-cup breakdown for the tooltip
-    cups.forEach(c => {
-      const m = String(c.position || '').match(/(\d+)/);
-      if (!m) return;
-      const n = parseInt(m[1], 10);
-      if (isNaN(n)) return;
-      const score = cupQualityScore(n);
-      total += score;
-      count++;
-      detail.push('  #' + n + ' (' + placeTier(n) + ') = ' + score + ' pts  ·  ' + (c.name || 'cup'));
-    });
-    if (count === 0) return null;
-    return { player: p, avg: total / count, cupCount: count, detail };
-  }).filter(x => x).sort((a, b) => b.avg - a.avg);
-
-  if (items.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucune cup récente avec position numérique.</div>';
-    return;
-  }
-
-  function tone(avg) {
-    if (avg >= 70) return { label: 'Excellent', cls: 'green' };
-    if (avg >= 50) return { label: 'Bonne', cls: 'amber' };
-    if (avg >= 30) return { label: 'Moyenne', cls: 'amber' };
-    return { label: 'Faible', cls: 'red' };
-  }
-
-  container.innerHTML = items.slice(0, 6).map(x => {
-    const t = tone(x.avg);
-    // Build a plain-text tooltip (native title attr — never clipped by overflow:hidden)
-    const tip =
-      'FORME DU MOMENT — ' + x.player.pseudo + '\n' +
-      'Moyenne de qualité sur les ' + x.cupCount + ' dernière' + (x.cupCount > 1 ? 's' : '') + ' cup' + (x.cupCount > 1 ? 's' : '') + '.\n\n' +
-      'Détail :\n' + x.detail.join('\n') + '\n\n' +
-      'Score = ' + Math.round(x.avg) + '/100  →  ' + t.label + '\n' +
-      'Barème : Victoire 100 · Podium 92 · Top5 85 · Top10 75 · Top25 60 · Top50 45 · Top100 28 · Top250 15 · Top500 7 · +500 3\n' +
-      'Paliers : 70+ Excellent · 50-69 Bonne · 30-49 Moyenne · -30 Faible';
-    return '<div class="mini-row" title="' + escapeAttr(tip) + '" style="cursor:help;">' +
-      '<div>' +
-        '<div class="mini-row-name">' + escapeHtml(x.player.pseudo) + '</div>' +
-        '<div class="mini-row-sub">' + x.cupCount + ' cup' + (x.cupCount > 1 ? 's' : '') + ' analysée' + (x.cupCount > 1 ? 's' : '') + ' · survol pour le détail</div>' +
-      '</div>' +
-      '<div class="mini-row-val">' +
-        '<span style="font-family:var(--font-display);font-size:18px;color:var(--white);">' + Math.round(x.avg) + '</span>' +
-        '<span class="pill ' + t.cls + '" style="margin-left:6px;">' + t.label + '</span>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
 
 /* ============================================================
    MEILLEURE PERF ALL-TIME (par joueur)
    ============================================================ */
+// ============================================================
+// CLASSEMENT DU ROSTER — un tableau triable qui remplace
+// Forme du moment, Place moyenne, Top gains et Joueur vs moyenne
+// ============================================================
+let dashRankSort = { key: 'pr', dir: 'desc' };
+const DASH_RANK_COLS = [
+  { key: 'pseudo', label: 'Joueur', dir: 'asc' },
+  { key: 'pr', label: 'Power Ranking', dir: 'desc', title: 'PR actuel · le trait marque la moyenne du roster' },
+  { key: 'form', label: 'Forme', dir: 'desc', title: 'Qualité moyenne des 5 dernières cups, sur 100' },
+  { key: 'avgPlace', label: 'Place moy.', dir: 'asc', title: 'Place moyenne sur toutes les cups' },
+  { key: 'cups', label: 'Cups', dir: 'desc' },
+  { key: 'gains', label: 'Gains', dir: 'desc' },
+  { key: 'last', label: '5 dernières', dir: null, title: 'Vert : top 10 · or : top 50 · bronze : top 100' }
+];
+
+function setDashRankSort(key) {
+  const col = DASH_RANK_COLS.find(c => c.key === key);
+  if (!col || !col.dir) return;
+  if (dashRankSort.key === key) dashRankSort.dir = dashRankSort.dir === 'asc' ? 'desc' : 'asc';
+  else dashRankSort = { key, dir: col.dir };
+  renderDashRanking();
+}
+
+function renderDashRanking() {
+  const container = document.getElementById('rosterRankingBlock');
+  if (!container) return;
+  if (players.length === 0) {
+    container.innerHTML = dashEmptyHtml('Aucun joueur dans le roster', 'Ajoute des joueurs pour voir le classement.', 'Ajouter un joueur', "switchTab('roster');openPlayerModal()");
+    return;
+  }
+  const posNum = c => { const m = String(c.position || '').match(/(\d+)/); const n = m ? parseInt(m[1], 10) : NaN; return isNaN(n) ? null : n; };
+  const placeTier = n => n <= 1 ? 'Victoire' : n <= 3 ? 'Podium' : n <= 10 ? 'Top 10' : n <= 25 ? 'Top 25' : n <= 50 ? 'Top 50' : n <= 100 ? 'Top 100' : '+100';
+
+  const rows = players.map((p, idx) => {
+    const pr = playerPrInfo(p);
+    const cups = (p.cups || []).slice();
+    const dated = cups.filter(c => c.date).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const last5 = dated.slice(0, 5);
+    const scored = last5.map(c => posNum(c)).filter(n => n != null);
+    const form = scored.length ? scored.reduce((s, n) => s + cupQualityScore(n), 0) / scored.length : null;
+    const all = cups.map(posNum).filter(n => n != null);
+    const avgPlace = all.length ? all.reduce((s, n) => s + n, 0) / all.length : null;
+    const gains = cups.reduce((s, c) => s + (Number(c.prize) || 0), 0);
+    return { p, idx, pseudo: p.pseudo || '', pr: pr.cur, prPct: pr.pct, form, avgPlace, cups: cups.length, gains, last5 };
+  });
+
+  // Moyennes du roster (repères sur les barres)
+  const avgOf = key => { const v = rows.map(r => r[key]).filter(x => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+  const avg = { pr: avgOf('pr'), form: avgOf('form'), avgPlace: avgOf('avgPlace'), cups: avgOf('cups'), gains: avgOf('gains') };
+  const maxOf = key => Math.max(0, ...rows.map(r => r[key]).filter(x => x != null));
+  const max = { pr: maxOf('pr'), cups: maxOf('cups'), gains: maxOf('gains'), avgPlace: maxOf('avgPlace') };
+  const minPlace = Math.min(...rows.map(r => r.avgPlace).filter(x => x != null), Infinity);
+
+  // Tri : les joueurs sans valeur restent en bas
+  const { key, dir } = dashRankSort;
+  rows.sort((a, b) => {
+    const va = a[key], vb = b[key];
+    if (key === 'pseudo') return dir === 'asc' ? va.localeCompare(vb, 'fr') : vb.localeCompare(va, 'fr');
+    if (va == null && vb == null) return (b.pr || 0) - (a.pr || 0);
+    if (va == null) return 1;
+    if (vb == null) return -1;
+    return dir === 'asc' ? va - vb : vb - va;
+  });
+
+  // Barre proportionnelle + trait vertical à la moyenne du roster
+  const bar = (ratio, avgRatio, color) =>
+    '<span class="drk-bar"><i style="width:' + Math.max(3, Math.min(100, ratio * 100)).toFixed(0) + '%;' + (color ? 'background:' + color : '') + '"></i>' +
+    (avgRatio != null ? '<b style="left:' + Math.max(0, Math.min(100, avgRatio * 100)).toFixed(0) + '%" title="Moyenne du roster"></b>' : '') + '</span>';
+  const formColor = f => f >= 70 ? 'var(--green)' : f >= 50 ? 'var(--red)' : f >= 30 ? 'var(--amber)' : 'var(--danger)';
+  const placeRatio = v => max.avgPlace > minPlace ? 1 - (v - minPlace) / (max.avgPlace - minPlace) * 0.85 : 1;
+
+  const head = '<thead><tr><th class="drk-pos"></th>' + DASH_RANK_COLS.map(c => {
+    const on = c.key === key;
+    const arrow = on ? (dir === 'asc' ? ' ↑' : ' ↓') : '';
+    return '<th class="' + (c.key === 'pseudo' ? 'drk-l' : '') + (on ? ' on' : '') + '"' + (c.title ? ' title="' + escapeAttr(c.title) + '"' : '') +
+      (on ? ' aria-sort="' + (dir === 'asc' ? 'ascending' : 'descending') + '"' : '') + '>' +
+      (c.dir ? '<button type="button" onclick="setDashRankSort(\'' + c.key + '\')">' + c.label + arrow + '</button>' : c.label) + '</th>';
+  }).join('') + '</tr></thead>';
+
+  const body = rows.map((r, i) => {
+    const p = r.p;
+    const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+    const team = p.team || 'main';
+    const open = "switchTab('data');setTimeout(function(){openDataModal('" + p.id + "')},100)";
+    const lastHtml = r.last5.length ? r.last5.slice().reverse().map(c => {
+      const n = posNum(c);
+      const cls = n == null ? '' : n <= 10 ? 't10' : n <= 50 ? 't50' : n <= 100 ? 't100' : '';
+      return '<i class="' + cls + '" title="' + escapeAttr((n != null ? '#' + n + ' (' + placeTier(n) + ')' : (c.position || '—')) + ' · ' + (c.name || 'cup') + ' · ' + fmtDateFR(c.date)) + '"></i>';
+    }).join('') : '<span class="drk-none">—</span>';
+    return '<tr onclick="' + open + '" title="Ouvrir les données de ' + escapeAttr(p.pseudo || '') + '">' +
+      '<td class="drk-pos">' + (i + 1) + '</td>' +
+      '<td class="drk-l"><div class="drk-who"><span class="drk-av" style="--t:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '">' + av + '</span>' +
+        '<span><span class="drk-name">' + escapeHtml(p.pseudo || '—') + '</span><span class="drk-team">' + escapeHtml(teamLabelFull(team)) + '</span></span></div></td>' +
+      '<td>' + (r.pr != null ? '<div class="drk-cell"><span>' + fmtNumber(r.pr) + (prDeltaChip(r.prPct) ? ' ' + prDeltaChip(r.prPct) : '') + '</span>' + bar(max.pr ? r.pr / max.pr : 0, avg.pr != null && max.pr ? avg.pr / max.pr : null) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
+      '<td>' + (r.form != null ? '<div class="drk-cell"><span>' + Math.round(r.form) + '<small>/100</small></span>' + bar(r.form / 100, avg.form != null ? avg.form / 100 : null, formColor(r.form)) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
+      '<td>' + (r.avgPlace != null ? '<div class="drk-cell"><span>#' + r.avgPlace.toFixed(1).replace('.', ',') + '</span>' + bar(placeRatio(r.avgPlace), avg.avgPlace != null ? placeRatio(avg.avgPlace) : null) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
+      '<td><div class="drk-cell"><span>' + r.cups + '</span>' + bar(max.cups ? r.cups / max.cups : 0, avg.cups != null && max.cups ? avg.cups / max.cups : null) + '</div></td>' +
+      '<td><div class="drk-cell"><span class="' + (r.gains > 0 ? 'drk-pos-val' : '') + '">' + fmtNumber(Math.round(r.gains)) + ' €</span>' + bar(max.gains ? r.gains / max.gains : 0, avg.gains != null && max.gains ? avg.gains / max.gains : null, 'var(--green)') + '</div></td>' +
+      '<td><span class="drk-form">' + lastHtml + '</span></td>' +
+    '</tr>';
+  }).join('');
+
+  const foot = 'Moyennes du roster — PR : <b>' + (avg.pr != null ? fmtNumber(Math.round(avg.pr)) : '—') + '</b> · forme : <b>' + (avg.form != null ? Math.round(avg.form) + '/100' : '—') +
+    '</b> · place : <b>' + (avg.avgPlace != null ? '#' + avg.avgPlace.toFixed(1).replace('.', ',') : '—') + '</b> · cups : <b>' + (avg.cups != null ? avg.cups.toFixed(1).replace('.', ',') : '—') +
+    '</b> · gains : <b>' + (avg.gains != null ? fmtNumber(Math.round(avg.gains)) + ' €' : '—') + '</b>';
+
+  container.innerHTML = '<div class="drk-wrap"><table class="drk">' + head + '<tbody>' + body + '</tbody></table></div><div class="drk-foot">' + foot + '</div>';
+}
+
 function renderBestPerf() {
   const container = document.getElementById('bestPerfBlock');
   if (!container) return;
@@ -11878,39 +11894,6 @@ function renderBestPerf() {
 /* ============================================================
    PLACE MOYENNE (par joueur)
    ============================================================ */
-function renderAvgPlace() {
-  const container = document.getElementById('avgPlaceBlock');
-  if (!container) return;
-  const items = players.map(p => {
-    let total = 0, count = 0;
-    (p.cups || []).forEach(c => {
-      const m = String(c.position || '').match(/(\d+)/);
-      if (!m) return;
-      const n = parseInt(m[1], 10);
-      if (!isNaN(n)) { total += n; count++; }
-    });
-    if (count === 0) return null;
-    return { player: p, avg: total / count, count };
-  }).filter(x => x).sort((a, b) => a.avg - b.avg);
-
-  if (items.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucune cup avec position numérique.</div>';
-    return;
-  }
-
-  container.innerHTML = items.slice(0, 6).map(x =>
-    '<div class="mini-row">' +
-      '<div>' +
-        '<div class="mini-row-name">' + escapeHtml(x.player.pseudo) + '</div>' +
-        '<div class="mini-row-sub">' + x.count + ' cup' + (x.count > 1 ? 's' : '') + ' avec position</div>' +
-      '</div>' +
-      '<div class="mini-row-val">' +
-        '<span style="font-family:var(--font-display);font-size:18px;color:var(--white);">#' + x.avg.toFixed(1) + '</span>' +
-        '<div style="font-size:9px;color:var(--text-mute);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px;">PLACE MOYENNE</div>' +
-      '</div>' +
-    '</div>'
-  ).join('');
-}
 
 /* ============================================================
    PYRAMIDE DES ÂGES
@@ -12089,90 +12072,6 @@ function renderNegoTime() {
 /* ============================================================
    JOUEUR VS MOYENNE ROSTER
    ============================================================ */
-function renderVsAverage() {
-  const container = document.getElementById('vsAverageBlock');
-  if (!container) return;
-  if (players.length < 2) {
-    container.innerHTML = '<div class="dash-empty">Nécessite au moins 2 joueurs dans le roster.</div>';
-    return;
-  }
-  // Compute averages
-  const data = players.map(p => {
-    const cur = currentPR(p);
-    const pr = cur ? Number(cur.points) : 0;
-    const cups = (p.cups || []).length;
-    const gains = (p.cups || []).reduce((s, c) => s + (Number(c.prize) || 0), 0);
-    return { player: p, pr, cups, gains };
-  });
-  const avgPR = data.reduce((s, x) => s + x.pr, 0) / data.length;
-  const avgCups = data.reduce((s, x) => s + x.cups, 0) / data.length;
-  const avgGains = data.reduce((s, x) => s + x.gains, 0) / data.length;
-
-  // Returns { pct, up, flat } describing deviation from the average
-  function delta(value, avg) {
-    if (avg === 0) return { txt: '—', cls: 'flat', pct: 0 };
-    const pct = ((value - avg) / avg) * 100;
-    if (Math.abs(pct) < 0.5) return { txt: '±0%', cls: 'flat', pct: 0 };
-    const up = pct > 0;
-    return {
-      txt: (up ? '▲' : '▼') + ' ' + Math.abs(pct).toFixed(0) + '%',
-      cls: up ? 'up' : 'down',
-      pct: pct
-    };
-  }
-
-  // A cell = real value + delta badge + bar showing deviation around the center
-  function cell(value, avg, fmt) {
-    const d = delta(value, avg);
-    // Bar: center line = average. Fill extends right (above avg, green) or left (below avg, red).
-    // Clamp magnitude to 100% for the half-width.
-    const mag = Math.min(Math.abs(d.pct), 100) / 100; // 0..1
-    const halfW = mag * 50; // percentage of the bar half
-    let fillStyle = '';
-    if (d.cls === 'up') {
-      fillStyle = 'left:50%;width:' + halfW + '%;background:var(--green);';
-    } else if (d.cls === 'down') {
-      fillStyle = 'right:50%;width:' + halfW + '%;background:var(--red-bright);';
-    } else {
-      fillStyle = 'left:50%;width:0;';
-    }
-    return '<div class="vs-avg-cell">' +
-      '<span class="vs-avg-delta ' + d.cls + '">' + d.txt + '</span>' +
-      '<span class="vs-avg-val">' + fmt(value) + '</span>' +
-      '<div class="vs-avg-bar"><div class="vs-avg-bar-mid"></div><div class="vs-avg-bar-fill" style="' + fillStyle + '"></div></div>' +
-    '</div>';
-  }
-
-  const fmtPR = v => fmtNumber(Math.round(v));
-  const fmtCups = v => String(v);
-  const fmtGains = v => fmtNumber(Math.round(v)) + ' €';
-
-  // Show all players, sorted by PR desc
-  const sorted = data.slice().sort((a, b) => b.pr - a.pr);
-
-  const header = '<div class="vs-avg-header">' +
-    '<span>Joueur</span>' +
-    '<span>Power Ranking</span>' +
-    '<span>Cups</span>' +
-    '<span>Gains</span>' +
-  '</div>';
-
-  const rows = sorted.slice(0, 8).map((x, i) =>
-    '<div class="vs-avg-row">' +
-      '<div class="vs-avg-name"><span class="vs-avg-rank">' + (i + 1) + '</span>' + escapeHtml(x.player.pseudo) + '</div>' +
-      cell(x.pr, avgPR, fmtPR) +
-      cell(x.cups, avgCups, fmtCups) +
-      cell(x.gains, avgGains, fmtGains) +
-    '</div>'
-  ).join('');
-
-  container.innerHTML = header + rows +
-    '<div class="vs-avg-foot">' +
-      'Moyennes du roster — PR : <strong style="color:var(--text-dim);">' + fmtNumber(Math.round(avgPR)) + '</strong> · ' +
-      'Cups : <strong style="color:var(--text-dim);">' + avgCups.toFixed(1) + '</strong> · ' +
-      'Gains : <strong style="color:var(--text-dim);">' + fmtNumber(Math.round(avgGains)) + ' €</strong>' +
-    '</div>';
-}
 
 /* ============================================================
    COMPARAISON MOIS EN COURS VS PRÉCÉDENT
