@@ -5893,7 +5893,7 @@
     }
     .mnav-tile.active { border-color: var(--red); color: var(--red-bright); }
     html.mnav-lock, html.mnav-lock body { overflow: hidden; }
-    .toast { top: auto; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; }
+    .toast { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
     /* Cartes chiffres en grille 2 × 2 sur téléphone */
     .kpi-card { grid-column: span 6 !important; padding: 12px 12px 0; gap: 4px; }
@@ -5915,6 +5915,335 @@
   @media (prefers-reduced-motion: reduce) {
     .pc-menu-pop, .pod-step, .chart-area, .chart-line, .chart-point, .chart-end, .mnav-panel, .mnav-backdrop, .mnav-item { transition: none !important; }
     .sk { animation: none; }
+  }
+
+  /* ============================================================
+     SAISON 2 — confirmations, scouting, calendrier, fiche joueur,
+     suivi, saisie PR, grinder, notes
+     ============================================================ */
+
+  /* --- 1. Notification en bas de l'écran --- */
+  .toast {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    width: max-content;
+    max-width: min(440px, calc(100vw - 32px));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 12px 14px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    background: var(--bg-3);
+    letter-spacing: 0;
+    z-index: 10030;
+    overflow: hidden;
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.98);
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .toast-ico { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; background: rgba(201,164,92,0.15); color: var(--red-bright); }
+  .toast.success .toast-ico { background: var(--good-bg); color: var(--green); }
+  .toast.error .toast-ico { background: var(--danger-bg); color: var(--danger); }
+  .toast-msg { font-size: 13px; line-height: 1.35; min-width: 0; }
+  .toast-action { margin-left: 6px; padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--red-bright); white-space: nowrap; }
+  .toast-action:hover { background: rgba(201,164,92,0.12); }
+  .toast-bar { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: var(--red); transform-origin: left; opacity: 0.8; }
+  .toast.success .toast-bar { background: var(--green); }
+  .toast.error .toast-bar { background: var(--danger); }
+  .toast.show .toast-bar { animation-name: toastDrain; animation-timing-function: linear; animation-fill-mode: forwards; }
+  @keyframes toastDrain { to { transform: scaleX(0); } }
+
+  .app-confirm { position: fixed; inset: 0; z-index: 10040; display: grid; place-items: center; padding: 16px; }
+  .ac-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); opacity: 0; transition: opacity 0.18s; }
+  .ac-box {
+    position: relative;
+    width: min(420px, 100%);
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+    transition: opacity 0.18s, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .app-confirm.open .ac-backdrop { opacity: 1; }
+  .app-confirm.open .ac-box { opacity: 1; transform: none; }
+  .ac-head { display: flex; align-items: center; gap: 12px; }
+  .ac-ico { width: 36px; height: 36px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 17px; background: rgba(201,164,92,0.15); color: var(--red-bright); }
+  .ac-box.danger .ac-ico { background: var(--danger-bg); color: var(--danger); }
+  .ac-head h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.35; color: var(--white); }
+  .ac-body { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-dim); white-space: pre-line; }
+  .ac-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .ac-actions button { padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid var(--border-strong); transition: background 0.15s, box-shadow 0.15s; }
+  .ac-cancel:hover { background: var(--bg-3); }
+  .ac-ok { background: linear-gradient(180deg, var(--red-bright), var(--red)); color: #0d0b07; border-color: transparent !important; font-weight: 700 !important; }
+  .ac-box.danger .ac-ok { background: var(--danger); color: #fff; }
+  .ac-ok:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+
+  /* --- 2. Scouting en pipeline --- */
+  .pp-board { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .pp-col { min-height: 260px; border-radius: 16px; }
+  .pp-col .kanban-col-header { border-bottom: 0; padding: 12px 14px 4px; }
+  .pp-col .kanban-col-title { display: flex; align-items: center; gap: 8px; letter-spacing: 0.04em; text-transform: none; font-size: 13px; }
+  .pp-dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; }
+  .pp-col.contacted .pp-dot { background: var(--blue); }
+  .pp-col.interested .pp-dot { background: var(--amber); }
+  .pp-col.signed .pp-dot { background: var(--green); }
+  .pp-col.rejected .pp-dot { background: var(--danger); }
+  .pp-col.not_interesting .pp-dot { background: #475569; }
+  .pp-col .kanban-col-body { padding: 8px 10px 12px; gap: 8px; }
+  .pp-card { padding: 10px; border-radius: 12px; display: grid; gap: 8px; background: var(--bg-2); transition: border-color 0.15s, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+  .pp-card:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+  .pp-card.signed { cursor: pointer; opacity: 0.9; }
+  .pp-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .pp-av { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; overflow: hidden; display: grid; place-items: center; font-family: var(--font-display); font-size: 19px; background: var(--bg-3); border: 1px solid var(--border-strong); }
+  .pp-av img { width: 100%; height: 100%; object-fit: cover; }
+  .pp-id { min-width: 0; }
+  .pp-name { font-family: var(--font-display); font-size: 20px; line-height: 1; letter-spacing: 0.04em; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pp-sub { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 3px; font-size: 11px; color: var(--text-mute); }
+  .pp-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-mute); }
+  .pp-sub img { border-radius: 2px; display: block; }
+  .pp-ok { color: var(--green); font-weight: 600; }
+  .pp-tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+  .pp-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: var(--bg-3); color: var(--text-dim); }
+  .pp-tag.stale { color: var(--amber); background: rgba(245,158,11,0.12); }
+  .pp-relance { justify-self: start; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 7px; }
+  .pp-relance.late { color: var(--danger); background: var(--danger-bg); }
+  .pp-relance.today { color: var(--amber); background: rgba(245,158,11,0.14); }
+  .pp-relance.soon { color: var(--amber); background: rgba(245,158,11,0.10); }
+  .pp-relance.later { color: var(--text-dim); background: var(--bg-3); }
+  .pp-actions { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .pp-ago { font-size: 10px; color: var(--text-mute); }
+  .pp-next { font-size: 11px; font-weight: 700; color: var(--red-bright); padding: 4px 8px; border-radius: 8px; transition: background 0.15s; white-space: nowrap; }
+  .pp-next:hover { background: rgba(201,164,92,0.12); }
+  .pp-archive { margin-top: 12px; display: grid; gap: 12px; }
+  .pp-archive-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; background: var(--bg-1); border: 1px solid var(--border); font-size: 12px; color: var(--text-mute); }
+  .pp-archive-toggle { font-size: 12px; font-weight: 600; color: var(--text-dim); padding: 4px 8px; border-radius: 8px; }
+  .pp-archive-toggle:hover { background: var(--bg-3); color: var(--text); }
+  .pp-archive-toggle b { margin-left: 4px; padding: 1px 7px; border-radius: 999px; background: var(--bg-3); font-family: var(--font-mono); font-size: 11px; }
+  .pp-drops { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .pp-drop { min-height: 0 !important; flex-direction: row !important; padding: 5px 10px; border-radius: 8px !important; border: 1px dashed var(--border-strong) !important; background: transparent !important; font-size: 11px; color: var(--text-mute); }
+  .pp-drop.drag-over { border-color: var(--red) !important; color: var(--text); background: rgba(201,164,92,0.06) !important; }
+  .pp-board-archived { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pp-board-archived .pp-col { min-height: 120px; opacity: 0.9; }
+  @media (max-width: 1100px) { .pp-board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .pp-board, .pp-board-archived { grid-template-columns: 1fr; } .pp-col { min-height: 0; } .pp-drops { margin-left: 0; } }
+
+  /* --- 3. Calendrier --- */
+  .cmv { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 16px; align-items: start; }
+  .cmv-main { background: var(--bg-1); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .cmv-dow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background: var(--bg-2); border-bottom: 1px solid var(--border); }
+  .cmv-dow div { padding: 8px 0; text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-mute); }
+  .cmv-week { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: 30px repeat(3, 22px) minmax(16px, 1fr); min-height: 118px; border-bottom: 1px solid var(--border); }
+  .cmv-week:last-child { border-bottom: 0; }
+  .cmv-day { grid-row: 1 / -1; position: relative; padding: 6px 7px; border-right: 1px solid var(--border); cursor: pointer; transition: background 0.15s; min-width: 0; }
+  .cmv-day:nth-child(7) { border-right: 0; }
+  .cmv-day:hover { background: rgba(255,255,255,0.025); }
+  .cmv-day.we { background: rgba(255,255,255,0.012); }
+  .cmv-day.other .cmv-num { color: var(--bg-4); }
+  .cmv-num { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 999px; font-family: var(--font-display); font-size: 15px; color: var(--text); }
+  .cmv-day.today .cmv-num { background: var(--red); color: #0d0b07; box-shadow: 0 0 0 4px rgba(201,164,92,0.18); }
+  .cmv-more { position: absolute; left: 7px; bottom: 4px; font-size: 10px; font-weight: 700; color: var(--text-mute); }
+  .cmv-ev { position: relative; z-index: 1; align-self: center; margin: 0 3px; height: 19px; display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; border-radius: 6px; }
+  .cmv-ev b { font-family: var(--font-mono); font-weight: 600; font-size: 10px; opacity: 0.85; }
+  .cmv-ev.cont-l { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: 0; border-left-width: 0; }
+  .cmv-ev.cont-r { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: 0; }
+  .cmv-len { margin-left: auto; padding-left: 6px; font-size: 9px; font-weight: 700; opacity: 0.7; }
+  .cmv-ev:hover { transform: none; filter: brightness(1.15); }
+  .cmv-side { display: grid; gap: 8px; align-content: start; }
+  .cag-head { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-mute); padding: 2px 2px 4px; }
+  .cag-item { --c: var(--red); display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; align-items: center; padding: 9px 10px; border-radius: 12px; text-align: left; background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--c); transition: border-color 0.15s, transform 0.15s; }
+  .cag-item:hover { border-color: var(--border-strong); border-left-color: var(--c); transform: translateX(2px); }
+  .cag-date { display: grid; justify-items: center; line-height: 1; font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-mute); }
+  .cag-date b { font-family: var(--font-display); font-weight: 400; font-size: 24px; color: var(--c); }
+  .cag-text { min-width: 0; display: grid; gap: 2px; }
+  .cag-title { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cag-meta { font-size: 11px; color: var(--text-mute); }
+  .cag-empty { display: grid; gap: 10px; justify-items: start; padding: 14px; border-radius: 12px; border: 1px dashed var(--border-strong); font-size: 13px; color: var(--text-mute); }
+  @media (max-width: 1100px) { .cmv { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) {
+    .cmv-week { grid-template-rows: 26px repeat(3, 18px) minmax(12px, 1fr); min-height: 96px; }
+    .cmv-day { padding: 4px; }
+    .cmv-num { min-width: 20px; height: 20px; font-size: 13px; }
+    .cmv-ev { height: 16px; font-size: 9px; padding: 0 3px; margin: 0 1px; }
+    .cmv-ev b, .cmv-len { display: none; }
+  }
+
+  /* --- 4. Fiche joueur en onglets --- */
+  .pm-modal { padding: 0; overflow: hidden; }
+  .pm-modal .modal-close { z-index: 2; }
+  .pm-head { display: flex; align-items: flex-end; gap: 16px; padding: 26px 26px 0; background: linear-gradient(135deg, rgba(201,164,92,0.20), transparent 65%); }
+  .pm-photo { position: relative; width: 84px; height: 84px; flex-shrink: 0; border-radius: 22px; overflow: hidden; cursor: pointer; border: 2px dashed rgba(201,164,92,0.55); background: rgba(0,0,0,0.3); transition: border-color 0.15s, background 0.15s, transform 0.15s; }
+  .pm-photo:hover, .pm-photo.drag { border-color: var(--red-bright); background: rgba(201,164,92,0.12); }
+  .pm-photo.drag { transform: scale(1.04); }
+  .pm-photo .preview { width: 100%; height: 100%; display: grid; place-items: center; color: var(--red-bright); }
+  .pm-photo .preview img { width: 100%; height: 100%; object-fit: cover; }
+  .pm-photo-hint { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 0; text-align: center; font-size: 9px; font-weight: 700; color: var(--red-bright); background: rgba(0,0,0,0.55); opacity: 0; transition: opacity 0.15s; }
+  .pm-photo:hover .pm-photo-hint, .pm-photo.drag .pm-photo-hint { opacity: 1; }
+  .pm-id { min-width: 0; padding-bottom: 2px; }
+  .pm-id h2 { margin: 0 40px 0 0; }
+  .pm-id .modal-sub { margin: 4px 0 8px; }
+  .pm-photo-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pm-photo-actions button { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--text-dim); transition: background 0.15s, color 0.15s; }
+  .pm-photo-actions button:hover { background: var(--bg-3); color: var(--text); }
+  .pm-tabs { display: flex; gap: 2px; margin-top: 18px; padding: 0 22px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+  .pm-tabs::-webkit-scrollbar { display: none; }
+  .pm-tabs button { position: relative; padding: 12px 14px; font-size: 13px; font-weight: 600; color: var(--text-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: color 0.2s, border-color 0.2s; }
+  .pm-tabs button:hover { color: var(--text); }
+  .pm-tabs button[aria-selected="true"] { color: var(--white); border-bottom-color: var(--red); }
+  .pm-dot { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--amber); vertical-align: 2px; }
+  .pm-pane { padding: 20px 26px 4px; animation: fadeIn 0.2s ease-out; }
+  .pm-pane[hidden] { display: none; }
+  .pm-modal .modal-actions { margin: 12px 0 0; padding: 14px 26px; background: var(--bg-2); }
+  .pm-timeline { margin-top: 6px; padding: 14px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--border); display: grid; gap: 8px; }
+  .pmt-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text-dim); }
+  .pmt-row b { font-weight: 700; }
+  .pmt-bar { --c: var(--green); position: relative; height: 8px; border-radius: 999px; background: var(--bg-4); }
+  .pmt-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 45%, transparent), var(--c)); }
+  .pmt-now { position: absolute; top: -5px; width: 3px; height: 18px; margin-left: -1.5px; border-radius: 2px; background: var(--white); box-shadow: 0 0 0 2px var(--bg-2); }
+  .pmt-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mute); }
+  .pmt-empty { font-size: 12px; color: var(--text-mute); }
+  @media (max-width: 600px) {
+    .pm-head { padding: 22px 16px 0; gap: 12px; }
+    .pm-photo { width: 68px; height: 68px; border-radius: 18px; }
+    .pm-tabs { padding: 0 10px; }
+    .pm-pane { padding: 16px 16px 4px; }
+    .pm-modal .modal-actions { padding: 12px 16px; }
+  }
+
+  /* --- 5. Suivi --- */
+  .tk-composer { display: grid; gap: 10px; padding: 14px; margin-bottom: 12px; border-radius: 16px; background: var(--bg-1); border: 1px solid var(--border); }
+  .tk-comp-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .tk-seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--border); }
+  .tk-seg button { padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--text-mute); transition: background 0.2s, color 0.2s; }
+  .tk-seg button[aria-pressed="true"] { background: linear-gradient(180deg, var(--red-bright), var(--red)); color: #0d0b07; }
+  .tk-hint { font-size: 12px; color: var(--text-mute); }
+  .tk-comp-row { display: grid; grid-template-columns: 200px minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+  .tk-comp-row .form-group { margin: 0; }
+  .tk-comp-row textarea { min-height: 42px; height: 42px; resize: vertical; }
+  .tk-comp-btn { height: 42px; white-space: nowrap; }
+  .tk-counters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .tkc { --c: var(--amber); display: grid; gap: 2px; justify-items: start; padding: 10px 14px; border-radius: 14px; background: var(--bg-1); border: 1px solid var(--border); font-size: 12px; color: var(--text-mute); text-align: left; transition: border-color 0.15s, background 0.15s; }
+  .tkc b { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1; color: var(--c); }
+  .tkc:hover { border-color: var(--border-strong); }
+  .tkc.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 8%, var(--bg-1)); }
+  .tkf { display: grid; padding: 4px 16px 8px; border-radius: 16px; background: var(--bg-1); border: 1px solid var(--border); }
+  .tkf-day { padding: 14px 0 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-mute); }
+  .tkf-day::first-letter { text-transform: uppercase; }
+  .tkf-item { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 8px 0 14px; }
+  .tkf-item::before { content: ''; position: absolute; left: 17px; top: 46px; bottom: 0; width: 2px; background: var(--border); }
+  .tkf-item:has(+ .tkf-day)::before, .tkf-item:last-child::before { display: none; }
+  .tkf-av { width: 36px; height: 36px; border-radius: 11px; overflow: hidden; display: grid; place-items: center; font-family: var(--font-display); font-size: 18px; background: var(--bg-3); border: 1px solid var(--border-strong); }
+  .tkf-av img { width: 100%; height: 100%; object-fit: cover; }
+  .tkf-text { font-size: 14px; line-height: 1.45; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+  .tkf-text b { color: var(--white); }
+  .tkf-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; font-size: 11px; color: var(--text-mute); }
+  .tkf-type { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 6px; }
+  .tkf-type.s { color: var(--red-bright); background: rgba(201,164,92,0.14); }
+  .tkf-type.b { color: #ff9a9a; background: var(--danger-bg); }
+  .tkf-side { display: flex; align-items: center; gap: 8px; }
+  .tkf-age { font-size: 11px; color: var(--amber); white-space: nowrap; }
+  .tkf-del { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; color: var(--text-mute); opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s; }
+  .tkf-item:hover .tkf-del, .tkf-del:focus-visible { opacity: 1; }
+  .tkf-del:hover { background: var(--danger-bg); color: var(--danger); }
+  .tkf-item.need.st-resolved .tkf-text { color: var(--text-dim); }
+  @media (hover: none) { .tkf-del { opacity: 1; } }
+  @media (max-width: 700px) {
+    .tk-comp-row { grid-template-columns: 1fr; }
+    .tkf-item { grid-template-columns: 36px minmax(0, 1fr); }
+    .tkf-side { grid-column: 2; }
+    .tkc b { font-size: 22px; }
+    .tkc { padding: 8px 10px; }
+  }
+
+  /* --- 6. Saisie du PR --- */
+  .pr-mini { margin: 4px 0 14px; padding: 12px 14px 0; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--border); overflow: hidden; }
+  .pr-mini[hidden] { display: none; }
+  .pr-mini-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+  .pr-mini-head b { font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 1; color: var(--red-bright); }
+  .pr-mini-head span:not(.kpi-delta) { margin-left: 6px; font-size: 12px; color: var(--text-mute); }
+  .pr-mini-svg { display: block; width: calc(100% + 28px); height: 56px; margin: 6px -14px 0; }
+  .pr-hint { margin-top: 8px; font-size: 12px; color: var(--text-mute); min-height: 18px; }
+  .pr-hint b { color: var(--text); }
+  .pr-hint b.up { color: var(--green); }
+  .pr-hint b.down { color: var(--danger); }
+  .history-entry.pr-row { grid-template-columns: auto minmax(0, 1fr) auto auto; padding: 9px 14px; }
+  .he-delta { min-width: 64px; text-align: right; font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-mute); }
+  .he-delta.up { color: var(--green); }
+  .he-delta.down { color: var(--danger); }
+  .pr-row .he-actions { opacity: 0; transition: opacity 0.15s; }
+  .pr-row:hover .he-actions, .pr-row:focus-within .he-actions { opacity: 1; }
+  @media (hover: none) { .pr-row .he-actions { opacity: 1; } }
+
+  /* --- 7. Grinder --- */
+  .grh-card { display: grid; gap: 12px; background: radial-gradient(circle at 0% 0%, rgba(168,85,247,0.22), transparent 55%), var(--bg-1); border-color: rgba(168,85,247,0.3); }
+  .grh-main { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; }
+  .grh-av { position: relative; width: 64px; height: 64px; border-radius: 18px; overflow: visible; display: grid; place-items: center; font-family: var(--font-display); font-size: 32px; background: var(--bg-3); border: 2px solid #a855f7; box-shadow: 0 8px 24px rgba(168,85,247,0.25); }
+  .grh-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+  .grh-av::after { content: '★'; position: absolute; top: -10px; right: -10px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; color: var(--red-bright); background: var(--bg-1); border: 1px solid var(--red-deep); }
+  .grh-title { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #c99bff; }
+  .grh-prog .grh-title { color: var(--text-mute); margin-bottom: 6px; }
+  .grh-name { font-family: var(--font-display); font-size: 32px; line-height: 1; letter-spacing: 0.04em; color: var(--white); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .grh-sub { font-size: 12px; color: var(--text-mute); margin-top: 3px; }
+  .grh-fgp { text-align: right; }
+  .grh-fgp b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 42px; line-height: 1; color: var(--green); }
+  .grh-fgp span { font-size: 11px; color: var(--text-mute); }
+  .grh-lead { font-size: 12px; color: var(--text-dim); }
+  .grh-podium { display: grid; gap: 6px; }
+  .grh-row { display: grid; grid-template-columns: 18px minmax(70px, 140px) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 12px; color: var(--text-dim); }
+  .grh-rk { font-family: var(--font-display); font-size: 15px; color: var(--text-mute); }
+  .grh-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 600; }
+  .grh-bar { height: 6px; border-radius: 99px; background: var(--bg-4); overflow: hidden; }
+  .grh-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #a855f7, #c99bff); }
+  .grh-row b { font-family: var(--font-mono); font-size: 12px; color: var(--green); }
+  .grh-prog { display: grid; gap: 10px; align-content: start; }
+  .grh-stat { display: flex; align-items: baseline; gap: 8px; font-size: 12px; color: var(--text-mute); }
+  .grh-stat b { font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 1; color: var(--white); }
+  .grh-stat b.g { color: var(--green); }
+  .gr-preview .gr-big { font-family: var(--font-display); font-size: 38px; line-height: 1; color: var(--green); }
+  .gr-preview .gr-big small { font-size: 18px; color: var(--text-dim); }
+  .gr-preview:has(.gr-big) { background: linear-gradient(90deg, rgba(34,197,94,0.10), var(--bg-2) 70%); border-color: rgba(34,197,94,0.28); }
+  @media (max-width: 600px) { .grh-main { grid-template-columns: auto minmax(0, 1fr); } .grh-fgp { grid-column: 1 / -1; text-align: left; } }
+
+  /* --- 8. Notes --- */
+  .note-card.nc2 { --g: var(--border-strong); border-left: 4px solid var(--g); border-radius: 14px; gap: 8px; }
+  .note-card.nc2.pinned { background: linear-gradient(180deg, rgba(201,164,92,0.09), var(--bg-1) 55%); }
+  .nc2 .note-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .nc-title-text { min-width: 0; }
+  .nc-pin { color: var(--red-bright); flex-shrink: 0; margin-top: 2px; }
+  .note-card.nc2.pinned::before { display: none; }
+  .nc-content { display: grid; gap: 4px; flex: 1; font-size: 12px; line-height: 1.5; color: var(--text-dim); }
+  .nc-line { white-space: pre-wrap; word-break: break-word; }
+  .nc-more { color: var(--text-mute); }
+  .nc-check { display: flex; align-items: flex-start; gap: 8px; text-align: left; font-size: 12px; line-height: 1.4; color: var(--text); padding: 2px 4px; margin: 0 -4px; border-radius: 6px; transition: background 0.15s; }
+  .nc-check:hover { background: rgba(255,255,255,0.04); }
+  .nc-check.ok > span:last-child { color: var(--text-mute); text-decoration: line-through; }
+  .nc-box { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; border-radius: 4px; display: grid; place-items: center; border: 1.5px solid var(--border-strong); color: #0d0b07; transition: background 0.15s, border-color 0.15s; }
+  .nc-check.ok .nc-box { background: var(--green); border-color: var(--green); }
+  .nc-progress { height: 4px; border-radius: 99px; background: var(--bg-4); overflow: hidden; }
+  .nc-progress i { display: block; height: 100%; background: var(--green); border-radius: inherit; transition: width 0.3s; }
+  .nc2 .note-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .nc2 .note-footer .note-author { margin-left: auto; }
+  .nc-prio { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+  .nc-prio.low { color: #7fb0ff; background: rgba(59,130,246,0.15); }
+  .nc-prio.medium { color: var(--amber); background: rgba(245,158,11,0.15); }
+  .nc-prio.high { color: #fb923c; background: rgba(249,115,22,0.15); }
+  .nc-prio.urgent { color: #fff; background: var(--danger); }
+  .nc-count { font-family: var(--font-mono); font-size: 11px; color: var(--green); }
+  .field-hint { margin-top: 6px; font-size: 11px; color: var(--text-mute); }
+  @media (max-width: 700px) { .toast { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toast, .ac-box, .ac-backdrop, .pp-card, .cag-item, .pm-photo, .nc-progress i { transition: none !important; }
+    .toast.show .toast-bar { animation: none; }
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -6501,17 +6830,17 @@ window.addEventListener('DOMContentLoaded', function() {
       <button class="filter-chip" data-pfilter="interested" onclick="setScoutingFilter('interested')">Intéressés</button>
       <button class="filter-chip" data-pfilter="rejected" onclick="setScoutingFilter('rejected')">Refusés</button>
       <button class="filter-chip" data-pfilter="not_interesting" onclick="setScoutingFilter('not_interesting')">Pas intéressants</button>
-      <span style="width:1px;height:24px;background:var(--border);margin:0 4px;"></span>
+      <span class="filter-sep" data-pfilter="sep" style="width:1px;height:24px;background:var(--border);margin:0 4px;"></span>
       <button class="filter-chip team-chip active" data-teamfilter="all" onclick="setScoutingTeamFilter('all')">Toutes équipes</button>
       <button class="filter-chip team-chip" data-teamfilter="main" onclick="setScoutingTeamFilter('main')">Main</button>
       <button class="filter-chip team-chip" data-teamfilter="academy" onclick="setScoutingTeamFilter('academy')">Académie</button>
       <button class="filter-chip team-chip" data-teamfilter="cdf" onclick="setScoutingTeamFilter('cdf')">CDF</button>
       <input type="text" class="search-input" placeholder="Rechercher un prospect..." id="scoutingSearch" oninput="renderScouting()" />
       <div class="scouting-view-toggle">
-        <button class="sv-toggle-btn active" data-sview="grid" onclick="setScoutingView('grid')" title="Vue grille">
+        <button class="sv-toggle-btn" data-sview="grid" onclick="setScoutingView('grid')" title="Vue grille">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         </button>
-        <button class="sv-toggle-btn" data-sview="kanban" onclick="setScoutingView('kanban')" title="Vue pipeline (Kanban)">
+        <button class="sv-toggle-btn active" data-sview="kanban" onclick="setScoutingView('kanban')" title="Vue pipeline (Kanban)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="21"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="18" y1="3" x2="18" y2="21"/></svg>
         </button>
       </div>
@@ -6557,46 +6886,26 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
-    <div class="tracking-forms">
-      <!-- Bloc 1 : suivi (observation) -->
-      <div class="tk-block">
-        <div class="tk-block-title">📝 Nouveau suivi</div>
-        <div class="tk-block-sub">Observation, point avec le joueur, état d'esprit, progression...</div>
-        <div class="form-group">
-          <label>Joueur *</label>
-          <select id="tk_playerSuivi"></select>
+    <div class="tk-composer">
+      <div class="tk-comp-top">
+        <div class="tk-seg" id="tkSeg" role="group" aria-label="Type d'entrée">
+          <button type="button" data-type="suivi" aria-pressed="true" onclick="setTrackingComposerType('suivi')">Suivi</button>
+          <button type="button" data-type="besoin" aria-pressed="false" onclick="setTrackingComposerType('besoin')">Besoin</button>
         </div>
-        <div class="form-group">
-          <label>Note *</label>
-          <textarea id="tk_textSuivi" placeholder="Ex: Point mental fait ce soir, motivé pour la FNCS mais fatigue en fin de session..."></textarea>
-        </div>
-        <div style="display:flex;justify-content:flex-end;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="addTrackingEntry('suivi')">Enregistrer le suivi</button>
-        </div>
+        <span class="tk-hint" id="tkHint">Observation, point avec le joueur, état d'esprit, progression.</span>
       </div>
-
-      <!-- Bloc 2 : besoin (actionnable) -->
-      <div class="tk-block tk-block-besoin">
-        <div class="tk-block-title">🎯 Nouveau besoin</div>
-        <div class="tk-block-sub">Matériel, accompagnement, administratif... Un besoin reste « à traiter » jusqu'à sa résolution.</div>
-        <div class="form-group">
-          <label>Joueur *</label>
-          <select id="tk_playerBesoin"></select>
-        </div>
-        <div class="form-group">
-          <label>Besoin *</label>
-          <textarea id="tk_textBesoin" placeholder="Ex: Souhaite une nouvelle manette, la sienne drift. Voir budget."></textarea>
-        </div>
-        <div style="display:flex;justify-content:flex-end;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="addTrackingEntry('besoin')">Enregistrer le besoin</button>
-        </div>
+      <div class="tk-comp-row">
+        <div class="form-group tk-comp-player"><label for="tk_player">Joueur</label><select id="tk_player"></select></div>
+        <div class="form-group tk-comp-text"><label for="tk_text">Note</label><textarea id="tk_text" rows="1" placeholder="Ex : point mental fait ce soir, motivé pour la FNCS mais fatigué en fin de session…" onkeydown="if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();addTrackingEntry();}"></textarea></div>
+        <button type="button" class="btn btn-primary tk-comp-btn" id="tkAddBtn" onclick="addTrackingEntry()">Ajouter le suivi</button>
       </div>
     </div>
+    <div class="tk-counters" id="tkCounters"></div>
 
     <div class="filters-bar">
       <button class="filter-chip active" data-tkfilter="all" onclick="setTrackingFilter('all')">Tout</button>
-      <button class="filter-chip" data-tkfilter="suivi" onclick="setTrackingFilter('suivi')">📝 Suivis</button>
-      <button class="filter-chip" data-tkfilter="besoin" onclick="setTrackingFilter('besoin')">🎯 Besoins</button>
+      <button class="filter-chip" data-tkfilter="suivi" onclick="setTrackingFilter('suivi')">Suivis</button>
+      <button class="filter-chip" data-tkfilter="besoin" onclick="setTrackingFilter('besoin')">Besoins</button>
       <span style="width:1px;height:24px;background:var(--border);margin:0 4px;"></span>
       <select id="tk_filterPlayer" class="compare-select" onchange="renderTracking()">
         <option value="">Tous les joueurs</option>
@@ -6805,27 +7114,36 @@ window.addEventListener('DOMContentLoaded', function() {
 
 <!-- Player / Roster Modal -->
 <div class="modal-overlay" id="playerModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('playerModal')">
+  <div class="modal pm-modal">
+    <button class="modal-close" onclick="closeModal('playerModal')" aria-label="Fermer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
-    <h2 id="playerModalTitle">Ajouter un joueur</h2>
-    <p class="modal-sub">Roster officiel FLC</p>
     <form id="playerForm" onsubmit="savePlayer(event)">
       <input type="hidden" id="playerId" />
-      <div class="photo-uploader" onclick="document.getElementById('playerPhotoInput').click()">
-        <div class="preview" id="playerPhotoPreview">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="pm-head">
+        <div class="pm-photo" id="playerPhotoDrop" role="button" tabindex="0" title="Clique ou glisse une photo ici" onclick="document.getElementById('playerPhotoInput').click()">
+          <div class="preview" id="playerPhotoPreview">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span class="pm-photo-hint">Glisse une photo</span>
         </div>
-        <div class="info">
-          <div class="name">Photo du joueur</div>
-          <div class="actions">
-            <button type="button" onclick="event.stopPropagation();document.getElementById('playerPhotoInput').click()">Choisir</button>
-            <button type="button" onclick="event.stopPropagation();clearPhotoPreview('player')">Retirer</button>
+        <div class="pm-id">
+          <h2 id="playerModalTitle">Ajouter un joueur</h2>
+          <p class="modal-sub">Roster officiel FLC</p>
+          <div class="pm-photo-actions">
+            <button type="button" onclick="document.getElementById('playerPhotoInput').click()">Choisir une photo</button>
+            <button type="button" onclick="clearPhotoPreview('player')">Retirer</button>
           </div>
         </div>
-        <input type="file" id="playerPhotoInput" accept="image/*" onchange="loadPhotoPreview(event,'player')" />
+        <input type="file" id="playerPhotoInput" accept="image/*" onchange="loadPhotoPreview(event,'player')" hidden />
       </div>
+      <div class="pm-tabs" role="tablist" aria-label="Sections de la fiche">
+        <button type="button" role="tab" data-pane="profil" aria-selected="true">Profil</button>
+        <button type="button" role="tab" data-pane="contrat" aria-selected="false">Contrat<span class="pm-dot" id="pmContractDot" hidden></span></button>
+        <button type="button" role="tab" data-pane="reseaux" aria-selected="false">Réseaux</button>
+        <button type="button" role="tab" data-pane="notes" aria-selected="false">Notes</button>
+      </div>
+      <div class="pm-pane" role="tabpanel" data-pane="profil">
       <div class="form-row">
         <div class="form-group"><label>Pseudo *</label><input type="text" id="p_pseudo" required /></div>
         <div class="form-group"><label>Vrai nom</label><input type="text" id="p_realName" /></div>
@@ -6866,8 +7184,8 @@ window.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
-      <div class="form-section">
-        <div class="form-section-title">Contrat</div>
+      </div>
+      <div class="pm-pane" role="tabpanel" data-pane="contrat" hidden>
         <label class="checkbox-row"><input type="checkbox" id="p_indefinite" onchange="togglePlayerIndef()" /> Contrat à durée indéterminée (CDI)</label>
         <div class="form-row">
           <div class="form-group"><label>Début</label><input type="date" id="p_contractStart" /></div>
@@ -6885,10 +7203,9 @@ window.addEventListener('DOMContentLoaded', function() {
             </select>
           </div>
         </div>
+        <div class="pm-timeline" id="pmTimeline"></div>
       </div>
-
-      <div class="form-section">
-        <div class="form-section-title">Réseaux</div>
+      <div class="pm-pane" role="tabpanel" data-pane="reseaux" hidden>
         <div class="form-row">
           <div class="form-group"><label>Twitter / X</label><input type="url" id="p_twitter" placeholder="https://twitter.com/..." /></div>
           <div class="form-group"><label>Twitch</label><input type="url" id="p_twitch" placeholder="https://twitch.tv/..." /></div>
@@ -6898,9 +7215,7 @@ window.addEventListener('DOMContentLoaded', function() {
           <div class="form-group"><label>Tracker</label><input type="url" id="p_tracker" placeholder="https://tracker.gg/..." /></div>
         </div>
       </div>
-
-      <div class="form-section">
-        <div class="form-section-title">Notes</div>
+      <div class="pm-pane" role="tabpanel" data-pane="notes" hidden>
         <div class="form-group">
           <label>Notes internes</label>
           <textarea id="p_notes" placeholder="Forces, faiblesses, comportement, objectifs..."></textarea>
@@ -7299,15 +7614,17 @@ window.addEventListener('DOMContentLoaded', function() {
     <!-- POWER RANKING block -->
     <div class="data-block">
       <div class="data-block-title">Power Ranking</div>
+      <div class="pr-mini" id="prMiniChart"></div>
       <div class="data-block-form">
         <div class="form-row form-row-3">
-          <div class="form-group"><label>Points</label><input type="number" id="d_prPoints" placeholder="Ex: 1450" min="0" /></div>
+          <div class="form-group"><label>Points</label><input type="number" id="d_prPoints" placeholder="Ex: 1450" min="0" oninput="updatePrHint()" onkeydown="if(event.key==='Enter'){event.preventDefault();addPrEntry();}" /></div>
           <div class="form-group"><label>Date</label><input type="date" id="d_prDate" /></div>
           <div class="form-group"><label>Note (optionnel)</label><input type="text" id="d_prNote" placeholder="Ex: Source Liquipedia" /></div>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:10px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="addPrEntry()">Enregistrer</button>
         </div>
+        <div class="pr-hint" id="prHint" aria-live="polite"></div>
       </div>
       <div class="data-block-list" id="prHistoryList"></div>
     </div>
@@ -7516,6 +7833,7 @@ window.addEventListener('DOMContentLoaded', function() {
       <div class="form-group">
         <label>Contenu</label>
         <textarea id="n_content" placeholder="Détails, contexte, plan d'action... (utilise @pseudo pour mentionner un membre)" style="min-height:140px;"></textarea>
+        <div class="field-hint">Astuce : commence une ligne par « - [ ] » pour créer une case à cocher, cochable directement sur la carte.</div>
       </div>
       <div class="form-group">
         <label>Tags (séparés par des virgules)</label>
@@ -8056,7 +8374,8 @@ let rosterTeamFilter = 'all';  // 'all' | 'main' | 'academy' | 'cdf'
 let rosterView = 'grid';       // 'grid' | 'table'
 let scoutingFilter = 'all';
 let scoutingTeamFilter = 'all';  // 'all' | 'main' | 'academy' | 'cdf'
-let scoutingView = 'grid';  // 'grid' | 'kanban'
+let scoutingView = 'kanban';  // 'grid' | 'kanban' — le pipeline est la vue par défaut
+let scoutingArchiveOpen = false;
 let staffFilter = 'all';
 
 let editingPlayerId = null;
@@ -9181,12 +9500,89 @@ document.addEventListener('click', (e) => {
 
 
 let toastTimer;
-function showToast(msg, type) {
+const TOAST_ICONS = {
+  success: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  error: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg>',
+  info: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>'
+};
+// Notification en bas de l'écran ; `action` = { label, run } ajoute un bouton (ex. Annuler)
+function showToast(msg, type, action, duration) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type || '');
+  const kind = type === 'success' || type === 'error' ? type : 'info';
+  const ms = duration || (action ? 6000 : 3200);
+  t.innerHTML = '<span class="toast-ico">' + TOAST_ICONS[kind] + '</span>' +
+    '<span class="toast-msg"></span>' +
+    (action ? '<button type="button" class="toast-action"></button>' : '') +
+    '<span class="toast-bar" style="animation-duration:' + ms + 'ms"></span>';
+  t.querySelector('.toast-msg').textContent = msg;
+  t.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+  if (action) {
+    const b = t.querySelector('.toast-action');
+    b.textContent = action.label;
+    b.onclick = async () => {
+      b.disabled = true;
+      clearTimeout(toastTimer);
+      t.classList.remove('show');
+      try { await action.run(); } catch (e) { console.error(e); showToast('Impossible d\'annuler', 'error'); }
+    };
+  }
+  t.className = 'toast ' + kind;
+  void t.offsetWidth; // relance l'animation de la barre
+  t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3000);
+  toastTimer = setTimeout(() => { t.classList.remove('show'); }, ms);
+}
+function showUndoToast(msg, undo) {
+  showToast(msg, 'success', { label: 'Annuler', run: async () => { await undo(); showToast('C\'est annulé', 'success'); } });
+}
+
+// Boîte de confirmation aux couleurs de l'app (remplace confirm() du navigateur)
+function appConfirm(message, opts) {
+  opts = opts || {};
+  const raw = String(message || '').replace(/^⚠️\s*/, '');
+  const parts = raw.split('\n');
+  const title = opts.title || parts[0];
+  const body = opts.body != null ? opts.body : parts.slice(1).join('\n').trim();
+  const danger = opts.danger != null ? opts.danger : /supprim|vider|effacer|retirer|danger|remplacera|irréversible|pousser/i.test(raw);
+  const verb = (raw.match(/^(Supprimer|Vider|Effacer|Retirer|Promouvoir|Se déconnecter|Fusionner)/) || [])[1];
+  const okLabel = opts.okLabel || (verb === 'Se déconnecter' ? 'Se déconnecter' : verb || 'Confirmer');
+  return new Promise(resolve => {
+    const prevFocus = document.activeElement;
+    const wrap = document.createElement('div');
+    wrap.className = 'app-confirm';
+    wrap.innerHTML = '<div class="ac-backdrop"></div>' +
+      '<div class="ac-box' + (danger ? ' danger' : '') + '" role="alertdialog" aria-modal="true" aria-labelledby="acTitle" aria-describedby="acBody">' +
+        '<div class="ac-head"><span class="ac-ico">' + (danger ? '!' : '?') + '</span><h3 id="acTitle"></h3></div>' +
+        '<p id="acBody" class="ac-body"></p>' +
+        '<div class="ac-actions"><button type="button" class="ac-cancel">Annuler</button><button type="button" class="ac-ok"></button></div>' +
+      '</div>';
+    wrap.querySelector('#acTitle').textContent = title;
+    const bodyEl = wrap.querySelector('#acBody');
+    if (body) bodyEl.textContent = body; else bodyEl.remove();
+    wrap.querySelector('.ac-ok').textContent = okLabel;
+    document.body.appendChild(wrap);
+    requestAnimationFrame(() => wrap.classList.add('open'));
+    const cancelBtn = wrap.querySelector('.ac-cancel'), okBtn = wrap.querySelector('.ac-ok');
+    (danger ? cancelBtn : okBtn).focus();
+    function done(v) {
+      document.removeEventListener('keydown', onKey, true);
+      wrap.classList.remove('open');
+      setTimeout(() => wrap.remove(), 180);
+      if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch (e) {}
+      resolve(v);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        (document.activeElement === okBtn ? cancelBtn : okBtn).focus();
+      }
+    }
+    document.addEventListener('keydown', onKey, true);
+    cancelBtn.onclick = () => done(false);
+    okBtn.onclick = () => done(true);
+    wrap.querySelector('.ac-backdrop').onclick = () => done(false);
+  });
 }
 
 /* ============================================================
@@ -9346,8 +9742,8 @@ function authSubmitPin() {
   }
 }
 
-function logout() {
-  if (confirm('Se déconnecter ?')) {
+async function logout() {
+  if (await appConfirm('Se déconnecter ?')) {
     logActivity('logout', 'Déconnexion');
     sessionStorage.removeItem('sovereign_current_user');
     currentUser = null;
@@ -9555,7 +9951,7 @@ async function logActivity(type, description) {
   renderActivity();
 }
 async function clearActivityLog() {
-  if (!confirm('Vider tout le journal d\'activité ?')) return;
+  if (!await appConfirm('Vider tout le journal d\'activité ?')) return;
   activityLog = [];
   await saveActivityLog();
   renderActivity();
@@ -13346,7 +13742,8 @@ async function savePlayer(e) {
 async function deletePlayer(id) {
   const p = players.find(x => x.id === id);
   if (!p) return;
-  if (!confirm('Supprimer définitivement ' + p.pseudo + ' du roster ?')) return;
+  if (!await appConfirm('Supprimer définitivement ' + p.pseudo + ' du roster ?')) return;
+  const snapshot = players.slice();
   players = players.filter(x => x.id !== id);
   await persistPlayers();
   renderRoster();
@@ -13355,8 +13752,13 @@ async function deletePlayer(id) {
   renderDashboard();
   renderCalendar();
   logActivity('roster', 'Suppression du joueur ' + p.pseudo);
+  showUndoToast(p.pseudo + ' supprimé du roster', async () => {
+    players = snapshot;
+    await persistPlayers();
+    renderAll();
+    logActivity('roster', 'Restauration du joueur ' + p.pseudo);
+  });
   await pushNotification('roster', 'Joueur retiré du roster : ' + p.pseudo, 'warn');
-  showToast('Joueur supprimé', 'success');
 }
 
 
@@ -13434,6 +13836,8 @@ const KANBAN_COLUMNS = [
 function renderScoutingKanban() {
   const container = document.getElementById('scoutingList');
   const search = (document.getElementById('scoutingSearch')?.value || '').toLowerCase().trim();
+  // Les colonnes remplacent les filtres de statut
+  document.querySelectorAll('[data-pfilter]').forEach(b => { b.style.display = 'none'; });
 
   let list = prospects.slice();
   list = applyTeamFilter(list);
@@ -13445,92 +13849,129 @@ function renderScoutingKanban() {
       (p.currentTeam || '').toLowerCase().includes(search)
     );
   }
+  // Relances en retard en premier, puis les plus récents
+  const sortKey = p => { const d = followUpDaysLeft(p); return d != null && d <= 0 ? -1e15 + d : -(p.updatedAt || p.createdAt || 0); };
 
-  const cols = KANBAN_COLUMNS.map(col => {
-    let colProspects;
+  const colHtml = col => {
+    let items;
     if (col.key === 'signed') {
-      // "Signé" shows players promoted from a prospect (read-only cards)
-      colProspects = players.filter(pl => pl.fromProspect)
+      items = players.filter(pl => pl.fromProspect)
         .filter(pl => scoutingTeamFilter === 'all' || (pl.team || 'main') === scoutingTeamFilter)
+        .filter(pl => !search || (pl.pseudo || '').toLowerCase().includes(search))
         .map(pl => ({ _player: pl }));
-      if (search) {
-        colProspects = colProspects.filter(x => (x._player.pseudo || '').toLowerCase().includes(search));
-      }
     } else {
-      colProspects = list.filter(p => (p.status || 'watching') === col.key);
+      items = list.filter(p => (p.status || 'watching') === col.key).sort((a, b) => sortKey(a) - sortKey(b));
     }
-
-    const cards = colProspects.length > 0
-      ? colProspects.map(item => item._player ? kanbanSignedCard(item._player) : kanbanCard(item)).join('')
-      : '<div class="kanban-empty-hint">' + (col.key === 'signed' ? 'Aucun joueur promu' : 'Glisse un prospect ici') + '</div>';
-
-    return '<div class="kanban-col ' + col.key + '" data-col="' + col.key + '" ' +
+    const cards = items.length
+      ? items.map(it => it._player ? kanbanSignedCard(it._player) : kanbanCard(it)).join('')
+      : '<div class="kanban-empty-hint">' + (col.key === 'signed' ? 'Les prospects passés au roster apparaissent ici' : 'Glisse un prospect ici') + '</div>';
+    return '<div class="kanban-col pp-col ' + col.key + '" data-col="' + col.key + '" ' +
       'ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,\'' + col.key + '\')">' +
-      '<div class="kanban-col-accent"></div>' +
-      '<div class="kanban-col-header">' +
-        '<span class="kanban-col-title">' + col.label + '</span>' +
-        '<span class="kanban-col-count">' + colProspects.length + '</span>' +
-      '</div>' +
+      '<div class="kanban-col-header"><span class="kanban-col-title"><i class="pp-dot"></i>' + col.label + '</span><span class="kanban-col-count">' + items.length + '</span></div>' +
       '<div class="kanban-col-body">' + cards + '</div>' +
     '</div>';
-  }).join('');
+  };
 
-  container.innerHTML = '<div class="kanban-board">' + cols + '</div>';
+  const main = KANBAN_COLUMNS.filter(c => ['watching', 'contacted', 'interested', 'signed'].includes(c.key));
+  const archived = KANBAN_COLUMNS.filter(c => ['rejected', 'not_interesting'].includes(c.key));
+  const archivedCount = list.filter(p => ['rejected', 'not_interesting'].includes(p.status)).length;
+  const contacted = list.filter(p => ['contacted', 'interested', 'rejected'].includes(p.status)).length;
+  const answered = list.filter(p => ['interested', 'rejected'].includes(p.status)).length;
+
+  container.innerHTML =
+    '<div class="kanban-board pp-board">' + main.map(colHtml).join('') + '</div>' +
+    '<div class="pp-archive' + (scoutingArchiveOpen ? ' open' : '') + '">' +
+      '<div class="pp-archive-bar">' +
+        '<button type="button" class="pp-archive-toggle" onclick="scoutingArchiveOpen=!scoutingArchiveOpen;renderScouting()">' +
+          (scoutingArchiveOpen ? 'Masquer les archivés' : 'Voir les archivés') + ' <b>' + archivedCount + '</b></button>' +
+        (contacted ? '<span class="pp-rate">Réponses : ' + answered + ' sur ' + contacted + ' contactés</span>' : '') +
+        '<span class="pp-drops">' + archived.map(c =>
+          '<span class="kanban-col pp-drop ' + c.key + '" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,\'' + c.key + '\')">Déposer ici : ' + c.label + '</span>'
+        ).join('') + '</span>' +
+      '</div>' +
+      (scoutingArchiveOpen ? '<div class="kanban-board pp-board pp-board-archived">' + archived.map(colHtml).join('') + '</div>' : '') +
+    '</div>';
+}
+
+// Étape suivante du pipeline (Intéressé → passage au roster)
+const PROSPECT_NEXT = { watching: 'contacted', contacted: 'interested', rejected: 'watching', not_interesting: 'watching' };
+
+async function setProspectStatus(id, newStatus) {
+  const p = prospects.find(x => x.id === id);
+  if (!p || p.status === newStatus) return;
+  p.status = newStatus;
+  p.updatedAt = Date.now();
+  await persistProspects();
+  renderScouting();
+  updateCounts();
+  renderDashboard();
+  const colLabel = (KANBAN_COLUMNS.find(c => c.key === newStatus) || {}).label || newStatus;
+  logActivity('scouting', 'Statut de ' + p.pseudo + ' changé en "' + colLabel + '"');
+  showToast(p.pseudo + ' → ' + colLabel, 'success');
+}
+
+function advanceProspect(id) {
+  const p = prospects.find(x => x.id === id);
+  if (!p) return;
+  const st = p.status || 'watching';
+  if (st === 'interested') { promoteToPlayer(id); return; }
+  setProspectStatus(id, PROSPECT_NEXT[st] || 'contacted');
 }
 
 function kanbanCard(p) {
-  const avatar = p.photo ? '<img src="' + escapeAttr(p.photo) + '" />' : (p.pseudo || '?').charAt(0).toUpperCase();
-  const flag = p.country ? flagImg(p.country, 16) : '';
+  const avatar = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+  const flag = p.country ? flagImg(p.country, 14) : '';
   const teamRaw = (p.currentTeam || '').trim();
   const isFA = isFreeAgent(teamRaw);
   const negoCount = Array.isArray(p.negoThread) ? p.negoThread.length : 0;
   const stale = isProspectStale(p);
-  const lastTs = p.updatedAt || p.createdAt;
-  const ago = timeAgo(lastTs);
-  const due = isFollowUpDue(p);
+  const st = p.status || 'watching';
+  const d = followUpDaysLeft(p);
 
-  const tags = [];
-  tags.push(teamBadge(p.targetTeam || 'main'));
-  if (due) tags.push('<span class="followup-badge" title="Relance prévue le ' + fmtDateFR(p.followUpDate) + '">🔔 À relancer</span>');
-  if (stale) tags.push('<span class="stale-badge" title="Pas mis à jour depuis ' + daysSince(lastTs) + ' jours">⏳ Négligé</span>');
-  if (isFA) tags.push('<span class="kanban-card-tag fa">F/A</span>');
-  else if (teamRaw) tags.push('<span class="kanban-card-tag">' + escapeHtml(teamRaw) + '</span>');
-  if (p.age) tags.push('<span class="kanban-card-tag">' + p.age + ' ans</span>');
-  if (negoCount > 0) tags.push('<span class="kanban-card-tag nego">📋 ' + negoCount + '</span>');
+  const sub = [];
+  if (flag) sub.push(flag);
+  if (p.age) sub.push(p.age + ' ans');
+  sub.push(isFA ? 'Free agent' : (teamRaw ? escapeHtml(teamRaw) : 'Sans équipe'));
 
-  return '<div class="kanban-card' + (stale ? ' card-stale' : '') + (due ? ' card-followup' : '') + '" draggable="true" data-id="' + p.id + '" ' +
+  let relance = '';
+  if (d != null && !['rejected', 'not_interesting'].includes(st)) {
+    const cls = d < 0 ? 'late' : d === 0 ? 'today' : d <= 3 ? 'soon' : 'later';
+    relance = '<span class="pp-relance ' + cls + '" title="Relance prévue le ' + fmtDateFR(p.followUpDate) + '">' +
+      (d < 0 ? 'Relance en retard de ' + Math.abs(d) + ' j' : d === 0 ? 'Relancer aujourd\'hui' : 'Relance dans ' + d + ' j') + '</span>';
+  }
+  const nextLabel = st === 'interested' ? 'Passer au roster ✓' : ['rejected', 'not_interesting'].includes(st) ? 'Réactiver' : 'Avancer →';
+
+  return '<div class="kanban-card pp-card' + (stale ? ' card-stale' : '') + '" draggable="true" data-id="' + p.id + '" ' +
     'ondragstart="kanbanDragStart(event,\'' + p.id + '\')" ondragend="kanbanDragEnd(event)" ' +
     'onclick="openProspectModal(\'' + p.id + '\')">' +
-    '<div class="kanban-card-head">' +
-      '<div class="kanban-card-avatar">' + avatar + '</div>' +
-      '<div style="min-width:0;flex:1;">' +
-        '<div class="kanban-card-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
-        '<div class="kanban-card-sub">' + (flag ? flag : '') + (p.realName ? '<span>' + escapeHtml(p.realName) + '</span>' : '') + '</div>' +
-      '</div>' +
+    '<div class="pp-top">' +
+      '<div class="pp-av">' + avatar + '</div>' +
+      '<div class="pp-id"><div class="pp-name">' + escapeHtml(p.pseudo || '—') + '</div><div class="pp-sub">' + sub.join('<span class="dot"></span>') + '</div></div>' +
     '</div>' +
-    (tags.length ? '<div class="kanban-card-meta">' + tags.join('') + '</div>' : '') +
-    (ago ? '<div style="font-size:10px;color:' + (stale ? 'var(--amber)' : 'var(--text-mute)') + ';margin-top:8px;">Modifié ' + ago + '</div>' : '') +
-    '<div class="kanban-card-actions">' +
-      '<button onclick="event.stopPropagation();openProspectModal(\'' + p.id + '\')">Éditer</button>' +
-      '<button class="promote" onclick="event.stopPropagation();promoteToPlayer(\'' + p.id + '\')">→ Roster</button>' +
+    '<div class="pp-tags">' + teamBadge(p.targetTeam || 'main') +
+      (stale ? '<span class="pp-tag stale" title="Pas mis à jour depuis ' + daysSince(p.updatedAt || p.createdAt) + ' jours">Négligé</span>' : '') +
+      (negoCount ? '<span class="pp-tag" title="Échanges de négociation">' + negoCount + ' échange' + (negoCount > 1 ? 's' : '') + '</span>' : '') +
+    '</div>' +
+    relance +
+    '<div class="pp-actions">' +
+      '<span class="pp-ago">' + (timeAgo(p.updatedAt || p.createdAt) || '') + '</span>' +
+      '<button type="button" class="pp-next" onclick="event.stopPropagation();advanceProspect(\'' + p.id + '\')">' + nextLabel + '</button>' +
     '</div>' +
   '</div>';
 }
 
-// Read-only card for already-signed players (promoted from prospect)
 function kanbanSignedCard(pl) {
-  const avatar = pl.photo ? '<img src="' + escapeAttr(pl.photo) + '" />' : (pl.pseudo || '?').charAt(0).toUpperCase();
-  const flag = pl.country ? flagImg(pl.country, 16) : '';
-  return '<div class="kanban-card" style="cursor:default;opacity:0.85;" onclick="switchTab(\'roster\')">' +
-    '<div class="kanban-card-head">' +
-      '<div class="kanban-card-avatar">' + avatar + '</div>' +
-      '<div style="min-width:0;flex:1;">' +
-        '<div class="kanban-card-name">' + escapeHtml(pl.pseudo || '—') + '</div>' +
-        '<div class="kanban-card-sub">' + (flag ? flag : '') + '<span style="color:var(--green);">✓ Au roster</span></div>' +
-      '</div>' +
+  const avatar = pl.photo ? '<img src="' + escapeAttr(pl.photo) + '" alt="" />' : escapeHtml((pl.pseudo || '?').charAt(0).toUpperCase());
+  const flag = pl.country ? flagImg(pl.country, 14) : '';
+  return '<div class="kanban-card pp-card signed" onclick="switchTab(\'roster\')" title="Voir dans le roster">' +
+    '<div class="pp-top"><div class="pp-av">' + avatar + '</div>' +
+      '<div class="pp-id"><div class="pp-name">' + escapeHtml(pl.pseudo || '—') + '</div><div class="pp-sub">' + (flag ? flag + '<span class="dot"></span>' : '') + '<span class="pp-ok">Au roster</span></div></div>' +
     '</div>' +
   '</div>';
 }
+
+
+// Read-only card for already-signed players (promoted from prospect)
 
 // === Drag and drop ===
 let kanbanDraggedId = null;
@@ -13567,28 +14008,9 @@ async function kanbanDrop(e, newStatus) {
   const id = kanbanDraggedId;
   kanbanDraggedId = null;
   if (!id) return;
-
-  // Dropping into "signed" column = promote to roster
-  if (newStatus === 'signed') {
-    promoteToPlayer(id);
-    return;
-  }
-
-  const p = prospects.find(x => x.id === id);
-  if (!p) return;
-  if (p.status === newStatus) return;   // no change
-
-  const oldStatus = p.status;
-  p.status = newStatus;
-  p.updatedAt = Date.now();
-  await persistProspects();
-  renderScouting();
-  updateCounts();
-  renderDashboard();
-
-  const colLabel = (KANBAN_COLUMNS.find(c => c.key === newStatus) || {}).label || newStatus;
-  logActivity('scouting', 'Statut de ' + p.pseudo + ' changé en "' + colLabel + '"');
-  showToast(p.pseudo + ' → ' + colLabel, 'success');
+  // Déposer dans « Signé » = passage au roster
+  if (newStatus === 'signed') { promoteToPlayer(id); return; }
+  await setProspectStatus(id, newStatus);
 }
 
 function statusBadge(status) {
@@ -13935,20 +14357,25 @@ async function saveProspect(e) {
 async function deleteProspect(id) {
   const p = prospects.find(x => x.id === id);
   if (!p) return;
-  if (!confirm('Supprimer le prospect ' + p.pseudo + ' ?')) return;
+  if (!await appConfirm('Supprimer le prospect ' + p.pseudo + ' ?')) return;
+  const snapshot = prospects.slice();
   prospects = prospects.filter(x => x.id !== id);
   await persistProspects();
   renderScouting();
   renderDashboard();
   updateCounts();
   logActivity('scouting', 'Suppression du prospect ' + p.pseudo);
-  showToast('Prospect supprimé', 'success');
+  showUndoToast('Prospect ' + p.pseudo + ' supprimé', async () => {
+    prospects = snapshot;
+    await persistProspects();
+    renderAll();
+  });
 }
 
 async function promoteToPlayer(id) {
   const p = prospects.find(x => x.id === id);
   if (!p) return;
-  if (!confirm('Promouvoir ' + p.pseudo + ' au roster officiel FLC ?')) return;
+  if (!await appConfirm('Promouvoir ' + p.pseudo + ' au roster officiel FLC ?')) return;
   // Create a new player from the prospect
   const newPlayer = {
     id: genId('p'),
@@ -14166,7 +14593,7 @@ async function deleteStaff(id) {
     showToast('Fiche liée au compte ' + (linkedUser ? linkedUser.pseudo : 'utilisateur') + '. Modifie son rôle dans Admin pour la retirer.', 'error');
     return;
   }
-  if (!confirm('Supprimer ' + s.name + ' du staff ?')) return;
+  if (!await appConfirm('Supprimer ' + s.name + ' du staff ?')) return;
   staff = staff.filter(x => x.id !== id);
   await persistStaff();
   renderStaff();
@@ -14492,11 +14919,17 @@ function renderPrHistoryList(p) {
     const db = new Date((b.date || '1970-01-01') + 'T00:00:00').getTime();
     return db - da;
   });
+  renderPrMiniChart(sorted.slice().reverse());
+  updatePrHint();
   if (sorted.length === 0) {
     container.innerHTML = '<div class="empty-history">Aucun enregistrement de power ranking pour l\'instant.</div>';
     return;
   }
-  container.innerHTML = sorted.map(e => {
+  container.innerHTML = sorted.map((e, idx) => {
+    const older = sorted[idx + 1];
+    const diff = older && !isNaN(Number(e.points)) && !isNaN(Number(older.points)) ? Number(e.points) - Number(older.points) : null;
+    const deltaHtml = diff == null ? '<div class="he-delta">—</div>'
+      : '<div class="he-delta ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : '') + '">' + (diff > 0 ? '+' : diff < 0 ? '−' : '±') + fmtNumber(Math.abs(diff)) + '</div>';
     if (e.id === editingPrEntryId) {
       return '<div class="history-entry editing">' +
         '<div class="he-edit-form">' +
@@ -14512,12 +14945,13 @@ function renderPrHistoryList(p) {
         '</div>' +
       '</div>';
     }
-    return '<div class="history-entry">' +
+    return '<div class="history-entry pr-row">' +
       '<div class="he-date">' + fmtDateFR(e.date) + '</div>' +
       '<div class="he-main">' +
         '<div class="he-primary">' + fmtPRPoints(e.points) + '</div>' +
         (e.note ? '<div class="he-tertiary">' + escapeHtml(e.note) + '</div>' : '') +
       '</div>' +
+      deltaHtml +
       '<div class="he-actions">' +
         '<button type="button" class="he-icon-btn" title="Modifier" onclick="startEditPrEntry(\'' + e.id + '\')">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>' +
@@ -14528,6 +14962,40 @@ function renderPrHistoryList(p) {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+// Courbe du Power Ranking en haut du bloc (relevés du plus ancien au plus récent)
+function renderPrMiniChart(asc) {
+  const el = document.getElementById('prMiniChart');
+  if (!el) return;
+  const vals = asc.map(e => Number(e.points)).filter(v => !isNaN(v));
+  if (vals.length < 2) { el.innerHTML = ''; el.hidden = true; return; }
+  el.hidden = false;
+  const p = players.find(x => x.id === editingDataPlayerId);
+  const rank = p ? playerPrRank(p) : null;
+  const first = vals[0], last = vals[vals.length - 1];
+  const diff = last - first;
+  el.innerHTML = '<div class="pr-mini-head"><div><b>' + fmtNumber(last) + '</b><span>pts' + (rank ? ' · #' + rank + ' du roster' : '') + '</span></div>' +
+    '<span class="kpi-delta ' + (diff >= 0 ? 'up' : 'down') + '">' + (diff >= 0 ? '▲ +' : '▼ −') + fmtNumber(Math.abs(diff)) + ' pts sur ' + vals.length + ' relevés</span></div>' +
+    areaSparkSvg(vals, '#ddbd80', 'pr-mini-svg');
+}
+
+// Écart avec le dernier relevé pendant la saisie
+function updatePrHint() {
+  const el = document.getElementById('prHint');
+  const input = document.getElementById('d_prPoints');
+  if (!el || !input) return;
+  const p = players.find(x => x.id === editingDataPlayerId);
+  const cur = p ? currentPR(p) : null;
+  const v = Number(input.value);
+  if (!input.value || isNaN(v)) {
+    el.innerHTML = cur ? 'Dernier relevé : <b>' + fmtPRPoints(cur.points) + '</b> le ' + fmtDateFR(cur.date) + '. Appuie sur Entrée pour enregistrer.' : 'Premier relevé de ce joueur.';
+    return;
+  }
+  if (!cur || isNaN(Number(cur.points))) { el.textContent = 'Premier relevé de ce joueur.'; return; }
+  const d = v - Number(cur.points);
+  const pct = Number(cur.points) ? (d / Number(cur.points)) * 100 : 0;
+  el.innerHTML = 'Par rapport au dernier relevé : <b class="' + (d > 0 ? 'up' : d < 0 ? 'down' : '') + '">' + (d > 0 ? '+' : d < 0 ? '−' : '±') + fmtNumber(Math.abs(d)) + ' pts (' + (d >= 0 ? '+' : '−') + fmtPctFr(pct) + ')</b>';
 }
 
 function renderCupHistoryList(p) {
@@ -14704,7 +15172,7 @@ async function executeCupMerge() {
   const msg = 'Fusionner ' + sources.length + ' nom' + (sources.length > 1 ? 's' : '') + ' en « ' + target + ' » ?\n\n' +
     affected + ' cup' + (affected > 1 ? 's' : '') + ' ser' + (affected > 1 ? 'ont' : 'a') + ' renommée' + (affected > 1 ? 's' : '') + '.\n' +
     'Fusionnés : ' + sources.join(', ');
-  if (!confirm(msg)) return;
+  if (!await appConfirm(msg)) return;
 
   const srcSet = new Set(sources);
   let renamed = 0;
@@ -14751,7 +15219,7 @@ async function removeCupName(name) { return removeGlobalCupName(name); }
 // Remove a cup name from the GLOBAL list. Does NOT delete existing player entries
 // (those keep their name, but the tag won't appear in autocomplete anymore).
 async function removeGlobalCupName(name) {
-  if (!confirm('Retirer "' + name + '" de la liste partagée des cups ?\n(Les cups déjà enregistrées pour les joueurs ne sont pas supprimées)')) return;
+  if (!await appConfirm('Retirer "' + name + '" de la liste partagée des cups ?\n(Les cups déjà enregistrées pour les joueurs ne sont pas supprimées)')) return;
   await unregisterCupName(name);
   const p = players.find(x => x.id === editingDataPlayerId);
   if (p) refreshDataModalView();
@@ -14847,7 +15315,8 @@ async function deletePrEntry(entryId) {
   if (!p) return;
   const e = (p.prHistory || []).find(x => x.id === entryId);
   if (!e) return;
-  if (!confirm('Supprimer cette entrée de power ranking ?')) return;
+  if (!await appConfirm('Supprimer cette entrée de power ranking ?')) return;
+  const snapshot = p.prHistory.slice();
   p.prHistory = p.prHistory.filter(x => x.id !== entryId);
   p.updatedAt = Date.now();
   await persistPlayers();
@@ -14856,7 +15325,12 @@ async function deletePrEntry(entryId) {
   renderRoster();
   renderDashboard();
   logActivity('data', 'Suppression entrée PR pour ' + p.pseudo);
-  showToast('Entrée supprimée', 'success');
+  showUndoToast('Relevé de ' + fmtNumber(Number(e.points) || 0) + ' pts supprimé', async () => {
+    p.prHistory = snapshot;
+    await persistPlayers();
+    if (editingDataPlayerId === p.id) refreshDataModalView();
+    renderAll();
+  });
 }
 
 /* Cup entry actions */
@@ -14985,7 +15459,8 @@ async function deleteCupEntry(entryId) {
   if (!p) return;
   const c = (p.cups || []).find(x => x.id === entryId);
   if (!c) return;
-  if (!confirm('Supprimer la cup "' + (c.name || 'sans nom') + '" ?')) return;
+  if (!await appConfirm('Supprimer la cup "' + (c.name || 'sans nom') + '" ?')) return;
+  const snapshot = p.cups.slice();
   p.cups = p.cups.filter(x => x.id !== entryId);
   p.updatedAt = Date.now();
   await persistPlayers();
@@ -14995,7 +15470,12 @@ async function deleteCupEntry(entryId) {
   renderDashboard();
   renderCalendar();
   logActivity('data', 'Suppression cup "' + (c.name || '') + '" pour ' + p.pseudo);
-  showToast('Cup supprimée', 'success');
+  showUndoToast('Cup « ' + (c.name || 'sans nom') + ' » supprimée', async () => {
+    p.cups = snapshot;
+    await persistPlayers();
+    if (editingDataPlayerId === p.id) refreshDataModalView();
+    renderAll();
+  });
 }
 
 
@@ -15196,7 +15676,7 @@ async function deleteUser(id) {
   }
   const linkedStaff = staff.find(s => s.userId === u.id && s.autoFromUser);
   const extra = linkedStaff ? '\n\n⚠️ Sa fiche staff (créée automatiquement) sera également supprimée.' : '';
-  if (!confirm('Supprimer définitivement l\'utilisateur ' + u.pseudo + ' ?' + extra)) return;
+  if (!await appConfirm('Supprimer définitivement l\'utilisateur ' + u.pseudo + ' ?' + extra)) return;
   users = users.filter(x => x.id !== id);
   await saveUsers();
   if (linkedStaff) {
@@ -15303,20 +15783,59 @@ function renderNotes() {
   container.innerHTML = html || '<div class="empty"><h3>Aucune note dans ce groupe</h3><p>Crée une note pour démarrer.</p><button class="btn btn-primary" onclick="openNoteModal()">Nouvelle note</button></div>';
 }
 
+// Contenu d'une note : les lignes « - [ ] » / « - [x] » deviennent des cases à cocher
+function noteContentHtml(n, maxLines) {
+  const lines = String(n.content || '').split('\n');
+  const out = [];
+  let shown = 0, checks = 0, done = 0;
+  lines.forEach((line, i) => {
+    const m = line.match(/^\s*[-*]?\s*\[( |x|X)\]\s*(.*)$/);
+    if (m) {
+      checks++;
+      const ok = m[1].toLowerCase() === 'x';
+      if (ok) done++;
+      if (shown++ < maxLines) out.push('<button type="button" class="nc-check' + (ok ? ' ok' : '') + '" role="checkbox" aria-checked="' + ok + '" onclick="event.stopPropagation();toggleNoteCheck(\'' + n.id + '\',' + i + ')">' +
+        '<span class="nc-box">' + (ok ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '') + '</span>' +
+        '<span>' + escapeHtml(m[2]) + '</span></button>');
+    } else if (line.trim()) {
+      if (shown++ < maxLines) out.push('<div class="nc-line">' + escapeHtml(line) + '</div>');
+    }
+  });
+  if (shown > maxLines) out.push('<div class="nc-more">…</div>');
+  return { html: out.join(''), checks, done };
+}
+
+async function toggleNoteCheck(id, lineIndex) {
+  const n = notes.find(x => x.id === id);
+  if (!n) return;
+  const lines = String(n.content || '').split('\n');
+  const line = lines[lineIndex];
+  if (line == null) return;
+  lines[lineIndex] = line.replace(/\[( |x|X)\]/, m => (m === '[ ]' ? '[x]' : '[ ]'));
+  n.content = lines.join('\n');
+  n.updatedAt = Date.now();
+  renderNotes();
+  await persistNotes();
+}
+
 function noteCardHtml(n) {
   const author = users.find(u => u.id === n.authorId);
   const authorName = author ? (author.displayName || author.pseudo) : (n.authorPseudo || 'inconnu');
   const date = formatDateTime(n.updatedAt || n.createdAt || Date.now());
   const tags = Array.isArray(n.tags) ? n.tags : [];
-  const priorityLabel = { low: 'BASSE', medium: 'MOYENNE', high: 'HAUTE', urgent: 'URGENT' }[n.priority] || '';
-  return '<div class="note-card ' + (n.pinned ? 'pinned' : '') + '" onclick="openNoteModal(\'' + n.id + '\')">' +
-    (n.priority ? '<div class="note-priority-strip ' + n.priority + '"></div>' : '') +
-    '<div class="note-title">' + escapeHtml(n.title) +
-      (n.priority ? '<span class="note-priority-badge ' + n.priority + '">' + priorityLabel + '</span>' : '') +
+  const priorityLabel = { low: 'Basse', medium: 'Moyenne', high: 'Haute', urgent: 'Urgent' }[n.priority] || '';
+  const group = noteGroups.find(g => g.id === n.groupId);
+  const content = noteContentHtml(n, 6);
+  return '<div class="note-card nc2' + (n.pinned ? ' pinned' : '') + '" style="--g:' + escapeAttr((group && group.color) || 'var(--border-strong)') + '" onclick="openNoteModal(\'' + n.id + '\')">' +
+    '<div class="note-title"><span class="nc-title-text">' + escapeHtml(n.title) + '</span>' +
+      (n.pinned ? '<span class="nc-pin" title="Épinglée"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l5 5-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z"/></svg></span>' : '') +
     '</div>' +
     (tags.length > 0 ? '<div class="note-tags-row">' + tags.map(t => '<span class="note-tag">' + escapeHtml(t) + '</span>').join('') + '</div>' : '') +
-    '<div class="note-content-preview">' + escapeHtml(n.content || '') + '</div>' +
+    '<div class="nc-content">' + content.html + '</div>' +
+    (content.checks ? '<div class="nc-progress" title="' + content.done + ' sur ' + content.checks + ' faites"><i style="width:' + Math.round(content.done / content.checks * 100) + '%"></i></div>' : '') +
     '<div class="note-footer">' +
+      (n.priority ? '<span class="nc-prio ' + n.priority + '">' + priorityLabel + '</span>' : '') +
+      (content.checks ? '<span class="nc-count">' + content.done + '/' + content.checks + '</span>' : '') +
       '<span class="note-author">' + escapeHtml(authorName) + '</span>' +
       '<span class="note-date">' + date + '</span>' +
     '</div>' +
@@ -15401,7 +15920,7 @@ async function deleteNoteGroup() {
   if (!g) return;
   const notesInGroup = notes.filter(n => n.groupId === id).length;
   const extra = notesInGroup > 0 ? '\n\n⚠️ ' + notesInGroup + ' note(s) seront orphelines (gardées sans groupe).' : '';
-  if (!confirm('Supprimer le groupe "' + g.name + '" ?' + extra)) return;
+  if (!await appConfirm('Supprimer le groupe "' + g.name + '" ?' + extra)) return;
   noteGroups = noteGroups.filter(x => x.id !== id);
   await persistNoteGroups();
   closeModal('noteGroupModal');
@@ -15536,14 +16055,20 @@ async function saveNote(e) {
 async function deleteNote(id) {
   const n = notes.find(x => x.id === id);
   if (!n) return;
-  if (!confirm('Supprimer la note "' + n.title + '" ?')) return;
+  if (!await appConfirm('Supprimer la note "' + n.title + '" ?')) return;
+  const snapshot = notes.slice();
   notes = notes.filter(x => x.id !== id);
   await persistNotes();
   closeModal('noteModal');
   renderNotes();
   updateCounts();
   logActivity('notes', 'Suppression de la note "' + n.title + '"');
-  showToast('Note supprimée', 'success');
+  showUndoToast('Note « ' + n.title + ' » supprimée', async () => {
+    notes = snapshot;
+    await persistNotes();
+    renderNotes();
+    updateCounts();
+  });
 }
 
 /* ============================================================
@@ -15761,8 +16286,9 @@ function fillTrackingPlayerSelect(id, includeAll) {
 }
 
 async function addTrackingEntry(type) {
-  const selId = type === 'besoin' ? 'tk_playerBesoin' : 'tk_playerSuivi';
-  const txtId = type === 'besoin' ? 'tk_textBesoin' : 'tk_textSuivi';
+  type = type || trackingComposerType;
+  const selId = 'tk_player';
+  const txtId = 'tk_text';
   const playerId = document.getElementById(selId)?.value || '';
   const text = (document.getElementById(txtId)?.value || '').trim();
 
@@ -15808,22 +16334,26 @@ async function setTrackingStatus(id, status) {
 async function deleteTrackingEntry(id) {
   const e = trackingEntries.find(x => x.id === id);
   if (!e) return;
-  if (!confirm('Supprimer cette entrée ?')) return;
+  if (!await appConfirm('Supprimer cette entrée ?')) return;
+  const snapshot = trackingEntries.slice();
   trackingEntries = trackingEntries.filter(x => x.id !== id);
   await persistTracking();
   renderTracking();
   updateCounts();
-  showToast('Entrée supprimée', 'success');
+  showUndoToast('Entrée supprimée', async () => {
+    trackingEntries = snapshot;
+    await persistTracking();
+    renderAll();
+  });
 }
 
 function renderTracking() {
   const container = document.getElementById('trackingTable');
   if (!container) return;
 
-  // Sélecteurs de saisie + filtre joueur
-  fillTrackingPlayerSelect('tk_playerSuivi', false);
-  fillTrackingPlayerSelect('tk_playerBesoin', false);
+  fillTrackingPlayerSelect('tk_player', false);
   fillTrackingPlayerSelect('tk_filterPlayer', true);
+  renderTrackingCounters();
 
   const fPlayer = document.getElementById('tk_filterPlayer')?.value || '';
   const fStatus = document.getElementById('tk_filterStatus')?.value || '';
@@ -15846,54 +16376,87 @@ function renderTracking() {
   if (list.length === 0) {
     const hasAny = trackingEntries.length > 0;
     container.innerHTML = '<div class="empty"><h3>' + (hasAny ? 'Aucune entrée ne correspond aux filtres' : 'Aucune entrée pour l\'instant') + '</h3>' +
-      '<p>' + (hasAny ? 'Modifie les filtres ci-dessus.' : 'Enregistre un premier suivi ou besoin avec les formulaires ci-dessus.') + '</p></div>';
+      '<p>' + (hasAny ? 'Modifie les filtres ci-dessus.' : 'Ajoute un premier suivi ou besoin avec la zone de saisie ci-dessus.') + '</p></div>';
     return;
   }
 
-  const rows = list.map(e => {
+  // Fil chronologique groupé par jour
+  const todayIso = todayISO();
+  const yesterdayIso = dateToLocalISO(new Date(Date.now() - 86400000));
+  const dayLabel = iso => iso === todayIso ? 'Aujourd\'hui' : iso === yesterdayIso ? 'Hier'
+    : new Date(iso + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  let html = '<div class="tkf">';
+  let curDay = '';
+  list.forEach(e => {
     const p = players.find(x => x.id === e.playerId);
     const d = new Date(e.createdAt || 0);
-    const dateStr = fmtDateFR(dateToLocalISO(d)) +
-      ' <span style="color:var(--text-mute);font-size:10px;">' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + '</span>';
-
-    const typeBadge = e.type === 'besoin'
-      ? '<span class="tk-type tk-type-besoin">🎯 Besoin</span>'
-      : '<span class="tk-type tk-type-suivi">📝 Suivi</span>';
-
-    let statusCell = '<span style="color:var(--text-mute);">—</span>';
-    if (e.type === 'besoin') {
+    const iso = dateToLocalISO(d);
+    if (iso !== curDay) { curDay = iso; html += '<div class="tkf-day">' + dayLabel(iso) + '</div>'; }
+    const time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    const av = p && p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml(((p && p.pseudo) || '?').charAt(0).toUpperCase());
+    const isNeed = e.type === 'besoin';
+    let status = '';
+    if (isNeed) {
       const st = e.status || 'todo';
-      statusCell = '<select class="tk-status-select" style="color:' + TK_STATUS[st].color + ';background:' + TK_STATUS[st].bg + ';" onchange="setTrackingStatus(\'' + e.id + '\', this.value)">' +
-        Object.keys(TK_STATUS).map(k =>
-          '<option value="' + k + '"' + (k === st ? ' selected' : '') + '>' + TK_STATUS[k].label + '</option>').join('') +
-      '</select>';
+      const age = Math.floor((Date.now() - (e.createdAt || Date.now())) / 86400000);
+      status = '<select class="tk-status-select" aria-label="Statut du besoin" style="color:' + TK_STATUS[st].color + ';background:' + TK_STATUS[st].bg + ';" onchange="setTrackingStatus(\'' + e.id + '\', this.value)">' +
+        Object.keys(TK_STATUS).map(k => '<option value="' + k + '"' + (k === st ? ' selected' : '') + '>' + TK_STATUS[k].label + '</option>').join('') +
+      '</select>' + (st !== 'resolved' && age >= 7 ? '<span class="tkf-age">depuis ' + age + ' j</span>' : '');
     }
-
-    return '<tr class="rt-row" style="cursor:default;">' +
-      '<td style="white-space:nowrap;color:var(--text-dim);font-size:12px;">' + dateStr + '</td>' +
-      '<td style="white-space:nowrap;font-weight:700;color:var(--text);">' + escapeHtml(p ? p.pseudo : 'Joueur supprimé') + '</td>' +
-      '<td style="white-space:nowrap;">' + typeBadge + '</td>' +
-      '<td class="tk-text">' + escapeHtml(e.text || '') + '</td>' +
-      '<td style="white-space:nowrap;">' + statusCell + '</td>' +
-      '<td style="white-space:nowrap;color:var(--text-mute);font-size:11px;">' + escapeHtml(e.author || '—') + '</td>' +
-      '<td style="text-align:right;"><button class="rt-btn" onclick="deleteTrackingEntry(\'' + e.id + '\')" title="Supprimer">🗑</button></td>' +
-    '</tr>';
-  }).join('');
-
+    html += '<div class="tkf-item' + (isNeed ? ' need st-' + (e.status || 'todo') : '') + '">' +
+      '<span class="tkf-av">' + av + '</span>' +
+      '<div class="tkf-body">' +
+        '<div class="tkf-text"><b>' + escapeHtml(p ? p.pseudo : 'Joueur supprimé') + '</b> · ' + escapeHtml(e.text || '') + '</div>' +
+        '<div class="tkf-meta"><span class="tkf-type ' + (isNeed ? 'b' : 's') + '">' + (isNeed ? 'Besoin' : 'Suivi') + '</span>' +
+          'par ' + escapeHtml(e.author || '—') + ' · ' + time + '</div>' +
+      '</div>' +
+      '<div class="tkf-side">' + status +
+        '<button type="button" class="tkf-del" onclick="deleteTrackingEntry(\'' + e.id + '\')" aria-label="Supprimer l\'entrée" title="Supprimer">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
   const openNeeds = openNeedsCount();
-  container.innerHTML =
-    '<div class="rt-wrap"><table class="roster-table" style="min-width:760px;"><colgroup><col style="width:120px"><col style="width:120px"><col style="width:100px"><col><col style="width:120px"><col style="width:90px"><col style="width:50px"></colgroup>' +
-    '<thead><tr>' +
-      '<th class="rt-th" style="cursor:default;">Date</th>' +
-      '<th class="rt-th" style="cursor:default;">Joueur</th>' +
-      '<th class="rt-th" style="cursor:default;">Type</th>' +
-      '<th class="rt-th" style="cursor:default;">Note</th>' +
-      '<th class="rt-th" style="cursor:default;">Statut</th>' +
-      '<th class="rt-th" style="cursor:default;">Auteur</th>' +
-      '<th class="rt-th" style="cursor:default;"></th>' +
-    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
-    '<div class="rt-foot">' + list.length + ' entrée' + (list.length > 1 ? 's' : '') +
-      (openNeeds > 0 ? ' · <span style="color:var(--amber);">' + openNeeds + ' besoin' + (openNeeds > 1 ? 's' : '') + ' en attente</span>' : '') + '</div>';
+  container.innerHTML = html + '<div class="rt-foot">' + list.length + ' entrée' + (list.length > 1 ? 's' : '') +
+    (openNeeds > 0 ? ' · <span style="color:var(--amber);">' + openNeeds + ' besoin' + (openNeeds > 1 ? 's' : '') + ' en attente</span>' : '') + '</div>';
+}
+
+// Compteurs cliquables : à traiter / en cours / résolus ce mois
+function renderTrackingCounters() {
+  const el = document.getElementById('tkCounters');
+  if (!el) return;
+  const needs = trackingEntries.filter(e => e.type === 'besoin');
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+  const todo = needs.filter(e => (e.status || 'todo') === 'todo').length;
+  const prog = needs.filter(e => e.status === 'in_progress').length;
+  const done = needs.filter(e => e.status === 'resolved' && (e.updatedAt || e.createdAt || 0) >= monthStart).length;
+  const cur = document.getElementById('tk_filterStatus')?.value || '';
+  const item = (key, n, label, color) => '<button type="button" class="tkc' + (cur === key ? ' on' : '') + '" style="--c:' + color + '" onclick="filterTrackingStatus(\'' + key + '\')">' +
+    '<b>' + n + '</b>' + label + '</button>';
+  el.innerHTML = item('todo', todo, 'à traiter', 'var(--amber)') + item('in_progress', prog, 'en cours', 'var(--blue)') + item('resolved', done, 'résolus ce mois', 'var(--green)');
+}
+
+function filterTrackingStatus(key) {
+  const sel = document.getElementById('tk_filterStatus');
+  if (!sel) return;
+  sel.value = sel.value === key ? '' : key;
+  if (sel.value) setTrackingFilter('besoin'); else renderTracking();
+}
+
+// Zone de saisie unique : bascule Suivi / Besoin
+let trackingComposerType = 'suivi';
+function setTrackingComposerType(type) {
+  trackingComposerType = type;
+  document.querySelectorAll('#tkSeg [data-type]').forEach(b => b.setAttribute('aria-pressed', b.dataset.type === type ? 'true' : 'false'));
+  const txt = document.getElementById('tk_text');
+  if (txt) txt.placeholder = type === 'besoin'
+    ? 'Ex : souhaite une nouvelle manette, la sienne drift. Voir budget.'
+    : 'Ex : point mental fait ce soir, motivé pour la FNCS mais fatigué en fin de session…';
+  const btn = document.getElementById('tkAddBtn');
+  if (btn) btn.textContent = type === 'besoin' ? 'Ajouter le besoin' : 'Ajouter le suivi';
+  const hint = document.getElementById('tkHint');
+  if (hint) hint.textContent = type === 'besoin' ? 'Un besoin reste « à traiter » jusqu\'à sa résolution.' : 'Observation, point avec le joueur, état d\'esprit, progression.';
 }
 
 // Résumé du suivi d'un joueur, affiché dans sa fiche Données
@@ -16160,7 +16723,8 @@ async function deleteGrinder() {
   const g = grinders.find(x => x.id === editingGrinderId);
   if (!g) return;
   const nb = grinderEvents.filter(e => e.grinderId === g.id).length;
-  if (!confirm('Supprimer ' + g.pseudo + ' du programme ?\n\n' + nb + ' entrée(s) de FGP seront également supprimées.')) return;
+  if (!await appConfirm('Supprimer ' + g.pseudo + ' du programme ?\n\n' + nb + ' entrée(s) de FGP seront également supprimées.')) return;
+  const snapG = grinders.slice(), snapE = grinderEvents.slice();
   grinders = grinders.filter(x => x.id !== editingGrinderId);
   grinderEvents = grinderEvents.filter(e => e.grinderId !== editingGrinderId);
   await persistGrinders();
@@ -16169,7 +16733,14 @@ async function deleteGrinder() {
   renderGrinder();
   updateCounts();
   logActivity('roster', 'Suppression du grinder ' + g.pseudo);
-  showToast('Grinder supprimé', 'success');
+  showUndoToast(g.pseudo + ' retiré du programme', async () => {
+    grinders = snapG;
+    grinderEvents = snapE;
+    await persistGrinders();
+    await persistGrinderEvents();
+    renderGrinder();
+    updateCounts();
+  });
 }
 
 // ---------- Saisie de performance ----------
@@ -16192,10 +16763,10 @@ function updateFgpPreview() {
   const divLabel = (FGP_DIVISIONS.find(d => d.key === division) || {}).label || division;
   const cupLabel = (FGP_CUP_TYPES.find(c => c.key === cupType) || {}).label || cupType;
   el.innerHTML =
+    '<span class="gr-big">+' + r.total + ' <small>FGP</small></span>' +
     '<span class="gr-formula">' + r.base + ' pts <span class="gr-op">×</span> ' +
     r.coeffDivision.toFixed(2) + ' <span class="gr-dim">(' + escapeHtml(divLabel) + ')</span> <span class="gr-op">×</span> ' +
-    r.coeffCup.toFixed(2) + ' <span class="gr-dim">(' + escapeHtml(cupLabel) + ')</span></span>' +
-    '<span class="gr-result">= ' + r.total + ' FGP</span>';
+    r.coeffCup.toFixed(2) + ' <span class="gr-dim">(' + escapeHtml(cupLabel) + ')</span> <span class="gr-op">=</span> ' + r.total + '</span>';
 }
 
 async function addGrinderPerf() {
@@ -16538,28 +17109,50 @@ function renderGrinderHighlights() {
   if (active.length === 0) { container.innerHTML = ''; return; }
 
   const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
-  let month = null;
-  active.forEach(g => {
-    const v = grinderFGPSince(g.id, monthStart.getTime());
-    if (v > 0 && (!month || v > month.fgp)) month = { g, fgp: v };
-  });
-
+  const since = monthStart.getTime();
+  const monthName = monthStart.toLocaleDateString('fr-FR', { month: 'long' });
+  // Classement du mois (FGP gagnés depuis le 1er)
+  const ranking = active
+    .map(g => ({ g, fgp: grinderFGPSince(g.id, since), n: grinderEvents.filter(e => e.grinderId === g.id && (e.createdAt || 0) >= since).length }))
+    .filter(x => x.fgp > 0)
+    .sort((a, b) => b.fgp - a.fgp);
   const totalFgp = grinderEvents.reduce((s, e) => s + (Number(e.fgp) || 0), 0);
-  const monthName = monthStart.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const monthFgp = grinderEvents.filter(e => (e.createdAt || 0) >= since).reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+  const divLabel = key => (FGP_DIVISIONS.find(d => d.key === key) || {}).label || '';
 
-  const monthCard = month
-    ? '<div class="dash-card span-6"><div class="gr-hl-title">\ud83d\udc51 Grinder du mois</div>' +
-        '<div class="gr-hl-name" style="color:#c084fc;">' + escapeHtml(month.g.pseudo) + '</div>' +
-        '<div class="gr-hl-fgp">+' + fmtNumber(month.fgp) + ' FGP</div>' +
-        '<div class="gr-hl-sub">' + escapeHtml(monthName) + '</div></div>'
-    : '<div class="dash-card span-6"><div class="gr-hl-title">\ud83d\udc51 Grinder du mois</div>' +
-        '<div class="gr-hl-empty">Aucun FGP enregistr\u00e9 ce mois-ci</div></div>';
+  let hero;
+  if (ranking.length) {
+    const top = ranking[0];
+    const av = top.g.photo ? '<img src="' + escapeAttr(top.g.photo) + '" alt="" />' : escapeHtml((top.g.pseudo || '?').charAt(0).toUpperCase());
+    const lead = ranking[1] ? top.fgp - ranking[1].fgp : null;
+    const podium = ranking.slice(0, 3).map((x, i) =>
+      '<div class="grh-row"><span class="grh-rk">' + (i + 1) + '</span><span class="grh-nm">' + escapeHtml(x.g.pseudo || '—') + '</span>' +
+      '<span class="grh-bar"><i style="width:' + Math.max(6, Math.round(x.fgp / top.fgp * 100)) + '%"></i></span><b>+' + fmtNumber(x.fgp) + '</b></div>'
+    ).join('');
+    hero = '<div class="dash-card span-8 grh-card">' +
+      '<div class="grh-main">' +
+        '<div class="grh-av">' + av + '</div>' +
+        '<div class="grh-id"><div class="grh-title">Grinder de ' + escapeHtml(monthName) + '</div>' +
+          '<div class="grh-name">' + escapeHtml(top.g.pseudo || '—') + '</div>' +
+          '<div class="grh-sub">' + [divLabel(top.g.division), pluralFr(top.n, 'performance') + ' ce mois'].filter(Boolean).join(' · ') + '</div></div>' +
+        '<div class="grh-fgp"><b>+' + fmtNumber(top.fgp) + '</b><span>FGP ce mois</span></div>' +
+      '</div>' +
+      '<div class="grh-lead">' + (lead != null ? (lead > 0 ? fmtNumber(lead) + ' FGP d\'avance sur ' + escapeHtml(ranking[1].g.pseudo) : 'À égalité avec ' + escapeHtml(ranking[1].g.pseudo)) : 'Seul grinder à avoir marqué ce mois-ci') + '</div>' +
+      '<div class="grh-podium">' + podium + '</div>' +
+    '</div>';
+  } else {
+    hero = '<div class="dash-card span-8 grh-card">' +
+      dashEmptyHtml('Pas encore de grinder du mois', 'Enregistre une performance ci-dessous pour lancer le classement de ' + escapeHtml(monthName) + '.') +
+    '</div>';
+  }
 
-  container.innerHTML = monthCard +
-    '<div class="dash-card span-6"><div class="gr-hl-title">\ud83d\udcca Programme</div>' +
-      '<div class="gr-hl-name">' + active.length + '</div>' +
-      '<div class="gr-hl-fgp">' + fmtNumber(totalFgp) + ' FGP distribu\u00e9s</div>' +
-      '<div class="gr-hl-sub">grinder' + (active.length > 1 ? 's' : '') + ' actif' + (active.length > 1 ? 's' : '') + '</div></div>';
+  container.innerHTML = hero +
+    '<div class="dash-card span-4 grh-prog">' +
+      '<div class="grh-title">Programme</div>' +
+      '<div class="grh-stat"><b>' + active.length + '</b>grinder' + (active.length > 1 ? 's' : '') + ' actif' + (active.length > 1 ? 's' : '') + '</div>' +
+      '<div class="grh-stat"><b class="g">+' + fmtNumber(monthFgp) + '</b>FGP en ' + escapeHtml(monthName) + '</div>' +
+      '<div class="grh-stat"><b>' + fmtNumber(totalFgp) + '</b>FGP distribués au total</div>' +
+    '</div>';
 }
 
 // ---------- Fiche détaillée ----------
@@ -16669,12 +17262,18 @@ function editGrinderFromDetail() {
 async function deleteGrinderEvent(id) {
   const e = grinderEvents.find(x => x.id === id);
   if (!e) return;
-  if (!confirm('Supprimer cette entrée de ' + e.fgp + ' FGP ?')) return;
+  if (!await appConfirm('Supprimer cette entrée de ' + e.fgp + ' FGP ?')) return;
+  const snapshot = grinderEvents.slice();
   grinderEvents = grinderEvents.filter(x => x.id !== id);
   await persistGrinderEvents();
   if (detailGrinderId) openGrinderDetail(detailGrinderId);
   renderGrinder();
-  showToast('Entrée supprimée', 'success');
+  showUndoToast('Entrée de ' + e.fgp + ' FGP supprimée', async () => {
+    grinderEvents = snapshot;
+    await persistGrinderEvents();
+    if (detailGrinderId) openGrinderDetail(detailGrinderId);
+    renderGrinder();
+  });
 }
 
 // ---------- Barème de référence ----------
@@ -16928,52 +17527,118 @@ function openCalendarEventModalForTournament(prefillDate) {
 }
 
 // =============== MONTH VIEW ===============
+// Couleur principale de chaque type d'événement (identique aux puces du calendrier)
+const CAL_TYPE_COLORS = {
+  cup_done: '#9e7d3e', contract_start: '#22c55e', contract_end: '#f97316', birthday: '#ec4899', renewal: '#f59e0b',
+  tournament_upcoming: '#c9a45c', bootcamp: '#3b82f6', meeting: '#14b8a6', absence: '#64748b', indispo: '#f97316',
+  reminder: '#a855f7', custom: '#9ca3af'
+};
+
 function renderCalendarMonthView() {
   const container = document.getElementById('calMonthView');
   if (!container) return;
 
   const year = calCurrentDate.getFullYear();
   const month = calCurrentDate.getMonth();
-  const firstDay = new Date(year, month, 1);
-  // Week starts on Monday (Mon=0)
-  const firstDow = (firstDay.getDay() + 6) % 7;
-  const startDate = new Date(year, month, 1 - firstDow);
-  // Always render 6 rows × 7 cols = 42 cells for consistency
-  const numCells = 42;
-
-  const dowLabels = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
-  let html = '<div class="cal-month-grid">' +
-    '<div class="cal-dow-row">' + dowLabels.map(d => '<div class="cal-dow-cell">' + d + '</div>').join('') + '</div>' +
-    '<div class="cal-days-grid">';
-
+  const firstDow = (new Date(year, month, 1).getDay() + 6) % 7; // lundi = 0
   const todayIso = todayISO();
+  const all = getAllCalendarEvents();
+  const MAX_LANES = 3;
+  const dowLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-  for (let i = 0; i < numCells; i++) {
-    // Build the date by incrementing day-of-month (avoids DST/ms drift)
-    const d = new Date(year, month, 1 - firstDow + i);
-    const iso = dateToLocalISO(d);
-    const isOtherMonth = d.getMonth() !== month;
-    const isToday = iso === todayIso;
-    const dayEvents = sortEventsForDay(eventsOnDate(iso));
-    const MAX_VISIBLE = 3;
+  let html = '<div class="cmv"><div class="cmv-main">' +
+    '<div class="cmv-dow">' + dowLabels.map(d => '<div>' + d + '</div>').join('') + '</div>';
 
-    html += '<div class="cal-day ' + (isOtherMonth ? 'other-month' : '') + ' ' + (isToday ? 'today' : '') + '" onclick="openCalendarDayModal(\'' + iso + '\')">' +
-      '<span class="cal-day-num">' + d.getDate() + '</span>';
+  for (let w = 0; w < 6; w++) {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(year, month, 1 - firstDow + w * 7 + i);
+      days.push({ d, iso: dateToLocalISO(d) });
+    }
+    // Une semaine entièrement dans le mois suivant n'apporte rien
+    if (w >= 4 && days[0].d.getMonth() !== month) break;
+    const wStart = days[0].iso, wEnd = days[6].iso;
+    const col = iso => days.findIndex(x => x.iso === iso);
 
-    dayEvents.slice(0, MAX_VISIBLE).forEach(e => {
-      const cfg = CAL_EVENT_TYPES[e.type] || CAL_EVENT_TYPES.custom;
-      html += '<div class="cal-event-chip ' + cfg.cls + '" onclick="event.stopPropagation();onCalendarEventClick(\'' + escapeAttr(e.id) + '\')" title="' + escapeAttr(e.title) + '">' +
-        '<span class="ce-icon">' + cfg.icon + '</span>' +
-        '<span class="ce-title">' + escapeHtml(e.title) + '</span>' +
+    // Événements de la semaine, découpés aux bords de la semaine
+    const evs = sortEventsForDay(all.filter(e => {
+      const s = e.dateStart, en = e.dateEnd || e.dateStart;
+      return s && s <= wEnd && en >= wStart;
+    })).map(e => {
+      const s = e.dateStart, en = e.dateEnd || e.dateStart;
+      return { e, c0: col(s < wStart ? wStart : s), c1: col(en > wEnd ? wEnd : en), contL: s < wStart, contR: en > wEnd, multi: en > s };
+    }).sort((a, b) => (a.c0 - b.c0) || ((b.c1 - b.c0) - (a.c1 - a.c0)));
+
+    // Répartition sur des rangs : un événement par rang sans chevauchement
+    const laneEnd = [];
+    const hidden = new Array(7).fill(0);
+    evs.forEach(x => {
+      let lane = laneEnd.findIndex(end => end < x.c0);
+      if (lane === -1) { lane = laneEnd.length; laneEnd.push(-1); }
+      laneEnd[lane] = x.c1;
+      x.lane = lane;
+      if (lane >= MAX_LANES) for (let c = x.c0; c <= x.c1; c++) hidden[c]++;
+    });
+
+    html += '<div class="cmv-week">';
+    days.forEach((x, i) => {
+      const cls = ['cmv-day'];
+      if (x.d.getMonth() !== month) cls.push('other');
+      if (x.iso === todayIso) cls.push('today');
+      if (i >= 5) cls.push('we');
+      html += '<div class="' + cls.join(' ') + '" style="grid-column:' + (i + 1) + '" onclick="openCalendarDayModal(\'' + x.iso + '\')">' +
+        '<span class="cmv-num">' + x.d.getDate() + '</span>' +
+        (hidden[i] ? '<span class="cmv-more">+' + hidden[i] + '</span>' : '') +
       '</div>';
     });
-    if (dayEvents.length > MAX_VISIBLE) {
-      html += '<div class="cal-more">+' + (dayEvents.length - MAX_VISIBLE) + ' autres</div>';
-    }
+    evs.filter(x => x.lane < MAX_LANES).forEach(x => {
+      const cfg = CAL_EVENT_TYPES[x.e.type] || CAL_EVENT_TYPES.custom;
+      const span = x.c1 - x.c0 + 1;
+      const time = x.e.timeStart || '';
+      const totalDays = x.multi ? Math.round((new Date(x.e.dateEnd + 'T00:00:00') - new Date(x.e.dateStart + 'T00:00:00')) / 86400000) + 1 : 1;
+      html += '<div class="cal-event-chip cmv-ev ' + cfg.cls + (x.contL ? ' cont-l' : '') + (x.contR ? ' cont-r' : '') + '" ' +
+        'style="grid-column:' + (x.c0 + 1) + ' / span ' + span + ';grid-row:' + (x.lane + 2) + '" ' +
+        'onclick="event.stopPropagation();onCalendarEventClick(\'' + escapeAttr(x.e.id) + '\')" ' +
+        'title="' + escapeAttr(cfg.label + ' · ' + x.e.title + (totalDays > 1 ? ' · ' + totalDays + ' jours' : '')) + '">' +
+        (time ? '<b>' + escapeHtml(time) + '</b> ' : '') + escapeHtml(x.e.title) +
+        (span > 1 && totalDays > 1 ? '<span class="cmv-len">' + totalDays + ' j</span>' : '') +
+      '</div>';
+    });
     html += '</div>';
   }
-  html += '</div></div>';
+
+  html += '</div>' + calendarWeekAgendaHtml(all, todayIso) + '</div>';
   container.innerHTML = html;
+}
+
+// Colonne « Cette semaine » : les 7 prochains jours avec compte à rebours
+function calendarWeekAgendaHtml(all, todayIso) {
+  const end = dateToLocalISO(new Date(new Date(todayIso + 'T00:00:00').getTime() + 6 * 86400000));
+  const items = all
+    .filter(e => e.type !== 'cup_done')
+    .filter(e => { const s = e.dateStart, en = e.dateEnd || e.dateStart; return s && s <= end && en >= todayIso; })
+    .sort((a, b) => (a.dateStart < todayIso ? todayIso : a.dateStart).localeCompare(b.dateStart < todayIso ? todayIso : b.dateStart) || (a.timeStart || '').localeCompare(b.timeStart || ''))
+    .slice(0, 8);
+  const rel = iso => {
+    const n = followUpDaysLike(iso, todayIso);
+    return n <= 0 ? 'Aujourd\'hui' : n === 1 ? 'Demain' : 'Dans ' + n + ' jours';
+  };
+  const body = items.length ? items.map(e => {
+    const started = e.dateStart < todayIso;
+    const ref = started ? todayIso : e.dateStart;
+    const d = new Date(ref + 'T00:00:00');
+    const cfg = CAL_EVENT_TYPES[e.type] || CAL_EVENT_TYPES.custom;
+    const multi = e.dateEnd && e.dateEnd > e.dateStart;
+    const len = multi ? Math.round((new Date(e.dateEnd + 'T00:00:00') - new Date(e.dateStart + 'T00:00:00')) / 86400000) + 1 : 0;
+    const meta = [started ? 'En cours' : rel(e.dateStart)];
+    if (e.timeStart) meta.push(e.timeStart);
+    if (len) meta.push(len + ' jours');
+    return '<button type="button" class="cag-item" style="--c:' + (CAL_TYPE_COLORS[e.type] || CAL_TYPE_COLORS.custom) + '" onclick="onCalendarEventClick(\'' + escapeAttr(e.id) + '\')">' +
+      '<span class="cag-date"><b>' + d.getDate() + '</b>' + d.toLocaleDateString('fr-FR', { weekday: 'short' }) + '</span>' +
+      '<span class="cag-text"><span class="cag-title">' + escapeHtml(e.title) + '</span><span class="cag-meta">' + escapeHtml(cfg.label) + ' · ' + meta.join(' · ') + '</span></span>' +
+    '</button>';
+  }).join('') : '<div class="cag-empty">Rien de prévu dans les 7 prochains jours.<button type="button" class="de-cta" onclick="openCalendarEventModal()">+ Ajouter un événement</button></div>';
+  return '<aside class="cmv-side"><div class="cag-head">Cette semaine</div>' + body + '</aside>';
 }
 
 // =============== LIST VIEW ===============
@@ -17219,13 +17884,18 @@ async function deleteCalendarEvent() {
   if (!id) return;
   const e = calendarEvents.find(x => x.id === id);
   if (!e) return;
-  if (!confirm('Supprimer l\'événement "' + e.title + '" ?')) return;
+  if (!await appConfirm('Supprimer l\'événement "' + e.title + '" ?')) return;
+  const snapshot = calendarEvents.slice();
   calendarEvents = calendarEvents.filter(x => x.id !== id);
   await persistCalendarEvents();
   closeModal('calendarEventModal');
   renderCalendar();
   logActivity('calendar', 'Suppression événement "' + e.title + '"');
-  showToast('Événement supprimé', 'success');
+  showUndoToast('Événement « ' + e.title + ' » supprimé', async () => {
+    calendarEvents = snapshot;
+    await persistCalendarEvents();
+    renderCalendar();
+  });
 }
 
 /* ============================================================
@@ -17236,7 +17906,7 @@ async function deleteCalendarEvent() {
    ============================================================ */
 async function migrateLocalStorageToSupabase() {
   if (!sb) { showToast('Supabase non configuré', 'error'); return; }
-  if (!confirm('Cette action va POUSSER toutes les données présentes dans le localStorage de ce navigateur vers Supabase.\n\nLes données déjà dans Supabase seront ÉCRASÉES par celles du localStorage.\n\nContinuer ?')) return;
+  if (!await appConfirm('Cette action va POUSSER toutes les données présentes dans le localStorage de ce navigateur vers Supabase.\n\nLes données déjà dans Supabase seront ÉCRASÉES par celles du localStorage.\n\nContinuer ?')) return;
 
   const keys = [
     'sovereign_users', 'sovereign_players', 'sovereign_prospects', 'sovereign_staff',
@@ -17429,8 +18099,8 @@ async function forceCreateAdmin() {
   }
 }
 
-function resetSupabaseConfig() {
-  if (!confirm('Effacer la config Supabase enregistrée dans ce navigateur ?\nTu devras re-saisir l\'URL et la anon key.')) return;
+async function resetSupabaseConfig() {
+  if (!await appConfirm('Effacer la config Supabase enregistrée dans ce navigateur ?\nTu devras re-saisir l\'URL et la anon key.')) return;
   localStorage.removeItem('sovereign_supabase_config');
   location.reload();
 }
@@ -17456,7 +18126,7 @@ function exportData() {
 async function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
-  if (!confirm('⚠️ L\'import REMPLACERA toutes les données actuelles. Continuer ?')) {
+  if (!await appConfirm('⚠️ L\'import REMPLACERA toutes les données actuelles. Continuer ?')) {
     event.target.value = ''; return;
   }
   try {
@@ -17492,8 +18162,8 @@ async function importData(event) {
 }
 
 async function resetAllData() {
-  if (!confirm('⚠️ DANGER : cela va effacer TOUTES les données (joueurs, scouting, staff, notifications, journal, notes, calendrier, liste de cups) sauf les comptes utilisateurs. Continuer ?')) return;
-  if (!confirm('Vraiment sûr ? Cette action est irréversible.')) return;
+  if (!await appConfirm('⚠️ DANGER : cela va effacer TOUTES les données (joueurs, scouting, staff, notifications, journal, notes, calendrier, liste de cups) sauf les comptes utilisateurs. Continuer ?')) return;
+  if (!await appConfirm('Vraiment sûr ? Cette action est irréversible.')) return;
   players = []; prospects = []; staff = []; activityLog = []; notifications = []; cupNamesGlobal = [];
   notes = []; noteGroups = []; calendarEvents = [];
   await persistPlayers();
@@ -18552,6 +19222,102 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closePcMenus
     build();
   }).observe(nav, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style'] });
   build();
+})();
+</script>
+<script>
+/* ============================================================
+   FICHE JOUEUR — onglets, frise du contrat, photo glisser-déposer
+   ============================================================ */
+function updatePmTimeline() {
+  const el = document.getElementById('pmTimeline');
+  const dot = document.getElementById('pmContractDot');
+  if (!el) return;
+  const indef = document.getElementById('p_indefinite')?.checked;
+  const start = document.getElementById('p_contractStart')?.value || '';
+  const end = document.getElementById('p_contractEnd')?.value || '';
+  if (dot) dot.hidden = true;
+  if (indef) {
+    el.innerHTML = '<div class="pmt-row"><span>Contrat à durée indéterminée</span><b style="color:var(--green)">CDI</b></div>' +
+      '<div class="pmt-bar" style="--c:var(--green)"><i style="width:100%"></i></div>' +
+      (start ? '<div class="pmt-labels"><span>Depuis le ' + formatDate(start) + '</span></div>' : '');
+    return;
+  }
+  if (!end) { el.innerHTML = '<div class="pmt-empty">Renseigne la date de fin pour voir la frise du contrat.</div>'; return; }
+  const DAY = 86400000;
+  const today = new Date(todayISO() + 'T00:00:00').getTime();
+  const e = new Date(end + 'T00:00:00').getTime();
+  const s = start ? new Date(start + 'T00:00:00').getTime() : null;
+  const left = Math.round((e - today) / DAY);
+  const color = left < 0 ? 'var(--danger)' : left <= 30 ? 'var(--amber)' : left <= 90 ? 'var(--blue)' : 'var(--green)';
+  const pct = s && e > s ? Math.max(0, Math.min(100, (today - s) / (e - s) * 100)) : 100;
+  const label = left < 0 ? 'Expiré depuis ' + pluralFr(-left, 'jour') : left === 0 ? 'Se termine aujourd\'hui' : pluralFr(left, 'jour') + ' restant' + (left > 1 ? 's' : '');
+  if (dot) dot.hidden = left > 30;
+  el.innerHTML = '<div class="pmt-row"><span>Temps de contrat écoulé</span><b style="color:' + color + '">' + label + '</b></div>' +
+    '<div class="pmt-bar" style="--c:' + color + '"><i style="width:' + pct.toFixed(1) + '%"></i>' +
+      (s && pct > 0 && pct < 100 ? '<span class="pmt-now" style="left:' + pct.toFixed(1) + '%" title="Aujourd\'hui"></span>' : '') + '</div>' +
+    '<div class="pmt-labels"><span>' + (start ? formatDate(start) : 'Début non renseigné') + '</span><span>' + formatDate(end) + '</span></div>';
+}
+
+(function () {
+  const modal = document.getElementById('playerModal');
+  const form = document.getElementById('playerForm');
+  if (!modal || !form) return;
+  const tabs = Array.from(modal.querySelectorAll('.pm-tabs [data-pane]'));
+
+  window.pmShowPane = function (name) {
+    tabs.forEach(b => {
+      const on = b.dataset.pane === name;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
+    modal.querySelectorAll('.pm-pane').forEach(p => { p.hidden = p.dataset.pane !== name; });
+  };
+  tabs.forEach((b, i) => {
+    b.addEventListener('click', () => pmShowPane(b.dataset.pane));
+    b.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      pmShowPane(next.dataset.pane);
+      next.focus();
+    });
+  });
+
+  // Un champ obligatoire vide dans un onglet caché : on ouvre cet onglet avant la validation
+  const submit = form.querySelector('[type="submit"]');
+  if (submit) submit.addEventListener('click', () => {
+    const inv = Array.from(form.querySelectorAll(':invalid')).find(el => el.closest('.pm-pane[hidden]'));
+    if (inv) pmShowPane(inv.closest('.pm-pane').dataset.pane);
+  });
+
+  ['p_contractStart', 'p_contractEnd', 'p_indefinite'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.addEventListener('change', updatePmTimeline); el.addEventListener('input', updatePmTimeline); }
+  });
+
+  const orig = window.openPlayerModal;
+  if (typeof orig === 'function') {
+    window.openPlayerModal = function () {
+      const r = orig.apply(this, arguments);
+      pmShowPane('profil');
+      updatePmTimeline();
+      return r;
+    };
+  }
+
+  // Photo : clic, clavier ou glisser-déposer
+  const drop = document.getElementById('playerPhotoDrop');
+  if (drop) {
+    drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('playerPhotoInput').click(); } });
+    ['dragenter', 'dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('drag'); }));
+    ['dragleave', 'drop'].forEach(t => drop.addEventListener(t, () => drop.classList.remove('drag')));
+    drop.addEventListener('drop', e => {
+      e.preventDefault();
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (!file || !/^image\//.test(file.type)) { showToast('Dépose une image (JPG, PNG…)', 'error'); return; }
+      loadPhotoPreview({ target: { files: [file] } }, 'player');
+    });
+  }
 })();
 </script>
 </body>
