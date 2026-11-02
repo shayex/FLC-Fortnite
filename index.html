@@ -5504,95 +5504,118 @@
     .da-sub { white-space: normal; }
   }
 
-  /* --- 3. Cartes joueur --- */
-  .pcard {
-    --team: var(--red);
+  /* --- 3. Cartes joueur — style « carte de collection » --- */
+  .grid.grid-cards { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .col-card {
+    --t: var(--red);
+    --m: color-mix(in srgb, var(--t) 14%, #3a3a46);
     position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: 18px;
-    background: var(--bg-1);
-    border: 1px solid var(--border);
-    overflow: hidden;
+    border-radius: 22px;
+    padding: 3px;
     cursor: pointer;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s, box-shadow 0.25s;
+    background: linear-gradient(160deg, var(--m), color-mix(in srgb, var(--m) 18%, var(--bg-2)) 42%, color-mix(in srgb, var(--m) 55%, var(--bg-2)));
+    box-shadow: 0 16px 36px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s;
   }
-  .pcard::after {
+  .col-card.rank-1 { --m: var(--red); }
+  .col-card.rank-2 { --m: var(--silver); }
+  .col-card.rank-3 { --m: var(--bronze); }
+  .col-card.rank-1 { box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 28px rgba(201,164,92,0.18); }
+  .col-in { position: relative; height: 100%; display: flex; flex-direction: column; border-radius: 19px; overflow: hidden; background: var(--bg-1); }
+  /* Reflet qui traverse la carte au survol */
+  .col-in::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, -30%), color-mix(in srgb, var(--team) 18%, transparent), transparent 60%);
-    opacity: 0;
-    transition: opacity 0.25s;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.07) 48%, transparent 60%);
+    background-size: 250% 100%;
+    background-position: 120% 0;
     pointer-events: none;
+    transition: background-position 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   }
   @media (hover: hover) {
-    .pcard:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--team) 45%, transparent); box-shadow: 0 14px 36px rgba(0,0,0,0.5); }
-    .pcard:hover::after { opacity: 1; }
+    .col-card:hover { transform: translateY(-5px) rotate(-0.6deg); box-shadow: 0 22px 46px rgba(0,0,0,0.55), 0 0 32px color-mix(in srgb, var(--m) 22%, transparent); }
+    .col-card:hover .col-in::after { background-position: -40% 0; }
   }
-  .pc-banner {
+  .col-card:active { transform: scale(0.985); }
+
+  .col-hero { position: relative; height: 178px; display: grid; place-items: center; overflow: hidden; }
+  .col-blur {
+    position: absolute;
+    inset: -24px;
+    background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--t) 55%, transparent), transparent 70%), var(--bg-2);
+  }
+  .col-card[style*="--photo"] .col-blur {
+    background: var(--photo) center / cover no-repeat;
+    filter: blur(22px) saturate(1.3);
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+  .col-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--t) 28%, transparent), transparent 42%, var(--bg-1) 97%); }
+  .col-photo {
     position: relative;
-    height: 64px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 12px;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--team) 55%, #000) 0%, color-mix(in srgb, var(--team) 14%, var(--bg-1)) 75%);
+    z-index: 1;
+    width: 100px;
+    height: 100px;
+    border-radius: 28px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--t) 40%, var(--bg-3)), var(--bg-3));
+    border: 3px solid var(--m);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 0 6px color-mix(in srgb, var(--m) 16%, transparent);
   }
-  .pc-team { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
-  .pc-status, .pc-rank {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: rgba(0,0,0,0.45);
-    color: var(--white);
-    font-family: var(--font-mono);
+  .col-card[style*="--photo"] .col-photo { background: var(--photo) center / cover no-repeat, var(--bg-3); }
+  .col-photo span { font-family: var(--font-display); font-size: 52px; color: var(--white); text-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+  .col-rank { position: absolute; z-index: 2; left: 14px; top: 10px; display: grid; justify-items: center; line-height: 1; }
+  .col-rank b { font-family: var(--font-display); font-weight: 400; font-size: 44px; color: var(--m); text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
+  .col-card.rank-x .col-rank b { color: var(--white); opacity: 0.85; font-size: 36px; }
+  .col-rank span { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+  .col-tags { position: absolute; z-index: 2; right: 12px; top: 12px; display: grid; justify-items: end; gap: 6px; }
+  .col-team { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--t) 85%, #000); color: #fff; }
+  .col-status { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .col-status.tone-red { background: var(--danger); color: #fff; }
+  .col-status.tone-amber { background: var(--amber); color: #1a1205; }
+  .col-status.tone-blue { background: var(--blue); color: #fff; }
+  .col-socials { position: absolute; z-index: 2; right: 10px; bottom: 10px; display: flex; gap: 4px; }
+  .col-socials .social-link { width: 26px; height: 26px; border-radius: 8px; background: rgba(0,0,0,0.45); border: 1px solid var(--border-strong); }
+  .col-socials .social-link svg { width: 12px; height: 12px; }
+
+  .col-id { position: relative; z-index: 1; text-align: center; padding: 0 16px; margin-top: -4px; }
+  .col-name { font-family: var(--font-display); font-size: 32px; line-height: 1; letter-spacing: 0.05em; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .col-sub { display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 5px; font-size: 12px; color: var(--text-mute); }
+  .col-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-mute); }
+  .col-flag { display: inline-flex; }
+  .col-flag img { border-radius: 2px; display: block; }
+  .col-real { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .col-pr {
+    position: relative;
+    margin: 12px 14px 0;
+    padding: 10px 10px 8px;
+    border-radius: 14px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(201,164,92,0.12), transparent);
+    border: 1px solid rgba(201,164,92,0.2);
   }
-  .pc-status.tone-red { background: var(--danger); color: #fff; }
-  .pc-status.tone-amber { background: var(--amber); color: #1a1205; }
-  .pc-status.tone-blue { background: var(--blue); color: #fff; }
-  .pc-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; padding: 0 14px 14px; flex: 1; }
-  .pc-id { display: flex; align-items: flex-end; gap: 12px; margin-top: -28px; min-width: 0; }
-  .pc-av {
-    width: 60px; height: 60px; flex-shrink: 0; border-radius: 16px; overflow: hidden;
-    display: grid; place-items: center;
-    font-family: var(--font-display); font-size: 30px; color: var(--white);
-    background: var(--bg-3);
-    border: 2px solid var(--team);
-    box-shadow: 0 6px 20px color-mix(in srgb, var(--team) 35%, transparent);
-  }
-  .pc-av img { width: 100%; height: 100%; object-fit: cover; }
-  .pc-idtext { min-width: 0; padding-bottom: 2px; }
-  .pc-name { font-family: var(--font-display); font-size: 26px; line-height: 1; letter-spacing: 0.04em; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pc-sub { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; color: var(--text-mute); }
-  .pc-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-mute); }
-  .pc-sub img { border-radius: 2px; display: block; }
-  .pc-real { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
-  .pc-pr { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
-  .pc-lab { font-size: 11px; color: var(--text-mute); }
-  .pc-pr-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--red-bright); font-variant-numeric: tabular-nums; }
-  .pc-pr-val small { font-size: 15px; color: var(--text-mute); margin-left: 4px; }
-  .pc-none { font-family: var(--font-body); font-size: 13px; color: var(--text-mute); }
-  .pc-contract { --c: var(--text); display: grid; gap: 6px; }
-  .pc-contract-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text-dim); }
-  .pc-contract-row b { color: var(--c); font-weight: 600; }
-  .pc-bar { height: 6px; border-radius: 999px; background: var(--bg-4); overflow: hidden; }
-  .pc-bar i { display: block; height: 100%; border-radius: inherit; background: var(--c); }
-  .pc-contract-dates { font-size: 11px; color: var(--text-mute); }
-  .pc-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border); border-radius: 12px; }
-  .pc-stats > div { padding: 8px 6px; text-align: center; font-size: 11px; color: var(--text-mute); min-width: 0; }
-  .pc-stats > div + div { border-left: 1px solid var(--border); }
-  .pc-stats b { display: block; font-size: 15px; color: var(--white); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pc-stats b.pos { color: var(--green); }
-  .pc-socials { padding: 0; border: 0; }
-  .pc-spark-wrap { margin: -4px -14px 0; }
-  .pc-spark { display: block; width: 100%; height: 44px; }
-  .pc-actions { display: flex; gap: 8px; margin-top: auto; }
-  .pc-actions > button {
+  .col-pr > b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 38px; line-height: 1; letter-spacing: 0.02em; color: var(--red-bright); font-variant-numeric: tabular-nums; }
+  .col-pr > b.none { font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--text-dim); padding: 8px 0 4px; }
+  .col-pr > span { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-mute); }
+  .col-pr .kpi-delta { font-size: 10px; padding: 1px 6px; }
+  .col-spark { display: block; width: calc(100% + 20px); height: 34px; margin: 4px -10px -8px; }
+  .col-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin: 12px 14px 0; }
+  .col-grid > div { min-width: 0; text-align: center; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mute); }
+  .col-grid > div + div { border-left: 1px solid var(--border); }
+  .col-grid b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 23px; letter-spacing: 0.03em; text-transform: none; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+  .col-grid b.pos { color: var(--green); }
+  .col-foot { --c: var(--text-mute); --p: 0%; display: flex; align-items: center; gap: 10px; margin: 14px 14px 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-dim); }
+  .col-bar { flex: 1; height: 5px; border-radius: 999px; background: var(--bg-4); overflow: hidden; }
+  .col-bar i { display: block; width: var(--p); height: 100%; border-radius: inherit; background: var(--c); }
+  .col-foot b { color: var(--c); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .col-actions { display: flex; gap: 8px; margin-top: auto; padding: 14px; }
+  .col-actions > button {
     flex: 1;
-    padding: 9px 10px;
+    padding: 8px 10px;
     border-radius: 10px;
     border: 1px solid var(--border-strong);
     font-size: 12px;
@@ -5600,8 +5623,12 @@
     color: var(--text);
     transition: background 0.15s, border-color 0.15s;
   }
-  .pc-actions > button:hover { background: var(--bg-3); border-color: color-mix(in srgb, var(--team) 50%, transparent); }
-  .pc-actions > button.primary { background: color-mix(in srgb, var(--team) 16%, transparent); border-color: color-mix(in srgb, var(--team) 40%, transparent); }
+  .col-actions > button:hover { background: var(--bg-3); border-color: color-mix(in srgb, var(--m) 55%, transparent); }
+  .col-actions > button.primary { background: color-mix(in srgb, var(--m) 18%, transparent); border-color: color-mix(in srgb, var(--m) 45%, transparent); }
+  .col-actions .pc-more { width: 38px; }
+  @media (prefers-reduced-motion: reduce) {
+    .col-card, .col-in::after { transition: none !important; }
+  }
   .pc-menu { position: relative; }
   .pc-more {
     width: 40px; height: 100%; min-height: 36px;
@@ -5886,7 +5913,7 @@
     .dash-card-actions { flex-wrap: wrap; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pcard, .pcard::after, .pc-menu-pop, .pod-step, .chart-area, .chart-line, .chart-point, .chart-end, .mnav-panel, .mnav-backdrop, .mnav-item { transition: none !important; }
+    .pc-menu-pop, .pod-step, .chart-area, .chart-line, .chart-point, .chart-end, .mnav-panel, .mnav-backdrop, .mnav-item { transition: none !important; }
     .sk { animation: none; }
   }
 </style>
@@ -12903,7 +12930,7 @@ function renderRoster() {
     return;
   }
 
-  container.innerHTML = '<div class="grid">' + list.map(p => playerCardHtml(p)).join('') + '</div>';
+  container.innerHTML = '<div class="grid grid-cards">' + list.map(p => playerCardHtml(p)).join('') + '</div>';
 }
 
 let rosterSort = { key: 'pr', dir: 'desc' };
@@ -13048,26 +13075,63 @@ function cardAvatar(p) {
   return p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
 }
 
-function playerCardHtml(p) {
-  const cs = computeContractStatus(p);
-  const team = p.team || 'main';
-  const flag = p.country ? flagImg(p.country, 16) : '';
-  const salary = formatSalary(p.salary, p.salaryFreq);
-  const pr = playerPrInfo(p);
-  const rank = playerPrRank(p);
-  const gains = totalGains(p);
-  const cups = (p.cups || []).length;
+// Cadre de la carte : or / argent / bronze pour le top 3 du roster, couleur d'équipe sinon
+function colFrameClass(rank) { return rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-x'; }
 
+// Haut de carte commun : fond flou tiré de la photo, rang, équipe, statut, photo, réseaux
+function colHeroHtml(p, rank, extraTop, socialsHtml) {
+  const initial = escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+  return '<div class="col-hero">' +
+    '<div class="col-blur"></div>' +
+    (rank ? '<div class="col-rank"><b>#' + rank + '</b><span>Roster</span></div>' : '') +
+    '<div class="col-tags"><span class="col-team">' + escapeHtml(teamLabelFull(p.team || 'main')) + '</span>' + (extraTop || '') + '</div>' +
+    '<div class="col-photo">' + (p.photo ? '' : '<span>' + initial + '</span>') + '</div>' +
+    (socialsHtml ? '<div class="col-socials">' + socialsHtml + '</div>' : '') +
+  '</div>';
+}
+
+function colCardStyle(p) {
+  const team = p.team || 'main';
+  return '--t:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + ';' +
+    (p.photo ? "--photo:url('" + escapeAttr(p.photo) + "');" : '');
+}
+
+function colIdHtml(p, showAge) {
+  const flag = p.country ? flagImg(p.country, 16) : '';
+  const country = p.country ? ((COUNTRIES.find(c => c.code === String(p.country).toUpperCase()) || {}).name || p.country) : '';
   const realAge = p.birthdate ? ageFromBirthdate(p.birthdate) : (p.age ? Number(p.age) : null);
   const isBirthday = (function () {
     if (!p.birthdate) return false;
     const b = new Date(p.birthdate + 'T00:00:00'), n = new Date();
     return b.getDate() === n.getDate() && b.getMonth() === n.getMonth();
   })();
-  const subParts = [];
-  if (flag) subParts.push(flag);
-  subParts.push(escapeHtml(p.game || 'Jeu non précisé'));
-  if (realAge != null && !isNaN(realAge)) subParts.push(realAge + ' ans' + (isBirthday ? ' 🎂' : ''));
+  const parts = [];
+  if (flag) parts.push('<span class="col-flag" title="' + escapeAttr(country) + '">' + flag + '</span>');
+  parts.push(escapeHtml(p.game || 'Jeu non précisé'));
+  if (showAge && realAge != null && !isNaN(realAge)) parts.push(realAge + ' ans' + (isBirthday ? ' 🎂' : ''));
+  return '<div class="col-id">' +
+    '<div class="col-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
+    '<div class="col-sub">' + parts.join('<span class="dot"></span>') + '</div>' +
+    (p.realName ? '<div class="col-real">' + escapeHtml(p.realName) + '</div>' : '') +
+  '</div>';
+}
+
+function colPrHtml(pr, spark) {
+  return '<div class="col-pr">' +
+    (pr.cur != null ? '<b>' + fmtNumber(pr.cur) + '</b>' : '<b class="none">Pas encore de PR</b>') +
+    '<span>Power Ranking' + (pr.cur != null && prDeltaChip(pr.pct) ? ' · ' + prDeltaChip(pr.pct) : '') + '</span>' +
+    (spark || '') +
+  '</div>';
+}
+
+function playerCardHtml(p) {
+  const cs = computeContractStatus(p);
+  const salary = formatSalary(p.salary, p.salaryFreq);
+  const pr = playerPrInfo(p);
+  const rank = playerPrRank(p);
+  const gains = totalGains(p);
+  const cups = (p.cups || []).length;
+  const realAge = p.birthdate ? ageFromBirthdate(p.birthdate) : (p.age ? Number(p.age) : null);
 
   const socials = [];
   if (p.twitter) socials.push(socialLinkHtml('twitter', p.twitter));
@@ -13075,56 +13139,42 @@ function playerCardHtml(p) {
   if (p.youtube) socials.push(socialLinkHtml('youtube', p.youtube));
   if (p.tracker) socials.push(socialLinkHtml('tracker', p.tracker));
 
-  // Contrat : barre du temps écoulé + jours restants, colorée selon l'urgence
-  let contract = '';
+  const status = cs && cs.tone !== 'green' ? '<span class="col-status tone-' + cs.tone + '">' + cs.label + '</span>' : '';
+
+  // Pied de carte : barre du contrat écoulé + jours restants (dates et salaire au survol)
+  let foot;
   if (p.contractIndefinite) {
-    contract = '<div class="pc-contract" style="--c:var(--green)"><div class="pc-contract-row"><span>Contrat</span><b>CDI</b></div>' +
-      '<div class="pc-contract-dates">' + (p.contractStart ? 'Depuis le ' + formatDate(p.contractStart) : 'Durée indéterminée') + (salary ? ' · ' + salary : '') + '</div></div>';
+    foot = '<div class="col-foot" style="--c:var(--green);--p:100%" title="' + escapeAttr('CDI' + (p.contractStart ? ' depuis le ' + formatDate(p.contractStart) : '') + (salary ? ' · ' + salary.replace(/<[^>]+>/g, '') : '')) + '">' +
+      '<span>Contrat</span><div class="col-bar"><i></i></div><b>CDI</b></div>';
   } else if (p.contractEnd && cs) {
     const color = { red: 'var(--danger)', amber: 'var(--amber)', blue: 'var(--blue)', green: 'var(--green)' }[cs.tone] || 'var(--red)';
-    let label;
-    if (cs.days < 0) label = 'Expiré depuis ' + pluralFr(-cs.days, 'jour');
-    else if (cs.days === 0) label = 'Se termine aujourd\'hui';
-    else label = pluralFr(cs.days, 'jour') + ' restant' + (cs.days > 1 ? 's' : '');
     let pct = 100;
     if (p.contractStart) {
       const s = Date.parse(p.contractStart + 'T00:00:00'), e = Date.parse(p.contractEnd + 'T00:00:00');
       if (e > s) pct = Math.max(0, Math.min(100, (Date.now() - s) / (e - s) * 100));
     }
-    contract = '<div class="pc-contract" style="--c:' + color + '">' +
-      '<div class="pc-contract-row"><span>Contrat</span><b>' + label + '</b></div>' +
-      '<div class="pc-bar" title="Part du contrat écoulée"><i style="width:' + pct.toFixed(0) + '%"></i></div>' +
-      '<div class="pc-contract-dates">' + (p.contractStart ? formatDate(p.contractStart) + ' → ' : 'Jusqu\'au ') + formatDate(p.contractEnd) + (salary ? ' · ' + salary : '') + '</div>' +
-    '</div>';
-  } else if (salary) {
-    contract = '<div class="pc-contract"><div class="pc-contract-row"><span>Salaire</span><b>' + salary + '</b></div></div>';
+    const label = cs.days < 0 ? 'Expiré' : cs.days + ' j';
+    const tip = (p.contractStart ? formatDate(p.contractStart) + ' → ' : 'Jusqu\'au ') + formatDate(p.contractEnd) +
+      (cs.days >= 0 ? ' · ' + pluralFr(cs.days, 'jour') + ' restant' + (cs.days > 1 ? 's' : '') : ' · expiré depuis ' + pluralFr(-cs.days, 'jour')) +
+      (salary ? ' · ' + salary.replace(/<[^>]+>/g, '') : '');
+    foot = '<div class="col-foot" style="--c:' + color + ';--p:' + pct.toFixed(0) + '%" title="' + escapeAttr(tip) + '">' +
+      '<span>Contrat</span><div class="col-bar"><i></i></div><b>' + label + '</b></div>';
+  } else {
+    foot = '<div class="col-foot is-none"><span>Contrat</span><div class="col-bar"></div><b>—</b></div>';
   }
 
-  const statusBadge = cs && cs.tone !== 'green' ? '<span class="pc-status tone-' + cs.tone + '">' + cs.label + '</span>' : '';
-
-  return '<div class="pcard" style="--team:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '" onclick="openPlayerModal(\'' + p.id + '\')">' +
-    '<div class="pc-banner"><span class="pc-team">' + escapeHtml(teamLabelFull(team)) + '</span>' + statusBadge + '</div>' +
-    '<div class="pc-body">' +
-      '<div class="pc-id">' +
-        '<div class="pc-av">' + cardAvatar(p) + '</div>' +
-        '<div class="pc-idtext">' +
-          '<div class="pc-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
-          '<div class="pc-sub">' + subParts.join('<span class="dot"></span>') + '</div>' +
-          (p.realName ? '<div class="pc-real">' + escapeHtml(p.realName) + '</div>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="pc-pr">' +
-        '<div><div class="pc-lab">Power Ranking</div><div class="pc-pr-val">' + (pr.cur != null ? fmtNumber(pr.cur) + '<small>pts</small>' : '<span class="pc-none">Pas encore de PR</span>') + '</div></div>' +
-        prDeltaChip(pr.pct) +
-      '</div>' +
-      contract +
-      '<div class="pc-stats">' +
+  return '<div class="col-card ' + colFrameClass(rank) + '" style="' + colCardStyle(p) + '" onclick="openPlayerModal(\'' + p.id + '\')">' +
+    '<div class="col-in">' +
+      colHeroHtml(p, rank, status, socials.join('')) +
+      colIdHtml(p, false) +
+      colPrHtml(pr) +
+      '<div class="col-grid">' +
         '<div><b>' + cups + '</b>' + (cups > 1 ? 'cups' : 'cup') + '</div>' +
         '<div><b class="' + (gains > 0 ? 'pos' : '') + '">' + fmtNumber(gains) + ' €</b>gains</div>' +
-        '<div><b>' + (rank ? '#' + rank : '—') + '</b>roster</div>' +
+        '<div><b>' + (realAge != null && !isNaN(realAge) ? realAge : '—') + '</b>ans</div>' +
       '</div>' +
-      (socials.length ? '<div class="card-socials pc-socials">' + socials.join('') + '</div>' : '') +
-      '<div class="pc-actions">' +
+      foot +
+      '<div class="col-actions">' +
         '<button type="button" onclick="event.stopPropagation();openPlayerModal(\'' + p.id + '\')">Éditer</button>' +
         '<button type="button" onclick="event.stopPropagation();openPlayerReport(\'' + p.id + '\')">Rapport</button>' +
         '<div class="pc-menu">' +
@@ -14348,41 +14398,28 @@ function renderData() {
     return (a.pseudo || '').localeCompare(b.pseudo || '', 'fr');
   });
 
-  container.innerHTML = '<div class="grid">' + list.map(p => dataPlayerCardHtml(p)).join('') + '</div>';
+  container.innerHTML = '<div class="grid grid-cards">' + list.map(p => dataPlayerCardHtml(p)).join('') + '</div>';
 }
 
 function dataPlayerCardHtml(p) {
-  const team = p.team || 'main';
-  const flag = p.country ? flagImg(p.country, 16) : '';
   const pr = playerPrInfo(p);
   const rank = playerPrRank(p);
   const cups = (p.cups || []).filter(c => c);
   const gains = totalGains(p);
   const lastCup = cups.filter(c => c.date).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
-  const color = playerColor(p, players.indexOf(p));
-  const spark = pr.hist.length >= 2 ? areaSparkSvg(pr.hist.slice(-12).map(e => e.points), color, 'pc-spark') : '';
+  const spark = pr.hist.length >= 2 ? areaSparkSvg(pr.hist.slice(-12).map(e => e.points), '#ddbd80', 'col-spark') : '';
 
-  return '<div class="pcard pcard-data" style="--team:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '" onclick="openDataModal(\'' + p.id + '\')">' +
-    '<div class="pc-banner"><span class="pc-team">' + escapeHtml(teamLabelFull(team)) + '</span>' + (rank ? '<span class="pc-rank">#' + rank + '</span>' : '') + '</div>' +
-    '<div class="pc-body">' +
-      '<div class="pc-id">' +
-        '<div class="pc-av">' + cardAvatar(p) + '</div>' +
-        '<div class="pc-idtext">' +
-          '<div class="pc-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
-          '<div class="pc-sub">' + (flag ? flag + '<span class="dot"></span>' : '') + escapeHtml(p.game || 'Jeu non précisé') + '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="pc-pr">' +
-        '<div><div class="pc-lab">Power Ranking</div><div class="pc-pr-val">' + (pr.cur != null ? fmtNumber(pr.cur) + '<small>pts</small>' : '<span class="pc-none">Pas encore de PR</span>') + '</div></div>' +
-        prDeltaChip(pr.pct) +
-      '</div>' +
-      (spark ? '<div class="pc-spark-wrap">' + spark + '</div>' : '') +
-      '<div class="pc-stats">' +
+  return '<div class="col-card ' + colFrameClass(rank) + '" style="' + colCardStyle(p) + '" onclick="openDataModal(\'' + p.id + '\')">' +
+    '<div class="col-in">' +
+      colHeroHtml(p, rank, '', '') +
+      colIdHtml(p, true) +
+      colPrHtml(pr, spark) +
+      '<div class="col-grid">' +
         '<div><b>' + cups.length + '</b>' + (cups.length > 1 ? 'cups' : 'cup') + '</div>' +
         '<div><b class="' + (gains > 0 ? 'pos' : '') + '">' + fmtNumber(gains) + ' €</b>gains</div>' +
-        '<div><b>' + (lastCup ? formatDate(lastCup.date).replace(/\s\d{4}$/, '') : '—') + '</b>dernière cup</div>' +
+        '<div><b>' + (lastCup ? formatDate(lastCup.date).replace(/\s\d{4}$/, '') : '—') + '</b>dernière</div>' +
       '</div>' +
-      '<div class="pc-actions"><button type="button" class="primary" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button></div>' +
+      '<div class="col-actions"><button type="button" class="primary" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button></div>' +
     '</div>' +
   '</div>';
 }
@@ -18348,7 +18385,7 @@ init();
 </script>
 <script>
 /* ============================================================
-   CARTES JOUEUR — menu « ⋯ » et halo qui suit la souris
+   CARTES JOUEUR — menu « ⋯ »
    ============================================================ */
 function closePcMenus(except) {
   document.querySelectorAll('.pc-menu.open').forEach(m => {
@@ -18367,13 +18404,6 @@ function togglePcMenu(btn) {
 }
 document.addEventListener('click', e => { if (!e.target.closest('.pc-menu')) closePcMenus(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePcMenus(); });
-document.addEventListener('pointermove', e => {
-  const card = e.target.closest && e.target.closest('.pcard');
-  if (!card) return;
-  const r = card.getBoundingClientRect();
-  card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-  card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-}, { passive: true });
 
 /* ============================================================
    ÉCRAN DE CHARGEMENT — squelette de l'app pendant que Supabase répond
