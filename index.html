@@ -1665,44 +1665,299 @@
      TABS NAVIGATION
      ============================================================ */
   .tabs {
+    --pill-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
     display: flex;
-    gap: 0;
+    width: fit-content;
+    max-width: 100%;
+    gap: 4px;
+    padding: 5px;
     margin-bottom: 28px;
-    border-bottom: 1px solid var(--border);
+    background: rgba(17,17,24,0.72);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.35);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     overflow-x: auto;
     scrollbar-width: none;
+    isolation: isolate;
   }
   .tabs::-webkit-scrollbar { display: none; }
+
+  /* Pilule dorée qui glisse sous l'onglet actif */
+  .pill-indicator {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    height: calc(100% - 10px);
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--red-bright), var(--red));
+    box-shadow: 0 4px 18px var(--red-glow), inset 0 1px 0 rgba(255,255,255,0.35);
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.45s var(--pill-ease), width 0.45s var(--pill-ease), opacity 0.2s;
+  }
+  .pill-indicator.ready { opacity: 1; }
+  .pill-indicator.no-anim { transition: none; }
+
   .tab {
-    background: none;
-    color: var(--text-mute);
-    padding: 16px 24px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s;
-    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: none;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: color 0.25s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab svg { position: relative; z-index: 1; flex-shrink: 0; transition: transform 0.35s var(--pill-ease); }
+
+  /* Cercle qui remplit la pilule au survol (part du bas) */
+  .tab::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 140%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(201,164,92,0.14);
+    transform: translate(-50%, 100%) scale(0.2);
+    transition: transform 0.45s var(--pill-ease);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Texte qui « roule » : le libellé monte, sa copie arrive par le bas */
+  .pill-text {
     position: relative;
+    z-index: 1;
+    display: inline-block;
+    overflow: hidden;
+    line-height: 1.25;
+    height: 1.25em;
   }
-  .tab:hover { color: var(--text); }
-  .tab.active {
-    color: var(--white);
-    border-bottom-color: var(--red);
+  .pill-text > span,
+  .pill-text::after {
+    display: block;
+    transition: transform 0.4s var(--pill-ease);
   }
+  .pill-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    color: var(--red-bright);
+  }
+
+  @media (hover: hover) {
+    .tab:not(.active):hover { color: var(--text); }
+    .tab:not(.active):hover::before { transform: translate(-50%, 35%) scale(1); }
+    .tab:not(.active):hover .pill-text > span,
+    .tab:not(.active):hover .pill-text::after { transform: translateY(-100%); }
+    .tab:not(.active):hover svg { transform: translateY(-1px) scale(1.08); color: var(--red-bright); }
+  }
+  .tab:active:not(.active) { transform: scale(0.97); }
+  .tab:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+  .tab.active { color: #0d0b07; }
   .tab .count {
+    position: relative;
+    z-index: 1;
     background: var(--bg-3);
     color: var(--text-dim);
     font-size: 10px;
     padding: 2px 7px;
     border-radius: 10px;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: background 0.25s, color 0.25s;
   }
-  .tab.active .count { background: var(--red); color: white; }
+  .tab.active .count { background: rgba(13,11,7,0.85); color: var(--red-bright); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pill-indicator, .tab, .tab::before, .tab svg, .pill-text > span, .pill-text::after { transition: none !important; }
+  }
+
+  /* ============================================================
+     GOOEY MENU — listes déroulantes
+     ============================================================ */
+  .gm-svg { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .gm { position: relative; display: inline-block; vertical-align: middle; max-width: 100%; }
+  .form-group .gm, .cup-merge-bar .gm { display: block; }
+  .cup-merge-bar .gm { flex: 1; min-width: 180px; max-width: 340px; }
+  .gm-native {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+  }
+  .gm-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .gm-trigger:not(.compare-select):not(.tk-status-select) {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .form-group .gm-trigger { width: 100%; }
+  .gm-trigger:hover { border-color: var(--border-strong); }
+  .gm-trigger:focus-visible,
+  .gm-trigger[aria-expanded="true"] {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(201,164,92,0.14);
+  }
+  .gm-trigger:disabled { opacity: 0.5; cursor: not-allowed; }
+  .gm-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .gm-label.is-placeholder { color: var(--text-mute); }
+  .gm-caret {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(201,164,92,0.12);
+    color: var(--red-bright);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+  }
+  .gm-trigger[aria-expanded="true"] .gm-caret { transform: rotate(180deg); background: var(--red); color: #0d0b07; }
+  .tk-status-select.gm-trigger .gm-caret { width: 14px; height: 14px; background: transparent; color: inherit; }
+
+  /* Panneau (attaché au body, positionné en fixed) */
+  .gm-panel {
+    position: fixed;
+    z-index: 10000;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .gm-panel.open { visibility: visible; pointer-events: auto; }
+  .gm-scroll {
+    position: relative;
+    max-height: 300px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding: 12px 6px 6px;
+  }
+  .gm-panel.up .gm-scroll { padding: 6px 6px 12px; }
+  /* Couche « liquide » : uniquement les formes, floutées puis seuillées par le filtre SVG */
+  .gm-goo {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 12px;
+    filter: url(#flc-goo) drop-shadow(0 12px 22px rgba(0,0,0,0.55));
+    pointer-events: none;
+  }
+  .gm-panel.up .gm-goo { top: 6px; }
+  .gm-blob {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-radius: 14px;
+    background: var(--bg-3);
+    transform: translateY(calc(var(--i, 0) * -36px)) scale(0.5);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.2s;
+    transition-delay: var(--d, 0ms);
+  }
+  .gm-panel.up .gm-blob { transform: translateY(calc(var(--ri, 0) * 36px)) scale(0.5); transition-delay: var(--rd, 0ms); }
+  .gm-blob.gm-drop {
+    top: 0;
+    left: 50%;
+    right: auto;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    border-radius: 50%;
+    transform: scale(0.3);
+    transition-delay: 0ms;
+  }
+  .gm-panel.up .gm-blob.gm-drop { top: auto; bottom: 0; transform: scale(0.3); transition-delay: 0ms; }
+  .gm-hl {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    height: 32px;
+    border-radius: 12px;
+    background: var(--red);
+    opacity: 0;
+    transform: translateY(var(--y, 0px));
+    transition: transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1), opacity 0.2s 0.12s;
+  }
+  .gm-panel.open .gm-blob { transform: translateY(0) scale(1); opacity: 1; }
+  .gm-panel.open .gm-blob.gm-drop { transform: translateY(-10px) scale(1); }
+  .gm-panel.open.up .gm-blob.gm-drop { transform: translateY(10px) scale(1); }
+  .gm-panel.open .gm-hl.show { opacity: 1; }
+
+  .gm-list { position: relative; list-style: none; margin: 0; padding: 0; outline: none; }
+  .gm-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.25s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.15s;
+    transition-delay: calc(var(--d, 0ms) + 90ms);
+  }
+  .gm-panel.up .gm-option { transform: translateY(6px); transition-delay: calc(var(--rd, 0ms) + 90ms); }
+  .gm-panel.open .gm-option { opacity: 1; transform: none; }
+  .gm-option > span { overflow: hidden; text-overflow: ellipsis; }
+  .gm-option.is-active { color: #0d0b07; font-weight: 600; transition-delay: 0ms; }
+  .gm-option[aria-selected="true"] { color: var(--red-bright); font-weight: 600; }
+  .gm-option.is-active[aria-selected="true"] { color: #0d0b07; }
+  .gm-option[aria-disabled="true"] { opacity: 0.35 !important; cursor: not-allowed; }
+  .gm-check { margin-left: auto; flex-shrink: 0; opacity: 0; }
+  .gm-option[aria-selected="true"] .gm-check { opacity: 1; }
+  .gm-empty { padding: 10px 12px; font-size: 12px; color: var(--text-mute); }
+
+  /* Fermeture : plus rapide, sans rebond */
+  .gm-panel.closing .gm-blob,
+  .gm-panel.closing .gm-option,
+  .gm-panel.closing .gm-hl { transition-duration: 0.18s; transition-delay: 0ms; transition-timing-function: ease-in; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gm-blob, .gm-hl, .gm-option, .gm-caret { transition: opacity 0.12s !important; transform: none !important; }
+  }
 
   .tab-content { display: none; }
   .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
@@ -4918,7 +5173,8 @@
     .event-card { grid-template-columns: 70px 1fr; gap: 14px; padding: 14px; }
     .event-result { grid-column: 2; justify-self: end; }
     .user-row { grid-template-columns: 1fr; gap: 8px; }
-    .tab { padding: 14px 16px; font-size: 11px; }
+    .tab { padding: 9px 14px; font-size: 10px; }
+    .tabs { width: 100%; }
     .brand-text { font-size: 22px; }
   }
 </style>
@@ -5065,42 +5321,43 @@ window.addEventListener('DOMContentLoaded', function() {
   </header>
 
   <!-- TABS -->
-  <nav class="tabs">
+  <nav class="tabs" role="tablist" aria-label="Navigation principale">
+    <span class="pill-indicator" aria-hidden="true"></span>
     <button class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Dashboard
+      <span class="pill-text" data-text="Dashboard"><span>Dashboard</span></span>
     </button>
     <button class="tab" data-tab="roster" onclick="switchTab('roster')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Roster <span class="count" id="countRoster">0</span>
+      <span class="pill-text" data-text="Roster"><span>Roster</span></span> <span class="count" id="countRoster">0</span>
     </button>
     <button class="tab" data-tab="data" onclick="switchTab('data')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/><circle cx="7" cy="14" r="1.5" fill="currentColor"/><circle cx="11" cy="10" r="1.5" fill="currentColor"/><circle cx="15" cy="14" r="1.5" fill="currentColor"/><circle cx="20" cy="9" r="1.5" fill="currentColor"/></svg>
-      Données
+      <span class="pill-text" data-text="Données"><span>Données</span></span>
     </button>
     <button class="tab" data-tab="tracking" onclick="switchTab('tracking')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Suivi <span class="count" id="countTracking" title="Besoins en attente">0</span>
+      <span class="pill-text" data-text="Suivi"><span>Suivi</span></span> <span class="count" id="countTracking" title="Besoins en attente">0</span>
     </button>
     <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Calendrier
+      <span class="pill-text" data-text="Calendrier"><span>Calendrier</span></span>
     </button>
     <button class="tab" data-tab="scouting" onclick="switchTab('scouting')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Scouting <span class="count" id="countScouting">0</span>
+      <span class="pill-text" data-text="Scouting"><span>Scouting</span></span> <span class="count" id="countScouting">0</span>
     </button>
     <button class="tab" data-tab="grinder" onclick="switchTab('grinder')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      Grinder <span class="count" id="countGrinder">0</span>
+      <span class="pill-text" data-text="Grinder"><span>Grinder</span></span> <span class="count" id="countGrinder">0</span>
     </button>
     <button class="tab" data-tab="notes" onclick="switchTab('notes')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-      Notes <span class="count" id="countNotes">0</span>
+      <span class="pill-text" data-text="Notes"><span>Notes</span></span> <span class="count" id="countNotes">0</span>
     </button>
     <button class="tab" data-tab="admin" id="tabAdmin" style="display:none;" onclick="switchTab('admin')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Admin
+      <span class="pill-text" data-text="Admin"><span>Admin</span></span>
     </button>
   </nav>
 
@@ -16389,6 +16646,386 @@ async function init() {
 
 init();
 
+</script>
+<script>
+/* ============================================================
+   PILL NAVIGATION — pilule dorée qui glisse vers l'onglet actif
+   ============================================================ */
+(function () {
+  const nav = document.querySelector('nav.tabs');
+  if (!nav) return;
+  const indicator = nav.querySelector('.pill-indicator');
+  nav.querySelectorAll('.tab').forEach(t => t.setAttribute('role', 'tab'));
+
+  function place(animate) {
+    const active = nav.querySelector('.tab.active');
+    if (!active || !active.offsetWidth) { indicator.classList.remove('ready'); return; }
+    if (!animate || !indicator.classList.contains('ready')) indicator.classList.add('no-anim');
+    indicator.style.width = active.offsetWidth + 'px';
+    indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+    indicator.classList.add('ready');
+    nav.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t === active ? 'true' : 'false'));
+    void indicator.offsetWidth;
+    indicator.classList.remove('no-anim');
+  }
+
+  function revealActive() {
+    const active = nav.querySelector('.tab.active');
+    if (!active || nav.scrollWidth <= nav.clientWidth) return;
+    const left = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+    nav.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+  }
+
+  const originalSwitchTab = window.switchTab;
+  if (typeof originalSwitchTab === 'function') {
+    window.switchTab = function () {
+      const result = originalSwitchTab.apply(this, arguments);
+      place(true);
+      revealActive();
+      return result;
+    };
+  }
+
+  // Recalcule quand la barre ou un onglet change de taille (compteurs, onglets masqués, polices…)
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(() => place(false));
+    ro.observe(nav);
+    nav.querySelectorAll('.tab').forEach(t => ro.observe(t));
+  }
+  window.addEventListener('resize', () => place(false));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(false));
+  window.updatePillNav = place;
+  place(false);
+})();
+
+/* ============================================================
+   GOOEY MENU — remplace visuellement chaque <select>
+   Le <select> natif reste dans le DOM (caché) : valeurs, onchange,
+   formulaires et code existant continuent de fonctionner.
+   ============================================================ */
+(function () {
+  const ITEM_H = 36;
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CARET = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  const CHECK = '<svg class="gm-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  let uid = 0;
+  let openGm = null;
+
+  // Filtre SVG « goo » : flou + seuil alpha = formes qui fusionnent comme du liquide
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'gm-svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.innerHTML = '<defs><filter id="flc-goo" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">' +
+    '<feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>' +
+    '<feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo"/>' +
+    '<feComposite in="SourceGraphic" in2="goo" operator="atop"/></filter></defs>';
+  document.body.appendChild(svg);
+
+  // Setters natifs (utilisés pour écrire sans boucle de synchronisation)
+  const valueDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  const indexDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+  const optSelDesc = Object.getOwnPropertyDescriptor(HTMLOptionElement.prototype, 'selected');
+
+  const pending = new Set();
+  function schedule(gm) {
+    if (!gm) return;
+    if (!pending.size) queueMicrotask(flush);
+    pending.add(gm);
+  }
+  function flush() {
+    const list = Array.from(pending);
+    pending.clear();
+    list.forEach(sync);
+  }
+
+  // Quand le code existant fait select.value = x, on met l'affichage à jour
+  function patch(proto, prop, desc, owner) {
+    if (!desc || !desc.set) return;
+    Object.defineProperty(proto, prop, {
+      configurable: true,
+      enumerable: desc.enumerable,
+      get: desc.get,
+      set(v) {
+        desc.set.call(this, v);
+        const sel = owner(this);
+        if (sel && sel._gm) schedule(sel._gm);
+      }
+    });
+  }
+  patch(HTMLSelectElement.prototype, 'value', valueDesc, s => s);
+  patch(HTMLSelectElement.prototype, 'selectedIndex', indexDesc, s => s);
+  patch(HTMLOptionElement.prototype, 'selected', optSelDesc, o => o.closest && o.closest('select'));
+
+  function visibleOptions(sel) {
+    return Array.from(sel.options).filter(o => !o.hidden);
+  }
+
+  function sync(gm) {
+    const sel = gm.select;
+    if (!sel.isConnected) { if (openGm === gm) close(gm, true); return; }
+    const opt = sel.options[sel.selectedIndex];
+    const text = opt ? opt.textContent.trim() : '';
+    gm.label.textContent = text || '—';
+    gm.label.classList.toggle('is-placeholder', !opt || opt.value === '');
+    gm.trigger.disabled = sel.disabled;
+    gm.trigger.title = text;
+    // Classes / style inline du select (ex. couleur du statut) reportés sur le bouton
+    const cls = Array.from(sel.classList).filter(c => c !== 'gm-native').join(' ');
+    gm.trigger.className = 'gm-trigger' + (cls ? ' ' + cls : '');
+    gm.trigger.style.cssText = sel.dataset.gmStyle || '';
+    gm.wrap.style.display = sel.dataset.gmHidden === '1' ? 'none' : '';
+    if (openGm === gm) buildList(gm);
+  }
+
+  function captureSelectStyle(sel) {
+    // Le style inline du select décrit son apparence : on le garde pour le bouton
+    const raw = sel.getAttribute('style') || '';
+    sel.dataset.gmHidden = sel.style.display === 'none' ? '1' : '0';
+    sel.dataset.gmStyle = raw.replace(/(^|;)\s*display\s*:[^;]*/gi, '$1');
+  }
+
+  function enhance(sel) {
+    if (sel._gm || sel.multiple || sel.size > 1 || sel.dataset.native !== undefined) return;
+    const id = 'gm' + (++uid);
+    const wrap = document.createElement('div');
+    wrap.className = 'gm';
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-controls', id + '-list');
+    trigger.innerHTML = '<span class="gm-label"></span><span class="gm-caret">' + CARET + '</span>';
+    const label = trigger.firstChild;
+
+    const panel = document.createElement('div');
+    panel.className = 'gm-panel';
+    panel.innerHTML = '<div class="gm-scroll"><div class="gm-goo"></div><ul class="gm-list" role="listbox" id="' + id + '-list" tabindex="-1"></ul></div>';
+    const scroll = panel.firstChild;
+    const goo = scroll.firstChild;
+    const list = scroll.lastChild;
+
+    const ariaLabel = (sel.labels && sel.labels[0] && sel.labels[0].textContent.trim()) || sel.getAttribute('aria-label') || '';
+    if (ariaLabel) { trigger.setAttribute('aria-label', ariaLabel.replace(/\s*\*$/, '')); list.setAttribute('aria-label', ariaLabel); }
+
+    captureSelectStyle(sel);
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(trigger);
+    wrap.appendChild(sel);
+    sel.classList.add('gm-native');
+    sel.tabIndex = -1;
+    sel.setAttribute('aria-hidden', 'true');
+
+    const gm = { select: sel, wrap, trigger, label, panel, scroll, goo, list, active: -1, opts: [], type: '', typeTimer: 0 };
+    sel._gm = gm;
+
+    trigger.addEventListener('click', () => (openGm === gm ? close(gm) : open(gm)));
+    trigger.addEventListener('keydown', e => onKey(gm, e));
+    list.addEventListener('keydown', e => onKey(gm, e));
+    sel.addEventListener('focus', () => trigger.focus());
+    sel.addEventListener('change', () => schedule(gm));
+    sel.addEventListener('invalid', () => {
+      trigger.style.borderColor = '#ef4444';
+      setTimeout(() => { trigger.style.borderColor = ''; }, 1800);
+    });
+    list.addEventListener('pointermove', e => {
+      const li = e.target.closest('.gm-option');
+      if (li) setActive(gm, +li.dataset.i, false);
+    });
+    list.addEventListener('click', e => {
+      const li = e.target.closest('.gm-option');
+      if (li) choose(gm, +li.dataset.i);
+    });
+    panel.addEventListener('pointerdown', e => e.preventDefault()); // garde le focus sur le bouton
+    sync(gm);
+  }
+
+  function buildList(gm) {
+    const sel = gm.select;
+    gm.opts = visibleOptions(sel);
+    const n = gm.opts.length;
+    const stagger = n > 12 ? 12 : 24; // ms entre chaque goutte
+    let blobs = '<div class="gm-blob gm-drop"></div>';
+    let items = '';
+    gm.opts.forEach((o, i) => {
+      const ri = n - 1 - i;
+      const vars = '--i:' + i + ';--ri:' + ri + ';--d:' + (Math.min(i, 12) * stagger) + 'ms;--rd:' + (Math.min(ri, 12) * stagger) + 'ms';
+      // Chaque goutte déborde sur la suivante : la colonne reste lisse une fois ouverte
+      blobs += '<div class="gm-blob" style="top:' + (i * ITEM_H) + 'px;height:' + (ITEM_H + (ri ? 28 : 0)) + 'px;' + vars + '"></div>';
+      const selected = o.index === sel.selectedIndex;
+      items += '<li class="gm-option" role="option" id="' + gm.list.id + '-' + i + '" data-i="' + i + '" aria-selected="' + selected + '"' +
+        (o.disabled ? ' aria-disabled="true"' : '') + ' style="' + vars + '"><span></span>' + CHECK + '</li>';
+    });
+    blobs += '<div class="gm-hl"></div>';
+    gm.goo.innerHTML = blobs;
+    gm.goo.style.height = Math.max(n, 1) * ITEM_H + 'px';
+    gm.list.innerHTML = n ? items : '<li class="gm-empty">Aucune option</li>';
+    gm.list.querySelectorAll('.gm-option > span').forEach((s, i) => { s.textContent = gm.opts[i].textContent.trim(); });
+    gm.hl = gm.goo.querySelector('.gm-hl');
+    if (gm.active >= n) gm.active = n - 1;
+    if (gm.active >= 0) setActive(gm, gm.active, false);
+  }
+
+  function position(gm) {
+    const r = gm.trigger.getBoundingClientRect();
+    if (!r.width && !r.height) { close(gm, true); return; }
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const width = Math.min(Math.max(r.width, 190), vw - 16);
+    const listH = Math.max(gm.opts.length, 1) * ITEM_H + 18;
+    const below = vh - r.bottom - 12, above = r.top - 12;
+    const up = below < Math.min(listH, 220) && above > below;
+    const maxH = Math.max(120, Math.min(320, up ? above : below));
+    gm.scroll.style.maxHeight = maxH + 'px';
+    gm.panel.classList.toggle('up', up);
+    gm.panel.style.width = width + 'px';
+    gm.panel.style.left = Math.min(Math.max(8, r.left + (r.width - width) / 2), vw - width - 8) + 'px';
+    const h = Math.min(listH, maxH);
+    gm.panel.style.top = (up ? r.top - h - 2 : r.bottom - 4) + 'px';
+  }
+
+  function open(gm) {
+    if (gm.trigger.disabled) return;
+    if (openGm && openGm !== gm) close(openGm, true);
+    clearTimeout(gm.closeTimer);
+    gm.panel.classList.remove('closing');
+    document.body.appendChild(gm.panel);
+    gm.active = Math.max(0, gm.opts.indexOf(gm.select.options[gm.select.selectedIndex]));
+    buildList(gm);
+    gm.active = Math.max(0, gm.opts.indexOf(gm.select.options[gm.select.selectedIndex]));
+    position(gm);
+    void gm.panel.offsetWidth; // démarre l'animation depuis l'état fermé
+    gm.panel.classList.add('open');
+    gm.trigger.setAttribute('aria-expanded', 'true');
+    openGm = gm;
+    setActive(gm, gm.active, true);
+  }
+
+  function close(gm, instant) {
+    if (!gm || openGm !== gm) return;
+    openGm = null;
+    gm.trigger.setAttribute('aria-expanded', 'false');
+    gm.trigger.removeAttribute('aria-activedescendant');
+    gm.panel.classList.add('closing');
+    gm.panel.classList.remove('open');
+    const done = () => { gm.panel.classList.remove('closing'); if (openGm !== gm) gm.panel.remove(); };
+    if (instant || reduceMotion) done();
+    else gm.closeTimer = setTimeout(done, 200);
+  }
+
+  function setActive(gm, i, scrollIntoView) {
+    const n = gm.opts.length;
+    if (!n) return;
+    i = Math.max(0, Math.min(n - 1, i));
+    gm.active = i;
+    gm.list.querySelectorAll('.gm-option.is-active').forEach(li => li.classList.remove('is-active'));
+    const li = gm.list.children[i];
+    if (li) li.classList.add('is-active');
+    if (gm.hl) {
+      gm.hl.style.setProperty('--y', (i * ITEM_H + 2) + 'px');
+      gm.hl.classList.add('show');
+    }
+    gm.trigger.setAttribute('aria-activedescendant', gm.list.id + '-' + i);
+    if (scrollIntoView) {
+      const top = i * ITEM_H, s = gm.scroll;
+      const viewTop = s.scrollTop, viewH = s.clientHeight - 18;
+      if (top < viewTop) s.scrollTop = top;
+      else if (top + ITEM_H > viewTop + viewH) s.scrollTop = top + ITEM_H - viewH;
+    }
+  }
+
+  function choose(gm, i) {
+    const o = gm.opts[i];
+    if (!o || o.disabled) return;
+    const sel = gm.select;
+    const changed = o.index !== sel.selectedIndex;
+    indexDesc.set.call(sel, o.index);
+    close(gm);
+    gm.trigger.focus();
+    sync(gm);
+    if (changed) {
+      sel.dispatchEvent(new Event('input', { bubbles: true }));
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  function step(gm, from, dir) {
+    const n = gm.opts.length;
+    for (let i = from + dir; i >= 0 && i < n; i += dir) if (!gm.opts[i].disabled) return i;
+    return from;
+  }
+
+  function onKey(gm, e) {
+    const isOpen = openGm === gm;
+    const k = e.key;
+    if (k === 'Escape' && isOpen) { e.preventDefault(); e.stopPropagation(); close(gm); return; }
+    if (k === 'Tab') { if (isOpen) close(gm, true); return; }
+    if (k === 'ArrowDown' || k === 'ArrowUp') {
+      e.preventDefault();
+      if (!isOpen) { open(gm); return; }
+      setActive(gm, step(gm, gm.active, k === 'ArrowDown' ? 1 : -1), true);
+      return;
+    }
+    if (k === 'Home' || k === 'End') {
+      if (!isOpen) return;
+      e.preventDefault();
+      setActive(gm, k === 'Home' ? step(gm, -1, 1) : step(gm, gm.opts.length, -1), true);
+      return;
+    }
+    if (k === 'Enter' || k === ' ') {
+      if (k === ' ' && gm.type) { /* espace dans une recherche au clavier */ }
+      else {
+        e.preventDefault();
+        if (isOpen) choose(gm, gm.active); else open(gm);
+        return;
+      }
+    }
+    // Recherche au clavier : taper les premières lettres d'une option
+    if (k.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      clearTimeout(gm.typeTimer);
+      gm.type += k.toLowerCase();
+      gm.typeTimer = setTimeout(() => { gm.type = ''; }, 600);
+      if (!isOpen) open(gm);
+      const idx = gm.opts.findIndex(o => !o.disabled && o.textContent.trim().toLowerCase().startsWith(gm.type));
+      if (idx >= 0) setActive(gm, idx, true);
+    }
+  }
+
+  // Fermer au clic extérieur, repositionner au scroll / redimensionnement
+  document.addEventListener('pointerdown', e => {
+    if (openGm && !openGm.panel.contains(e.target) && !openGm.wrap.contains(e.target)) close(openGm);
+  }, true);
+  window.addEventListener('resize', () => { if (openGm) position(openGm); });
+  document.addEventListener('scroll', e => {
+    if (openGm && e.target !== openGm.scroll) position(openGm);
+  }, true);
+
+  // Améliore les selects présents et futurs (listes générées par le JS)
+  function scan(root) {
+    if (root.tagName === 'SELECT') enhance(root);
+    else if (root.querySelectorAll) root.querySelectorAll('select').forEach(enhance);
+  }
+  const mo = new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.type === 'childList') {
+        const t = m.target;
+        const sel = t.tagName === 'SELECT' ? t : (t.tagName === 'OPTION' || t.tagName === 'OPTGROUP') && t.closest('select');
+        if (sel && sel._gm) schedule(sel._gm);
+        m.addedNodes.forEach(node => { if (node.nodeType === 1) scan(node); });
+      } else if (m.type === 'attributes' && m.target.tagName === 'SELECT' && m.target._gm) {
+        if (m.attributeName === 'style') captureSelectStyle(m.target);
+        schedule(m.target._gm);
+      } else if (m.type === 'characterData') {
+        const sel = m.target.parentElement && m.target.parentElement.closest('select');
+        if (sel && sel._gm) schedule(sel._gm);
+      }
+    }
+    if (openGm && !openGm.select.isConnected) close(openGm, true);
+  });
+  mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'style'], characterData: true });
+  document.addEventListener('reset', e => {
+    setTimeout(() => e.target.querySelectorAll && e.target.querySelectorAll('select').forEach(s => s._gm && sync(s._gm)), 0);
+  }, true);
+  scan(document.body);
+})();
 </script>
 </body>
 </html>
