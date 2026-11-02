@@ -5600,6 +5600,27 @@
     .sq-card:hover .sq-hover, .sq-card:focus-within .sq-hover { opacity: 1; visibility: visible; transition: opacity 0.2s, visibility 0s; }
   }
   /* Écran tactile : la carte ouvre la fiche, le bouton « ⋯ » donne accès aux autres actions */
+  /* Onglet Données : bouton toujours visible en bas de la carte */
+  .sq-data .sq-ph { top: 11%; width: 40%; }
+  .sq-data .sq-bottom { bottom: 58px; }
+  .sq-data .sq-hover { bottom: 52px; justify-content: flex-end; padding-bottom: 8px; background: linear-gradient(180deg, rgba(5,5,7,0.35), rgba(5,5,7,0.94) 55%); }
+  .sq-data-btn {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 2;
+    padding: 9px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0d0b07;
+    background: linear-gradient(180deg, var(--red-bright), var(--red));
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .sq-data-btn:hover { box-shadow: 0 6px 18px var(--red-glow); }
+  .sq-data-btn:active { transform: scale(0.98); }
   .sq-touch-more { display: none; }
   @media (hover: none) {
     .sq-touch-more { display: grid; place-items: center; position: absolute; left: 8px; top: 42%; z-index: 2; width: 28px; height: 28px; border-radius: 9px; background: rgba(0,0,0,0.55); border: 1px solid var(--border-strong); color: var(--text); }
@@ -5624,6 +5645,10 @@
     .sq-h-actions > button { padding: 6px 4px; font-size: 11px; }
     .sq-h-actions > button.gold { flex-basis: 100%; }
     .sq-h-actions .pc-more { width: 32px; min-height: 30px; }
+    .sq-data .sq-ph { top: 9%; width: 38%; }
+    .sq-data .sq-bottom { bottom: 44px; }
+    .sq-data .sq-hover { bottom: 40px; }
+    .sq-data-btn { left: 8px; right: 8px; bottom: 8px; padding: 7px 6px; font-size: 11px; border-radius: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .sq-card, .sq-ph, .sq-hover, .sq-team { transition: none !important; }
@@ -14789,17 +14814,16 @@ function dataPlayerCardHtml(p) {
   const gains = totalGains(p);
   const lastCup = cups.filter(c => c.date).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
   const nPr = (p.prHistory || []).length;
-  return '<div class="sq-card ' + sqRankClass(rank) + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Saisir les données de ' + escapeAttr(p.pseudo || '') + '" ' +
+  // Bouton « Saisir / modifier » toujours visible ; le survol ajoute seulement les stats
+  return '<div class="sq-card sq-data ' + sqRankClass(rank) + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Saisir les données de ' + escapeAttr(p.pseudo || '') + '" ' +
     'onclick="openDataModal(\'' + p.id + '\')" onkeydown="if(event.target===this&&(event.key===\'Enter\'||event.key===\' \')){event.preventDefault();openDataModal(\'' + p.id + '\')}">' +
     sqFaceHtml(p, rank, '') +
-    '<button type="button" class="sq-touch-more" aria-label="Afficher les actions" onclick="event.stopPropagation();this.closest(\'.sq-card\').classList.toggle(\'open\')">' +
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>' +
-    '<div class="sq-hover" onclick="if(event.target===this&&matchMedia(\'(hover: none)\').matches){event.stopPropagation();this.closest(\'.sq-card\').classList.remove(\'open\')}">' +
+    '<div class="sq-hover" aria-hidden="true">' +
       '<div class="sq-h-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
       '<div class="sq-h-stats">' + pluralFr(cups.length, 'cup') + ' · ' + fmtNumber(gains) + ' €</div>' +
       '<div class="sq-h-contract">' + pluralFr(nPr, 'relevé') + ' de PR' + (lastCup ? ' · dernière cup le ' + formatDate(lastCup.date).replace(/\s\d{4}$/, '') : '') + '</div>' +
-      '<div class="sq-h-actions"><button type="button" class="gold" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button></div>' +
     '</div>' +
+    '<button type="button" class="sq-data-btn" tabindex="-1" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button>' +
   '</div>';
 }
 
