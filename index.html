@@ -5363,6 +5363,532 @@
     .tabs { width: 100%; }
     .brand-text { font-size: 22px; }
   }
+
+  /* ============================================================
+     DESIGN V2 — cartes chiffres, alertes, cartes joueur, podium,
+     graphique avec focus, états vides, chargement, nav mobile
+     ============================================================ */
+  :root {
+    --danger: #ef4444;
+    --danger-bg: rgba(239,68,68,0.12);
+    --good-bg: rgba(34,197,94,0.12);
+    --silver: #c7ccd6;
+    --bronze: #c98a5c;
+  }
+  .kpi-delta.down { color: var(--danger); background: var(--danger-bg); }
+  .dlb-delta.down { color: var(--danger); }
+
+  /* --- 1. Cartes chiffres --- */
+  .kpi-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 16px 0;
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    min-width: 0;
+  }
+  .kpi-card::before { display: none; }
+  .kpi-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .kpi-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-dim);
+    min-width: 0;
+  }
+  .kpi-ico {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(201,164,92,0.12);
+    color: var(--red-bright);
+  }
+  .kpi-value { font-size: 40px; margin: 2px 0 0; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+  .kpi-value small { font-size: 18px; color: var(--text-dim); margin-left: 5px; }
+  .kpi-delta { margin: 0; font-size: 11px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .kpi-sub { font-size: 12px; color: var(--text-mute); line-height: 1.4; }
+  .kpi-foot { margin: auto -16px 0; min-height: 52px; display: flex; align-items: flex-end; }
+  .kpi-spark { display: block; width: 100%; height: 48px; }
+  .kpi-top-perf { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .kpi-top-perf .kpi-value { font-size: 32px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kpi-av {
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; overflow: hidden;
+    display: grid; place-items: center; background: var(--bg-3); border: 1px solid var(--border-red);
+    font-family: var(--font-display); font-size: 20px; color: var(--red-bright);
+  }
+  .kpi-av img { width: 100%; height: 100%; object-fit: cover; }
+  .kpi-empty { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.03em; color: var(--text-dim); margin-top: 4px; }
+  .kpi-cta {
+    margin: 0 16px 16px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--red-bright), var(--red));
+    color: #0d0b07;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .kpi-cta:hover { box-shadow: 0 4px 16px var(--red-glow); }
+  .kpi-cta:active { transform: scale(0.97); }
+
+  /* --- 2. Centre d'alertes --- */
+  .dash-alerts {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 8px;
+    display: grid;
+    gap: 10px;
+  }
+  .dash-alerts.is-ok {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .da-ok { width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; background: var(--good-bg); color: var(--green); }
+  .da-head { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: var(--white); padding: 0 2px; }
+  .da-count { font-size: 11px; font-weight: 800; background: var(--red); color: #0d0b07; border-radius: 999px; padding: 1px 8px; }
+  .da-list { display: grid; gap: 8px; }
+  .da-item {
+    --c: var(--red);
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px 11px 16px;
+    border-radius: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .da-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--c); }
+  .da-item.tone-bad { --c: var(--danger); }
+  .da-item.tone-warn { --c: var(--amber); }
+  .da-item.tone-info { --c: var(--blue); }
+  .da-item.tone-gold { --c: var(--red); }
+  .da-ico { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
+  .da-title { font-size: 14px; color: var(--text); line-height: 1.35; }
+  .da-title b { color: var(--white); font-weight: 700; }
+  .da-sub { font-size: 12px; color: var(--text-mute); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .da-btn {
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .da-btn:hover { background: var(--bg-3); border-color: var(--c); color: var(--white); }
+  .da-more { justify-self: start; font-size: 12px; font-weight: 600; color: var(--red-bright); padding: 4px 6px; border-radius: 8px; }
+  .da-more:hover { background: rgba(201,164,92,0.1); }
+  @media (max-width: 600px) {
+    .da-item { grid-template-columns: auto minmax(0, 1fr); }
+    .da-btn { grid-column: 2; justify-self: start; }
+    .da-sub { white-space: normal; }
+  }
+
+  /* --- 3. Cartes joueur --- */
+  .pcard {
+    --team: var(--red);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s, box-shadow 0.25s;
+  }
+  .pcard::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, -30%), color-mix(in srgb, var(--team) 18%, transparent), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .pcard:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--team) 45%, transparent); box-shadow: 0 14px 36px rgba(0,0,0,0.5); }
+    .pcard:hover::after { opacity: 1; }
+  }
+  .pc-banner {
+    position: relative;
+    height: 64px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--team) 55%, #000) 0%, color-mix(in srgb, var(--team) 14%, var(--bg-1)) 75%);
+  }
+  .pc-team { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+  .pc-status, .pc-rank {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.45);
+    color: var(--white);
+    font-family: var(--font-mono);
+  }
+  .pc-status.tone-red { background: var(--danger); color: #fff; }
+  .pc-status.tone-amber { background: var(--amber); color: #1a1205; }
+  .pc-status.tone-blue { background: var(--blue); color: #fff; }
+  .pc-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; padding: 0 14px 14px; flex: 1; }
+  .pc-id { display: flex; align-items: flex-end; gap: 12px; margin-top: -28px; min-width: 0; }
+  .pc-av {
+    width: 60px; height: 60px; flex-shrink: 0; border-radius: 16px; overflow: hidden;
+    display: grid; place-items: center;
+    font-family: var(--font-display); font-size: 30px; color: var(--white);
+    background: var(--bg-3);
+    border: 2px solid var(--team);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--team) 35%, transparent);
+  }
+  .pc-av img { width: 100%; height: 100%; object-fit: cover; }
+  .pc-idtext { min-width: 0; padding-bottom: 2px; }
+  .pc-name { font-family: var(--font-display); font-size: 26px; line-height: 1; letter-spacing: 0.04em; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pc-sub { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; color: var(--text-mute); }
+  .pc-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-mute); }
+  .pc-sub img { border-radius: 2px; display: block; }
+  .pc-real { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .pc-pr { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+  .pc-lab { font-size: 11px; color: var(--text-mute); }
+  .pc-pr-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--red-bright); font-variant-numeric: tabular-nums; }
+  .pc-pr-val small { font-size: 15px; color: var(--text-mute); margin-left: 4px; }
+  .pc-none { font-family: var(--font-body); font-size: 13px; color: var(--text-mute); }
+  .pc-contract { --c: var(--text); display: grid; gap: 6px; }
+  .pc-contract-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text-dim); }
+  .pc-contract-row b { color: var(--c); font-weight: 600; }
+  .pc-bar { height: 6px; border-radius: 999px; background: var(--bg-4); overflow: hidden; }
+  .pc-bar i { display: block; height: 100%; border-radius: inherit; background: var(--c); }
+  .pc-contract-dates { font-size: 11px; color: var(--text-mute); }
+  .pc-stats { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border); border-radius: 12px; }
+  .pc-stats > div { padding: 8px 6px; text-align: center; font-size: 11px; color: var(--text-mute); min-width: 0; }
+  .pc-stats > div + div { border-left: 1px solid var(--border); }
+  .pc-stats b { display: block; font-size: 15px; color: var(--white); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pc-stats b.pos { color: var(--green); }
+  .pc-socials { padding: 0; border: 0; }
+  .pc-spark-wrap { margin: -4px -14px 0; }
+  .pc-spark { display: block; width: 100%; height: 44px; }
+  .pc-actions { display: flex; gap: 8px; margin-top: auto; }
+  .pc-actions > button {
+    flex: 1;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .pc-actions > button:hover { background: var(--bg-3); border-color: color-mix(in srgb, var(--team) 50%, transparent); }
+  .pc-actions > button.primary { background: color-mix(in srgb, var(--team) 16%, transparent); border-color: color-mix(in srgb, var(--team) 40%, transparent); }
+  .pc-menu { position: relative; }
+  .pc-more {
+    width: 40px; height: 100%; min-height: 36px;
+    display: grid; place-items: center;
+    border-radius: 10px; border: 1px solid var(--border-strong); color: var(--text-dim);
+    transition: background 0.15s, color 0.15s;
+  }
+  .pc-more:hover, .pc-menu.open .pc-more { background: var(--bg-3); color: var(--white); }
+  .pc-menu-pop {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 6px);
+    min-width: 190px;
+    padding: 6px;
+    border-radius: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+    transform-origin: bottom right;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 5;
+  }
+  .pc-menu.open .pc-menu-pop { opacity: 1; transform: none; pointer-events: auto; }
+  .pc-menu-pop button { width: 100%; text-align: left; padding: 9px 10px; border-radius: 8px; font-size: 13px; color: var(--text); }
+  .pc-menu-pop button.danger { color: var(--danger); }
+  .pc-menu-pop button.danger:hover { background: var(--danger-bg); }
+
+  /* --- 4. Podium --- */
+  .podium { display: grid; align-items: end; gap: 10px; padding-top: 6px; margin-bottom: 12px; }
+  .pod-step { --m: var(--red); display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0; border-radius: 12px; padding-top: 4px; transition: transform 0.2s; }
+  .pod-step:hover { transform: translateY(-2px); }
+  .pod-2 { --m: var(--silver); }
+  .pod-3 { --m: var(--bronze); }
+  .pod-medal { position: relative; }
+  .pod-av {
+    width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
+    display: grid; place-items: center;
+    font-family: var(--font-display); font-size: 24px; color: var(--white);
+    background: var(--bg-3);
+    border: 3px solid var(--m);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--m) 18%, transparent);
+  }
+  .pod-1 .pod-av { width: 68px; height: 68px; font-size: 30px; }
+  .pod-av img { width: 100%; height: 100%; object-fit: cover; }
+  .pod-medal::after {
+    content: attr(data-rank);
+    position: absolute; right: -4px; bottom: -4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--m); color: #0d0b07; font-size: 12px; font-weight: 800;
+  }
+  .pod-name { font-weight: 600; font-size: 13px; color: var(--white); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pod-pts { font-family: var(--font-display); font-size: 22px; line-height: 1; color: var(--red-bright); font-variant-numeric: tabular-nums; }
+  .pod-step .dlb-delta { margin: 0; }
+  .pod-block {
+    width: 100%;
+    display: grid; place-items: center;
+    border-radius: 12px 12px 4px 4px;
+    font-family: var(--font-display); font-size: 30px;
+    color: color-mix(in srgb, var(--m) 75%, #fff);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--m) 26%, var(--bg-3)), var(--bg-2));
+    border: 1px solid color-mix(in srgb, var(--m) 30%, transparent);
+  }
+  .pod-1 .pod-block { height: 92px; }
+  .pod-2 .pod-block { height: 66px; }
+  .pod-3 .pod-block { height: 48px; }
+
+  /* --- 5. Graphique avec focus --- */
+  .chart-area { opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .chart-line { transition: opacity 0.25s, stroke-width 0.25s; pointer-events: none; }
+  .chart-point { transition: opacity 0.25s; }
+  .chart-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; pointer-events: stroke; }
+  .chart-end { font-family: var(--font-body); font-size: 11px; font-weight: 600; cursor: pointer; transition: opacity 0.25s; }
+  .chart-end-val { font-family: var(--font-mono); font-weight: 400; fill: var(--text-dim); opacity: 0; transition: opacity 0.25s; }
+  .chart-svg.has-focus .chart-area.is-focus { opacity: 1; }
+  .chart-svg.has-focus .chart-line:not(.is-focus),
+  .chart-svg.has-focus .chart-point:not(.is-focus) { opacity: 0.15; }
+  .chart-svg.has-focus .chart-line.is-focus { stroke-width: 3; }
+  .chart-svg.has-focus .chart-end:not(.is-focus) { opacity: 0.35; }
+  .chart-svg .chart-end.is-focus .chart-end-val { opacity: 1; }
+  button.legend-item { font: inherit; border: 1px solid transparent; }
+  .legend-item.active { color: var(--white); border-color: var(--border-strong); background: var(--bg-2); }
+
+  /* --- 7. États vides --- */
+  .dash-empty {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    margin: 6px 0;
+    padding: 26px 16px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.015);
+    color: var(--text-mute);
+    font-size: 13px;
+    font-style: normal;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .dash-empty::before {
+    content: '';
+    width: 38px;
+    height: 38px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    background: rgba(201,164,92,0.12) center / 20px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a45c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-6l-2 3h-4l-2-3H2'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E");
+  }
+  .dash-empty.rich::before { display: none; }
+  .de-ico { width: 44px; height: 44px; margin-bottom: 4px; border-radius: 14px; display: grid; place-items: center; background: rgba(201,164,92,0.12); color: var(--red-bright); }
+  .dash-empty strong { font-size: 14px; color: var(--text); font-weight: 600; }
+  .dash-empty > span:not(.de-ico) { max-width: 34ch; }
+  .de-cta {
+    margin-top: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--red-bright), var(--red));
+    color: #0d0b07;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .de-cta:hover { box-shadow: 0 4px 16px var(--red-glow); }
+  .de-cta:active { transform: scale(0.97); }
+  .empty { padding: 56px 20px; border-radius: 16px; border-color: var(--border-strong); }
+  .empty::before {
+    content: '';
+    display: block;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    border-radius: 16px;
+    background: rgba(201,164,92,0.12) center / 26px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a45c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cline x1='19' y1='8' x2='19' y2='14'/%3E%3Cline x1='22' y1='11' x2='16' y2='11'/%3E%3C/svg%3E");
+  }
+  .empty h3 { letter-spacing: 0.06em; color: var(--text); }
+  .empty p { letter-spacing: 0; max-width: 46ch; margin-left: auto; margin-right: auto; }
+
+  /* --- 7. Écran de chargement --- */
+  #bootSkeleton {
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    background: var(--bg-0);
+    overflow: hidden;
+    transition: opacity 0.25s;
+  }
+  #bootSkeleton.leaving { opacity: 0; pointer-events: none; }
+  .boot-inner { max-width: 1440px; margin: 0 auto; padding: 24px 28px; display: grid; gap: 14px; }
+  .boot-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .boot-row { display: flex; gap: 10px; }
+  .sk.boot-pill { height: 46px; width: min(1180px, 100%); border-radius: 999px !important; margin-top: 8px; }
+  .boot-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+  .boot-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .boot-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: grid; gap: 12px; align-content: start; }
+  .boot-card.tall { min-height: 300px; }
+  .sk.boot-chart { height: 220px; border-radius: 10px !important; }
+  .boot-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-mute); text-align: center; margin-top: 6px; }
+  .sk {
+    height: 12px;
+    border-radius: 7px;
+    background: linear-gradient(90deg, var(--bg-2) 0%, var(--bg-4) 50%, var(--bg-2) 100%);
+    background-size: 200% 100%;
+    animation: skShimmer 1.4s linear infinite;
+  }
+  @keyframes skShimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  @media (max-width: 700px) {
+    .boot-inner { padding: 16px; }
+    .boot-row .sk:last-child { display: none; }
+    .boot-kpis { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .boot-grid { grid-template-columns: 1fr; }
+  }
+
+  /* --- 8. Navigation mobile --- */
+  .mnav, .mnav-sheet { display: none; }
+  @media (max-width: 700px) {
+    .app > nav.tabs { display: none; }
+    .app { padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)) !important; }
+    .mnav {
+      display: block;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 960;
+      padding: 0 max(10px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-right, 0px));
+      pointer-events: none;
+    }
+    #appShell[style*="display: none"] ~ .mnav, #appShell[style*="display:none"] ~ .mnav { display: none; }
+    .mnav-inner {
+      pointer-events: auto;
+      display: flex;
+      gap: 2px;
+      padding: 6px;
+      border-radius: 24px;
+      background: rgba(17,17,24,0.92);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 -6px 30px rgba(0,0,0,0.5);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .mnav-item {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      padding: 7px 2px 6px;
+      border-radius: 18px;
+      color: var(--text-mute);
+      font-size: 10px;
+      font-weight: 600;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.2s, background 0.25s;
+    }
+    .mnav-item.active { color: #0d0b07; background: linear-gradient(180deg, var(--red-bright), var(--red)); box-shadow: 0 4px 14px var(--red-glow); }
+    .mnav-item:active { transform: scale(0.95); }
+    .mnav-ico { position: relative; display: grid; place-items: center; height: 20px; }
+    .mnav-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mnav-count {
+      position: absolute; top: -6px; left: 14px;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      border-radius: 999px; display: grid; place-items: center;
+      font-size: 9px; font-weight: 800;
+      background: var(--red); color: #0d0b07; border: 2px solid var(--bg-2);
+    }
+    .mnav-item.active .mnav-count { background: #0d0b07; color: var(--red-bright); border-color: var(--red); }
+    .mnav-dot { position: absolute; top: -2px; right: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid var(--bg-2); }
+    .mnav-sheet { display: block; position: fixed; inset: 0; z-index: 950; pointer-events: none; }
+    .mnav-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.55); opacity: 0; transition: opacity 0.25s; }
+    .mnav-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px max(16px, env(safe-area-inset-left, 0px)) calc(96px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px));
+      border-radius: 22px 22px 0 0;
+      background: var(--bg-2);
+      border-top: 1px solid var(--border-strong);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .mnav-sheet.open { pointer-events: auto; }
+    .mnav-sheet.open .mnav-backdrop { opacity: 1; }
+    .mnav-sheet.open .mnav-panel { transform: none; }
+    .mnav-grip { width: 40px; height: 4px; border-radius: 4px; background: var(--bg-4); margin: 0 auto 12px; }
+    .mnav-title { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 10px; }
+    .mnav-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .mnav-tile {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      padding: 14px 6px;
+      border-radius: 14px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .mnav-tile.active { border-color: var(--red); color: var(--red-bright); }
+    html.mnav-lock, html.mnav-lock body { overflow: hidden; }
+    .toast { top: auto; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; }
+
+    /* Cartes chiffres en grille 2 × 2 sur téléphone */
+    .kpi-card { grid-column: span 6 !important; padding: 12px 12px 0; gap: 4px; }
+    .kpi-ico { display: none; }
+    .kpi-label { font-size: 11px; }
+    .kpi-value { font-size: 28px; }
+    .kpi-value small { font-size: 13px; }
+    .kpi-top-perf .kpi-value { font-size: 24px; }
+    .kpi-av { width: 28px; height: 28px; font-size: 15px; }
+    .kpi-sub { font-size: 11px; }
+    .kpi-foot { margin: auto -12px 0; min-height: 40px; }
+    .kpi-spark { height: 38px; }
+    .kpi-cta { margin: 0 12px 12px; }
+    #kpiRow.dash-grid { gap: 10px; }
+    .dash-card-header { flex-wrap: wrap; gap: 10px; }
+    .dash-card-header > div:first-child { min-width: 0; flex: 1 1 100%; }
+    .dash-card-actions { flex-wrap: wrap; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pcard, .pcard::after, .pc-menu-pop, .pod-step, .chart-area, .chart-line, .chart-point, .chart-end, .mnav-panel, .mnav-backdrop, .mnav-item { transition: none !important; }
+    .sk { animation: none; }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -5558,6 +6084,9 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
+    <!-- Centre d'alertes -->
+    <div id="dashAlerts"></div>
+
     <div class="dash-section-title">Vue d'ensemble</div>
 
     <!-- KPI Bandeau -->
@@ -5569,7 +6098,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Évolution Power Ranking</div>
-            <div class="dash-card-sub">Courbes par joueur — clique sur la légende pour isoler</div>
+            <div class="dash-card-sub">Clique sur un joueur pour le mettre en avant</div>
           </div>
           <div class="dash-card-actions" id="prChartRangeBtns">
             <button class="dash-mini-btn" data-range="1m">1M</button>
@@ -9334,6 +9863,7 @@ function updateCounts() {
 
 let prChartRange = '1y';  // '3m' | '6m' | '1y' | 'all'
 let prChartHiddenPlayers = new Set();   // player IDs hidden from PR evolution chart
+let prChartFocus = null;   // joueur mis en avant dans le graphique PR (null = tous)
 
 // Color palette for player lines/swatches (cycles)
 const PLAYER_COLORS = [
@@ -9346,6 +9876,7 @@ function playerColor(p, idx) {
 }
 
 function renderDashboard() {
+  renderDashAlerts();
   renderKPIs();
   renderTeamComparison();
   renderPlayerComparator();
@@ -9575,6 +10106,50 @@ function setCompareSlot(i, value) {
 // ============================================================
 // KPI BANDEAU
 // ============================================================
+// Petites icônes partagées par les cartes chiffres et les alertes
+const UI_ICONS = {
+  pr: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  star: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>',
+  cup: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
+  euro: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 7a7 7 0 1 0 0 10M4 10h10M4 14h10"/></svg>',
+  clock: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  alert: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+  cake: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1M2 21h20M7 8v3M12 8v3M17 8v3M7 4h.01M12 4h.01M17 4h.01"/></svg>',
+  check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  chart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg>'
+};
+const UI_COLORS = { good: '#22c55e', bad: '#ef4444', gold: '#c9a45c' };
+
+function pluralFr(n, word) { return n + ' ' + word + (Math.abs(n) > 1 ? 's' : ''); }
+function fmtPctFr(pct) { return Math.abs(pct).toFixed(1).replace('.', ',') + ' %'; }
+
+// État vide d'un bloc du dashboard : icône, titre, explication et bouton d'action
+function dashEmptyHtml(title, text, cta, action) {
+  return '<div class="dash-empty rich">' +
+    '<span class="de-ico">' + UI_ICONS.chart + '</span>' +
+    '<strong>' + title + '</strong>' +
+    (text ? '<span>' + text + '</span>' : '') +
+    (cta ? '<button type="button" class="de-cta" onclick="' + action + '">' + cta + '</button>' : '') +
+  '</div>';
+}
+
+// Courbe remplie (aire + trait) qui prend toute la largeur de son conteneur
+let _areaSparkId = 0;
+function areaSparkSvg(values, color, cls) {
+  values = (values || []).map(Number).filter(v => !isNaN(v));
+  if (values.length < 2 || values.every(v => v === 0)) return '';
+  const w = 200, h = 48, pad = 5;
+  const min = Math.min(...values), max = Math.max(...values), range = (max - min) || 1;
+  const pts = values.map((v, i) => [(i / (values.length - 1)) * w, h - pad - ((v - min) / range) * (h - pad * 2 - 6)]);
+  const line = smoothPath(pts);
+  const id = 'asg' + (++_areaSparkId);
+  return '<svg class="' + (cls || 'kpi-spark') + '" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+    '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + color + '" stop-opacity="0.32"/><stop offset="1" stop-color="' + color + '" stop-opacity="0"/></linearGradient></defs>' +
+    '<path d="' + line + ' L ' + w + ',' + h + ' L 0,' + h + ' Z" fill="url(#' + id + ')"/>' +
+    '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>' +
+  '</svg>';
+}
+
 function renderKPIs() {
   const container = document.getElementById('kpiRow');
   if (!container) return;
@@ -9582,119 +10157,229 @@ function renderKPIs() {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
   const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+  const monthName = d => d.toLocaleDateString('fr-FR', { month: 'long' });
+  const curMonth = monthName(now);
+  const prevMonth = monthName(new Date(now.getFullYear(), now.getMonth() - 1, 1));
+  const MONTHS = 6;
+  const cupsSeries = new Array(MONTHS).fill(0);
+  const gainsSeries = new Array(MONTHS).fill(0);
 
-  // Total PR sum
-  let prSum = 0;
-  let prSumPrev = 0;
-  let topGainerThisMonth = null;
-  let cupsThisMonth = 0;
-  let cupsPrevMonth = 0;
-  let gainsThisMonth = 0;
-  let gainsPrevMonth = 0;
+  let prSum = 0, prSumPrev = 0, prPlayers = 0;
+  let topGainer = null;
+  let cupsThisMonth = 0, cupsPrevMonth = 0, gainsThisMonth = 0, gainsPrevMonth = 0;
 
   players.forEach(p => {
     if (typeof migratePlayerPRIfNeeded === 'function') migratePlayerPRIfNeeded(p);
     const hist = (p.prHistory || []).slice().sort((a, b) =>
       new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
     );
-    // Current PR
     if (hist.length > 0) {
       const cur = Number(hist[hist.length - 1].points);
-      if (!isNaN(cur)) prSum += cur;
+      if (!isNaN(cur)) { prSum += cur; prPlayers++; }
     }
-    // PR at start of this month
-    const beforeMonth = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() < monthStart);
-    if (beforeMonth.length > 0) {
-      const past = Number(beforeMonth[beforeMonth.length - 1].points);
+    // PR au début du mois (dernière entrée avant le 1er, sinon valeur actuelle)
+    const before = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() < monthStart);
+    const inMonth = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() >= monthStart);
+    if (before.length > 0) {
+      const past = Number(before[before.length - 1].points);
       if (!isNaN(past)) prSumPrev += past;
     } else if (hist.length > 0) {
       const cur = Number(hist[hist.length - 1].points);
       if (!isNaN(cur)) prSumPrev += cur;
     }
-    // Player gain this month.
-    // Baseline = last entry BEFORE this month if it exists; otherwise the
-    // FIRST entry within this month (so months with only in-month data still count).
-    const beforeMonthEntries = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() < monthStart);
-    const thisMonthEntries = hist.filter(e => new Date(e.date + 'T00:00:00').getTime() >= monthStart);
-    let baselineEntry = null;
-    if (beforeMonthEntries.length > 0) {
-      baselineEntry = beforeMonthEntries[beforeMonthEntries.length - 1];
-    } else if (thisMonthEntries.length > 0) {
-      baselineEntry = thisMonthEntries[0];
+    // Progression du mois : base = dernière entrée avant le mois, sinon première du mois
+    const baseline = before.length ? before[before.length - 1] : (inMonth.length ? inMonth[0] : null);
+    const latest = hist[hist.length - 1];
+    if (baseline && latest && latest !== baseline) {
+      const gain = Number(latest.points) - Number(baseline.points);
+      if (!isNaN(gain) && gain > 0 && (!topGainer || gain > topGainer.gain)) topGainer = { player: p, gain, hist };
     }
-    const latestEntry = hist[hist.length - 1];
-    if (baselineEntry && latestEntry && latestEntry !== baselineEntry) {
-      const gain = Number(latestEntry.points) - Number(baselineEntry.points);
-      if (!isNaN(gain) && gain > 0 && (!topGainerThisMonth || gain > topGainerThisMonth.gain)) {
-        topGainerThisMonth = { player: p, gain };
-      }
-    }
-    // Cups
     (p.cups || []).forEach(c => {
       if (!c.date) return;
-      const t = new Date(c.date + 'T00:00:00').getTime();
+      const d = new Date(c.date + 'T00:00:00');
+      const t = d.getTime();
       const prize = Number(c.prize) || 0;
-      if (t >= monthStart) {
-        cupsThisMonth++;
-        gainsThisMonth += prize;
-      } else if (t >= prevMonthStart && t < monthStart) {
-        cupsPrevMonth++;
-        gainsPrevMonth += prize;
-      }
+      if (t >= monthStart) { cupsThisMonth++; gainsThisMonth += prize; }
+      else if (t >= prevMonthStart) { cupsPrevMonth++; gainsPrevMonth += prize; }
+      const idx = (d.getFullYear() - now.getFullYear()) * 12 + d.getMonth() - now.getMonth() + (MONTHS - 1);
+      if (idx >= 0 && idx < MONTHS) { cupsSeries[idx]++; gainsSeries[idx] += prize; }
     });
   });
 
   function deltaPct(cur, prev) {
-    if (prev === 0) return cur === 0 ? 0 : null;
+    if (prev === 0) return null;
     return ((cur - prev) / prev) * 100;
   }
-  function deltaBadge(pct, suffix) {
-    if (pct == null) return '<span class="kpi-delta flat">—</span>';
-    if (Math.abs(pct) < 0.05) return '<span class="kpi-delta flat">—</span>';
+  function chip(pct) {
+    if (pct == null || Math.abs(pct) < 0.05) return '';
     const up = pct > 0;
-    const sym = up ? '▲' : '▼';
-    return '<span class="kpi-delta ' + (up ? 'up' : 'down') + '">' + sym + ' ' + Math.abs(pct).toFixed(1) + '%' + (suffix || '') + '</span>';
+    return '<span class="kpi-delta ' + (up ? 'up' : 'down') + '">' + (up ? '▲ +' : '▼ −') + fmtPctFr(pct) + '</span>';
+  }
+  function tone(pct) {
+    if (pct == null || Math.abs(pct) < 0.05) return UI_COLORS.gold;
+    return pct > 0 ? UI_COLORS.good : UI_COLORS.bad;
   }
 
-  // Sparkline for total PR over last 30 days
-  const prSparkData = computeTotalPrTimeline(30);
-  const sparkPR = sparklineSvg(prSparkData, '#ef4444', 80, 32);
+  const prPct = deltaPct(prSum, prSumPrev);
+  const cupsPct = deltaPct(cupsThisMonth, cupsPrevMonth);
+  const gainsPct = deltaPct(gainsThisMonth, gainsPrevMonth);
+
+  let topValue, topSub, topSpark, topChip;
+  if (topGainer) {
+    const tp = topGainer.player;
+    const av = tp.photo ? '<img src="' + escapeAttr(tp.photo) + '" alt="" />' : escapeHtml((tp.pseudo || '?').charAt(0).toUpperCase());
+    topValue = '<div class="kpi-top-perf"><span class="kpi-av">' + av + '</span><span class="kpi-value">' + escapeHtml(tp.pseudo || '—') + '</span></div>';
+    topSub = 'Meilleure progression de ' + curMonth;
+    topSpark = areaSparkSvg(topGainer.hist.slice(-10).map(e => e.points), UI_COLORS.gold);
+    topChip = '<span class="kpi-delta up">▲ +' + fmtNumber(topGainer.gain) + ' pts</span>';
+  } else {
+    topValue = '<div class="kpi-empty">Pas encore de top performer</div>';
+    topSub = 'Saisis un Power Ranking en ' + curMonth + ' pour voir qui progresse le plus.';
+    topSpark = '<button type="button" class="kpi-cta" onclick="switchTab(\'data\')">+ Saisir un PR</button>';
+    topChip = '';
+  }
 
   const kpis = [
     {
-      label: 'Total PR roster',
-      value: fmtNumber(prSum) + ' pts',
-      delta: deltaBadge(deltaPct(prSum, prSumPrev), ' ce mois'),
-      spark: sparkPR
+      icon: UI_ICONS.pr, label: 'PR total du roster',
+      value: '<div class="kpi-value">' + fmtNumber(prSum) + '<small>pts</small></div>',
+      chip: chip(prPct),
+      sub: prPlayers ? 'Depuis le 1er ' + curMonth + ' · ' + pluralFr(prPlayers, 'joueur') : 'Aucun Power Ranking saisi',
+      spark: areaSparkSvg(computeTotalPrTimeline(30).map(d => d.value), tone(prPct))
+    },
+    { icon: UI_ICONS.star, label: 'Top performer du mois', value: topValue, chip: topChip, sub: topSub, spark: topSpark },
+    {
+      icon: UI_ICONS.cup, label: 'Cups en ' + curMonth,
+      value: '<div class="kpi-value">' + cupsThisMonth + '</div>',
+      chip: chip(cupsPct),
+      sub: cupsPrevMonth + ' en ' + prevMonth,
+      spark: areaSparkSvg(cupsSeries, tone(cupsPct))
     },
     {
-      label: 'Top performer du mois',
-      value: topGainerThisMonth ? escapeHtml(topGainerThisMonth.player.pseudo) : '—',
-      delta: topGainerThisMonth ? '<span class="kpi-delta up">▲ +' + fmtNumber(topGainerThisMonth.gain) + ' pts</span>' : '<span class="kpi-delta flat">aucune progression ce mois</span>',
-      spark: ''
-    },
-    {
-      label: 'Cups ce mois',
-      value: cupsThisMonth,
-      delta: deltaBadge(deltaPct(cupsThisMonth, cupsPrevMonth), ' vs mois -1'),
-      spark: ''
-    },
-    {
-      label: 'Gains du mois',
-      value: fmtNumber(Math.round(gainsThisMonth)) + ' €',
-      delta: deltaBadge(deltaPct(gainsThisMonth, gainsPrevMonth), ' vs mois -1'),
-      spark: ''
+      icon: UI_ICONS.euro, label: 'Gains en ' + curMonth,
+      value: '<div class="kpi-value">' + fmtNumber(Math.round(gainsThisMonth)) + '<small>€</small></div>',
+      chip: chip(gainsPct),
+      sub: fmtNumber(Math.round(gainsPrevMonth)) + ' € en ' + prevMonth,
+      spark: areaSparkSvg(gainsSeries, tone(gainsPct))
     }
   ];
 
   container.innerHTML = kpis.map(k =>
     '<div class="kpi-card">' +
-      '<div class="kpi-label">' + k.label + '</div>' +
-      '<div class="kpi-value">' + k.value + '</div>' +
-      k.delta +
-      (k.spark ? '<div class="kpi-sparkline">' + k.spark + '</div>' : '') +
+      '<div class="kpi-head"><div class="kpi-label"><span class="kpi-ico">' + k.icon + '</span>' + k.label + '</div>' + k.chip + '</div>' +
+      k.value +
+      '<div class="kpi-sub">' + k.sub + '</div>' +
+      '<div class="kpi-foot">' + (k.spark || '') + '</div>' +
     '</div>'
   ).join('');
+}
+
+/* ============================================================
+   CENTRE D'ALERTES — ce qui demande une action
+   ============================================================ */
+function renderDashAlerts() {
+  const el = document.getElementById('dashAlerts');
+  if (!el) return;
+  const DAY = 86400000;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const alerts = [];
+  const openData = id => "switchTab('data');setTimeout(function(){openDataModal('" + id + "')},100)";
+
+  // Contrats qui se terminent dans 30 jours ou moins, ou expirés
+  players.forEach(p => {
+    if (p.contractIndefinite || !p.contractEnd) return;
+    const cs = computeContractStatus(p);
+    if (!cs || cs.days == null || cs.days > 30) return;
+    const name = '<b>' + escapeHtml(p.pseudo || '—') + '</b>';
+    let title;
+    if (cs.days < 0) title = 'Le contrat de ' + name + ' a expiré il y a ' + pluralFr(-cs.days, 'jour');
+    else if (cs.days === 0) title = 'Le contrat de ' + name + ' se termine aujourd\'hui';
+    else title = 'Le contrat de ' + name + ' se termine dans ' + pluralFr(cs.days, 'jour');
+    alerts.push({
+      tone: cs.days < 0 ? 'bad' : 'warn', order: cs.days, icon: 'clock', title,
+      sub: 'Fin le ' + formatDate(p.contractEnd) + ' · ' + escapeHtml(teamLabelFull(p.team || 'main')),
+      btn: 'Ouvrir la fiche', action: "openPlayerModal('" + p.id + "')"
+    });
+  });
+
+  // Besoins des joueurs pas encore résolus
+  const pending = (trackingEntries || []).filter(e => e.type === 'besoin' && e.status !== 'resolved');
+  if (pending.length) {
+    const ts = e => typeof e.createdAt === 'number' ? e.createdAt : Date.parse(e.createdAt || '');
+    const old = pending.filter(e => !isNaN(ts(e)) && Date.now() - ts(e) > 7 * DAY).length;
+    const sub = pending.slice(0, 3).map(e => {
+      const pl = players.find(x => x.id === e.playerId);
+      let txt = String(e.text || '').trim().replace(/\s+/g, ' ');
+      if (txt.length > 42) txt = txt.slice(0, 42) + '…';
+      return escapeHtml(txt) + (pl ? ' (' + escapeHtml(pl.pseudo || '') + ')' : '');
+    }).join(' · ') + (pending.length > 3 ? ' · …' : '');
+    alerts.push({
+      tone: old ? 'bad' : 'warn', order: -1000, icon: 'alert',
+      title: '<b>' + pluralFr(pending.length, 'besoin') + '</b> en attente' + (old ? ', dont ' + old + ' depuis plus de 7 jours' : ''),
+      sub, btn: 'Voir le suivi', action: "switchTab('tracking')"
+    });
+  }
+
+  // Joueurs sans cup depuis 3 semaines
+  const idle = [];
+  players.forEach(p => {
+    const cups = (p.cups || []).filter(c => c.date).sort((a, b) => (a.date < b.date ? 1 : -1));
+    if (!cups.length) return;
+    const days = Math.floor((today - new Date(cups[0].date + 'T00:00:00')) / DAY);
+    if (days >= 21) idle.push({ p, last: cups[0], days });
+  });
+  idle.sort((a, b) => b.days - a.days);
+  if (idle.length === 1) {
+    const x = idle[0];
+    alerts.push({
+      tone: 'info', order: 0, icon: 'cup',
+      title: '<b>' + escapeHtml(x.p.pseudo || '—') + '</b> n\'a pas joué de cup depuis ' + pluralFr(x.days, 'jour'),
+      sub: 'Dernière : ' + escapeHtml(x.last.name || 'cup') + ' le ' + formatDate(x.last.date),
+      btn: 'Ajouter une cup', action: openData(x.p.id)
+    });
+  } else if (idle.length > 1) {
+    alerts.push({
+      tone: 'info', order: 0, icon: 'cup',
+      title: '<b>' + pluralFr(idle.length, 'joueur') + '</b> sans cup depuis plus de 3 semaines',
+      sub: idle.slice(0, 4).map(x => escapeHtml(x.p.pseudo || '—') + ' (' + x.days + ' j)').join(' · ') + (idle.length > 4 ? ' · …' : ''),
+      btn: 'Voir les données', action: "switchTab('data')"
+    });
+  }
+
+  // Anniversaires du jour
+  players.forEach(p => {
+    if (!p.birthdate) return;
+    const b = new Date(p.birthdate + 'T00:00:00');
+    if (b.getDate() !== today.getDate() || b.getMonth() !== today.getMonth()) return;
+    const age = typeof ageFromBirthdate === 'function' ? ageFromBirthdate(p.birthdate) : null;
+    alerts.push({
+      tone: 'gold', order: 0, icon: 'cake',
+      title: 'C\'est l\'anniversaire de <b>' + escapeHtml(p.pseudo || '—') + '</b> aujourd\'hui' + (age ? ' (' + age + ' ans)' : ''),
+      sub: 'Pense à lui souhaiter !'
+    });
+  });
+
+  if (!alerts.length) {
+    el.innerHTML = '<div class="dash-alerts is-ok"><span class="da-ok">' + UI_ICONS.check + '</span>' +
+      '<span>Rien à traiter : contrats, besoins et activité des joueurs sont à jour.</span></div>';
+    return;
+  }
+  const rank = { bad: 0, warn: 1, info: 2, gold: 3 };
+  alerts.sort((a, b) => (rank[a.tone] - rank[b.tone]) || (a.order - b.order));
+  const MAX = 3;
+  const expanded = el.dataset.expanded === '1';
+  el.innerHTML = '<div class="dash-alerts">' +
+    '<div class="da-head"><span>À traiter</span><span class="da-count">' + alerts.length + '</span></div>' +
+    '<div class="da-list">' + alerts.slice(0, expanded ? alerts.length : MAX).map(a =>
+      '<div class="da-item tone-' + a.tone + '">' +
+        '<span class="da-ico">' + UI_ICONS[a.icon] + '</span>' +
+        '<div class="da-text"><div class="da-title">' + a.title + '</div>' + (a.sub ? '<div class="da-sub">' + a.sub + '</div>' : '') + '</div>' +
+        (a.btn ? '<button type="button" class="da-btn" onclick="' + a.action + '">' + a.btn + '</button>' : '') +
+      '</div>'
+    ).join('') + '</div>' +
+    (alerts.length > MAX ? '<button type="button" class="da-more" onclick="var d=document.getElementById(\'dashAlerts\');d.dataset.expanded=d.dataset.expanded===\'1\'?\'0\':\'1\';renderDashAlerts()">' +
+      (expanded ? 'Afficher moins' : 'Voir les ' + (alerts.length - MAX) + ' autres') + '</button>' : '') +
+  '</div>';
 }
 
 // Compute total PR roster summed by day for last N days
@@ -9775,7 +10460,6 @@ function renderPRChart() {
   const legendEl = document.getElementById('prChartLegend');
   if (!container) return;
 
-  // Wire up range buttons
   document.querySelectorAll('#prChartRangeBtns [data-range]').forEach(b => {
     b.classList.toggle('active', b.dataset.range === prChartRange);
     if (!b._wired) {
@@ -9784,15 +10468,13 @@ function renderPRChart() {
     }
   });
 
-  // Filter players who have PR history
   const playersWithPR = players.filter(p => (p.prHistory || []).length > 0);
   if (playersWithPR.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucun power ranking enregistré pour l\'instant.<br>Va dans l\'onglet Données pour saisir les premiers points.</div>';
+    container.innerHTML = dashEmptyHtml('Aucun Power Ranking pour l\'instant', 'Saisis les premiers points dans l\'onglet Données pour voir les courbes.', 'Aller dans Données', "switchTab('data')");
     legendEl.innerHTML = '';
     return;
   }
 
-  // Compute date range
   const today = new Date(); today.setHours(0, 0, 0, 0);
   let minDate = null;
   if (prChartRange === '1m') minDate = new Date(today.getTime() - 30 * 86400000);
@@ -9800,7 +10482,6 @@ function renderPRChart() {
   else if (prChartRange === '6m') minDate = new Date(today.getTime() - 180 * 86400000);
   else if (prChartRange === '1y') minDate = new Date(today.getTime() - 365 * 86400000);
   else {
-    // 'all' — find earliest entry across all players
     let earliest = Date.now();
     playersWithPR.forEach(p => {
       (p.prHistory || []).forEach(e => {
@@ -9813,15 +10494,13 @@ function renderPRChart() {
   const startTs = minDate.getTime();
   const endTs = today.getTime();
 
-  // Build series with step-forward interpolation (PR stays at last known value)
-  // Colour is keyed on the player's index in the FULL players array (not in the
-  // filtered list) so it always matches the leaderboard and other blocks.
-  const series = playersWithPR.map((p) => {
+  // Séries en escalier : le PR garde sa dernière valeur connue jusqu'à aujourd'hui.
+  // La couleur dépend de l'index dans le roster complet (identique aux autres blocs).
+  const series = playersWithPR.map(p => {
     const sorted = (p.prHistory || []).slice().sort((a, b) =>
       new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
     );
     const pts = [];
-    // Initial value at startTs (last value before or at startTs)
     const beforeStart = sorted.filter(e => new Date(e.date + 'T00:00:00').getTime() <= startTs);
     if (beforeStart.length > 0) {
       const v = Number(beforeStart[beforeStart.length - 1].points);
@@ -9832,95 +10511,88 @@ function renderPRChart() {
       const v = Number(e.points);
       if (!isNaN(t) && !isNaN(v) && t >= startTs && t <= endTs) pts.push({ t, v });
     });
-    // Extend to today with last value
-    if (pts.length > 0 && pts[pts.length - 1].t < endTs) {
-      pts.push({ t: endTs, v: pts[pts.length - 1].v });
-    }
+    if (pts.length > 0 && pts[pts.length - 1].t < endTs) pts.push({ t: endTs, v: pts[pts.length - 1].v });
     return { player: p, color: playerColor(p, players.indexOf(p)), pts };
   }).filter(s => s.pts.length > 0);
 
   if (series.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucune donnée sur la période sélectionnée.</div>';
+    container.innerHTML = dashEmptyHtml('Rien sur cette période', 'Choisis une période plus longue avec les boutons en haut à droite.');
     legendEl.innerHTML = '';
     return;
   }
+  if (prChartFocus && !series.some(s => s.player.id === prChartFocus)) prChartFocus = null;
 
-  // Compute extents
   let allV = [];
-  series.forEach(s => { if (!prChartHiddenPlayers.has(s.player.id)) s.pts.forEach(p => allV.push(p.v)); });
-  if (allV.length === 0) allV = [0, 1];
+  series.forEach(s => s.pts.forEach(p => allV.push(p.v)));
   const minV = Math.min(...allV);
   const maxV = Math.max(...allV);
   const vPad = Math.max(1, (maxV - minV) * 0.1);
   const yMin = Math.max(0, minV - vPad);
   const yMax = maxV + vPad;
 
-  // SVG dimensions (responsive viewBox)
+  // Marge droite pour écrire le nom au bout de chaque courbe
   const W = 800, H = 280;
-  const pad = { top: 16, right: 16, bottom: 32, left: 56 };
+  const pad = { top: 16, right: 96, bottom: 32, left: 56 };
+  const x = t => endTs === startTs ? pad.left : pad.left + ((t - startTs) / (endTs - startTs)) * (W - pad.left - pad.right);
+  const y = v => yMax === yMin ? pad.top + (H - pad.top - pad.bottom) / 2 : pad.top + (1 - (v - yMin) / (yMax - yMin)) * (H - pad.top - pad.bottom);
 
-  function x(t) {
-    if (endTs === startTs) return pad.left;
-    return pad.left + ((t - startTs) / (endTs - startTs)) * (W - pad.left - pad.right);
-  }
-  function y(v) {
-    if (yMax === yMin) return pad.top + (H - pad.top - pad.bottom) / 2;
-    return pad.top + (1 - (v - yMin) / (yMax - yMin)) * (H - pad.top - pad.bottom);
-  }
-
-  // Y-axis grid lines (5 lines)
-  let gridLines = '';
-  const yTicks = 5;
-  for (let i = 0; i <= yTicks; i++) {
-    const val = yMin + ((yMax - yMin) * i / yTicks);
+  let grid = '';
+  for (let i = 0; i <= 5; i++) {
+    const val = yMin + ((yMax - yMin) * i / 5);
     const yPos = y(val);
-    gridLines += '<line class="chart-grid-line" x1="' + pad.left + '" x2="' + (W - pad.right) + '" y1="' + yPos.toFixed(1) + '" y2="' + yPos.toFixed(1) + '" />';
-    gridLines += '<text class="chart-axis-label" x="' + (pad.left - 8) + '" y="' + (yPos + 3).toFixed(1) + '" text-anchor="end">' + fmtNumber(Math.round(val)) + '</text>';
+    grid += '<line class="chart-grid-line" x1="' + pad.left + '" x2="' + (W - pad.right) + '" y1="' + yPos.toFixed(1) + '" y2="' + yPos.toFixed(1) + '" />';
+    grid += '<text class="chart-axis-label" x="' + (pad.left - 8) + '" y="' + (yPos + 3).toFixed(1) + '" text-anchor="end">' + fmtNumber(Math.round(val)) + '</text>';
   }
-
-  // X-axis labels (~5-6 ticks)
   let xLabels = '';
-  const xTicks = 6;
-  for (let i = 0; i <= xTicks; i++) {
-    const t = startTs + ((endTs - startTs) * i / xTicks);
-    const d = new Date(t);
-    const label = d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
-    const xPos = x(t);
-    xLabels += '<text class="chart-axis-label" x="' + xPos.toFixed(1) + '" y="' + (H - pad.bottom + 16) + '" text-anchor="middle">' + label + '</text>';
+  for (let i = 0; i <= 6; i++) {
+    const t = startTs + ((endTs - startTs) * i / 6);
+    const label = new Date(t).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    xLabels += '<text class="chart-axis-label" x="' + x(t).toFixed(1) + '" y="' + (H - pad.bottom + 16) + '" text-anchor="middle">' + label + '</text>';
   }
 
-  // Lines + points
-  let lines = '';
-  let points = '';
-  series.forEach(s => {
-    if (prChartHiddenPlayers.has(s.player.id)) return;
-    // Smooth path through the data points (Catmull-Rom bezier curves)
-    const linePoints = s.pts.map(pt => [x(pt.t), y(pt.v)]);
-    const path = smoothPath(linePoints);
-    lines += '<path class="chart-line" d="' + path + '" stroke="' + s.color + '" />';
+  const bottomY = y(yMin);
+  let defs = '', areas = '', lines = '', hits = '', points = '';
+  series.forEach((s, i) => {
+    const pid = escapeAttr(s.player.id);
+    const lp = s.pts.map(pt => [x(pt.t), y(pt.v)]);
+    const path = smoothPath(lp);
+    defs += '<linearGradient id="prg' + i + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + s.color + '" stop-opacity="0.30"/><stop offset="1" stop-color="' + s.color + '" stop-opacity="0"/></linearGradient>';
+    areas += '<path class="chart-area" data-pid="' + pid + '" d="' + path + ' L ' + lp[lp.length - 1][0].toFixed(1) + ',' + bottomY.toFixed(1) + ' L ' + lp[0][0].toFixed(1) + ',' + bottomY.toFixed(1) + ' Z" fill="url(#prg' + i + ')" />';
+    lines += '<path class="chart-line" data-pid="' + pid + '" d="' + path + '" stroke="' + s.color + '" />';
+    hits += '<path class="chart-hit" data-pid="' + pid + '" d="' + path + '" />';
     s.pts.forEach(pt => {
-      points += '<circle class="chart-point" cx="' + x(pt.t).toFixed(1) + '" cy="' + y(pt.v).toFixed(1) + '" fill="' + s.color + '" r="3" ' +
+      points += '<circle class="chart-point" data-pid="' + pid + '" cx="' + x(pt.t).toFixed(1) + '" cy="' + y(pt.v).toFixed(1) + '" fill="' + s.color + '" r="3" ' +
         'data-pseudo="' + escapeAttr(s.player.pseudo) + '" data-points="' + pt.v + '" data-date="' + new Date(pt.t).toISOString().slice(0, 10) + '" />';
     });
   });
 
-  const svg = '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
-    gridLines +
-    lines +
-    points +
-    xLabels +
-  '</svg>';
+  // Noms au bout des courbes, écartés pour ne pas se chevaucher
+  const GAP = 14, maxY = H - pad.bottom - 2;
+  const labels = series.map(s => ({ s, y: y(s.pts[s.pts.length - 1].v) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < GAP) labels[i].y = labels[i - 1].y + GAP;
+  if (labels.length && labels[labels.length - 1].y > maxY) {
+    labels[labels.length - 1].y = maxY;
+    for (let i = labels.length - 2; i >= 0; i--) labels[i].y = Math.min(labels[i].y, labels[i + 1].y - GAP);
+  }
+  let ends = '';
+  labels.forEach(l => {
+    const name = String(l.s.player.pseudo || '—');
+    const short = name.length > 11 ? name.slice(0, 10) + '…' : name;
+    const lastV = l.s.pts[l.s.pts.length - 1].v;
+    ends += '<text class="chart-end" data-pid="' + escapeAttr(l.s.player.id) + '" x="' + (W - pad.right + 10) + '" y="' + (l.y + 4).toFixed(1) + '" fill="' + l.s.color + '">' +
+      escapeHtml(short) + '<tspan class="chart-end-val" dx="6">' + fmtNumber(lastV) + '</tspan></text>';
+  });
 
-  container.innerHTML = svg;
+  container.innerHTML = '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs>' + defs + '</defs>' + grid + areas + lines + hits + points + ends + xLabels + '</svg>';
 
-  // Tooltip on hover
   const tt = document.getElementById('prChartTooltip');
   container.querySelectorAll('.chart-point').forEach(el => {
-    el.addEventListener('mouseenter', (e) => {
+    el.addEventListener('mouseenter', e => {
       const rect = container.getBoundingClientRect();
       const cx = e.target.getBoundingClientRect();
-      tt.innerHTML = '<strong>' + e.target.dataset.points + ' pts</strong>' +
-        '<div class="ct-meta">' + e.target.dataset.pseudo + ' · ' + fmtDateFR(e.target.dataset.date) + '</div>';
+      tt.innerHTML = '<strong>' + fmtNumber(Number(e.target.dataset.points)) + ' pts</strong>' +
+        '<div class="ct-meta">' + escapeHtml(e.target.dataset.pseudo) + ' · ' + fmtDateFR(e.target.dataset.date) + '</div>';
       tt.style.left = (cx.left - rect.left + cx.width / 2) + 'px';
       tt.style.top = (cx.top - rect.top - 8) + 'px';
       tt.style.transform = 'translate(-50%, -100%)';
@@ -9929,23 +10601,48 @@ function renderPRChart() {
     el.addEventListener('mouseleave', () => { tt.style.opacity = '0'; });
   });
 
-  // Legend
   legendEl.innerHTML = series.map(s =>
-    '<span class="legend-item ' + (prChartHiddenPlayers.has(s.player.id) ? 'disabled' : '') + '" onclick="togglePrChartPlayer(\'' + s.player.id + '\')">' +
-      '<span class="legend-swatch" style="background:' + s.color + '"></span>' +
-      escapeHtml(s.player.pseudo) +
-    '</span>'
+    '<button type="button" class="legend-item" data-pid="' + escapeAttr(s.player.id) + '" aria-pressed="false">' +
+      '<span class="legend-swatch" style="background:' + s.color + '"></span>' + escapeHtml(s.player.pseudo) +
+    '</button>'
   ).join('');
+
+  // Clic = mettre un joueur en avant (re-clic pour revenir à tous) ; survol = aperçu
+  const svgEl = container.querySelector('svg');
+  const targets = Array.from(legendEl.querySelectorAll('.legend-item')).concat(Array.from(svgEl.querySelectorAll('.chart-hit, .chart-end')));
+  targets.forEach(t => {
+    t.addEventListener('click', () => { prChartFocus = prChartFocus === t.dataset.pid ? null : t.dataset.pid; applyPrChartFocus(prChartFocus); });
+    t.addEventListener('mouseenter', () => applyPrChartFocus(t.dataset.pid));
+    t.addEventListener('mouseleave', () => applyPrChartFocus(prChartFocus));
+  });
+  applyPrChartFocus(prChartFocus);
+}
+
+function applyPrChartFocus(pid) {
+  const svg = document.querySelector('#prChart svg');
+  if (!svg) return;
+  svg.classList.toggle('has-focus', !!pid);
+  svg.querySelectorAll('[data-pid]').forEach(el => el.classList.toggle('is-focus', el.dataset.pid === pid));
+  if (pid) {
+    // Passe la courbe choisie au premier plan
+    const line = svg.querySelector('.chart-line[data-pid="' + CSS.escape(pid) + '"]');
+    const firstHit = svg.querySelector('.chart-hit');
+    if (line && firstHit) svg.insertBefore(line, firstHit);
+  }
+  document.querySelectorAll('#prChartLegend .legend-item').forEach(li => {
+    const on = li.dataset.pid === pid;
+    li.classList.toggle('active', on);
+    li.setAttribute('aria-pressed', on && pid === prChartFocus ? 'true' : 'false');
+  });
 }
 
 function togglePrChartPlayer(playerId) {
-  if (prChartHiddenPlayers.has(playerId)) prChartHiddenPlayers.delete(playerId);
-  else prChartHiddenPlayers.add(playerId);
-  renderPRChart();
+  prChartFocus = prChartFocus === playerId ? null : playerId;
+  applyPrChartFocus(prChartFocus);
 }
 
 // ============================================================
-// PR LEADERBOARD with delta % + sparkline
+// CLASSEMENT PR — podium du top 3 + suite du classement
 // ============================================================
 function renderDashLeaderboard() {
   const container = document.getElementById('dashLeaderboard');
@@ -9971,36 +10668,43 @@ function renderDashLeaderboard() {
     .slice(0, 10);
 
   if (items.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucun joueur classé.<br>Saisis un power ranking dans l\'onglet Données.</div>';
+    container.innerHTML = dashEmptyHtml('Aucun joueur classé', 'Saisis un Power Ranking dans l\'onglet Données pour lancer le classement.', 'Aller dans Données', "switchTab('data')");
     return;
   }
 
-  container.innerHTML = '<div class="dash-lb">' + items.map((it, idx) => {
-    const rank = idx + 1;
-    const topClass = rank === 1 ? 'top-1' : (rank === 2 ? 'top-2' : (rank === 3 ? 'top-3' : ''));
-    const avatar = it.player.photo ? '<img src="' + escapeAttr(it.player.photo) + '" />' : (it.player.pseudo || '?').charAt(0).toUpperCase();
-    let deltaHtml = '<span class="dlb-delta flat">—</span>';
-    if (it.pct != null) {
-      if (Math.abs(it.pct) < 0.05) deltaHtml = '<span class="dlb-delta flat">±0%</span>';
-      else {
-        const up = it.pct > 0;
-        deltaHtml = '<span class="dlb-delta ' + (up ? 'up' : 'down') + '">' + (up ? '▲' : '▼') + ' ' + Math.abs(it.pct).toFixed(1) + '%</span>';
-      }
-    }
-    const spark = it.sparkData.length >= 2 ? sparklineSvg(it.sparkData, it.color, 70, 22) : '';
-    return '<div class="dash-lb-row ' + topClass + '" onclick="switchTab(\'data\');setTimeout(()=>openDataModal(\'' + it.player.id + '\'),100)">' +
-      '<div class="dlb-rank">#' + rank + '</div>' +
-      '<div class="dlb-player">' +
-        '<div class="dlb-avatar">' + avatar + '</div>' +
-        '<div class="dlb-name">' + escapeHtml(it.player.pseudo) + '</div>' +
-      '</div>' +
-      '<div class="dlb-sparkline">' + spark + '</div>' +
-      '<div class="dlb-score">' +
-        '<div class="dlb-pts">' + fmtNumber(it.cur) + '</div>' +
-        deltaHtml +
-      '</div>' +
-    '</div>';
+  const open = id => "switchTab('data');setTimeout(function(){openDataModal('" + id + "')},100)";
+  const av = p => p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+  const deltaHtml = it => {
+    if (it.pct == null) return '<span class="dlb-delta flat">—</span>';
+    if (Math.abs(it.pct) < 0.05) return '<span class="dlb-delta flat">±0 %</span>';
+    const up = it.pct > 0;
+    return '<span class="dlb-delta ' + (up ? 'up' : 'down') + '">' + (up ? '▲ ' : '▼ ') + fmtPctFr(it.pct) + '</span>';
+  };
+
+  const top = items.slice(0, 3);
+  const order = top.length === 1 ? [top[0]] : [top[1], top[0], top[2]].filter(Boolean);
+  const podium = '<div class="podium" style="grid-template-columns:repeat(' + order.length + ', minmax(0, 1fr))">' + order.map(it => {
+    const r = items.indexOf(it) + 1;
+    return '<button type="button" class="pod-step pod-' + r + '" onclick="' + open(it.player.id) + '" title="Ouvrir les données de ' + escapeAttr(it.player.pseudo) + '">' +
+      '<span class="pod-medal" data-rank="' + r + '"><span class="pod-av">' + av(it.player) + '</span></span>' +
+      '<span class="pod-name">' + escapeHtml(it.player.pseudo) + '</span>' +
+      '<span class="pod-pts">' + fmtNumber(it.cur) + '</span>' +
+      deltaHtml(it) +
+      '<span class="pod-block">' + r + '</span>' +
+    '</button>';
   }).join('') + '</div>';
+
+  const rest = items.slice(3).map((it, i) => {
+    const spark = it.sparkData.length >= 2 ? sparklineSvg(it.sparkData, it.color, 70, 22) : '';
+    return '<div class="dash-lb-row" onclick="' + open(it.player.id) + '">' +
+      '<div class="dlb-rank">#' + (i + 4) + '</div>' +
+      '<div class="dlb-player"><div class="dlb-avatar">' + av(it.player) + '</div><div class="dlb-name">' + escapeHtml(it.player.pseudo) + '</div></div>' +
+      '<div class="dlb-sparkline">' + spark + '</div>' +
+      '<div class="dlb-score"><div class="dlb-pts">' + fmtNumber(it.cur) + '</div>' + deltaHtml(it) + '</div>' +
+    '</div>';
+  }).join('');
+
+  container.innerHTML = podium + (rest ? '<div class="dash-lb">' + rest + '</div>' : '');
 }
 
 // ============================================================
@@ -12311,62 +13015,126 @@ function renderRosterTable() {
     '<div class="rt-foot">' + rows.length + ' joueur' + (rows.length > 1 ? 's' : '') + ' · clique sur une colonne pour trier</div>';
 }
 
+// Couleur de l'équipe pour la bannière des cartes
+const TEAM_CARD_COLORS = { main: 'var(--red)', academy: 'var(--blue)', cdf: '#a855f7', undecided: 'var(--text-mute)' };
+
+// PR actuel, évolution depuis l'entrée précédente et historique trié
+function playerPrInfo(p) {
+  const hist = (p.prHistory || []).slice().sort((a, b) =>
+    new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
+  );
+  const cur = hist.length ? Number(hist[hist.length - 1].points) : null;
+  const prev = hist.length > 1 ? Number(hist[hist.length - 2].points) : null;
+  const pct = (cur != null && prev != null && !isNaN(cur) && !isNaN(prev) && prev !== 0) ? ((cur - prev) / prev) * 100 : null;
+  return { hist, cur: (cur != null && !isNaN(cur)) ? cur : null, pct };
+}
+
+function playerPrRank(p) {
+  const ranked = players
+    .map(x => ({ id: x.id, v: Number((currentPR(x) || {}).points) }))
+    .filter(x => !isNaN(x.v))
+    .sort((a, b) => b.v - a.v);
+  const i = ranked.findIndex(x => x.id === p.id);
+  return i >= 0 ? i + 1 : null;
+}
+
+function prDeltaChip(pct) {
+  if (pct == null || Math.abs(pct) < 0.05) return '';
+  const up = pct > 0;
+  return '<span class="kpi-delta ' + (up ? 'up' : 'down') + '">' + (up ? '▲ +' : '▼ −') + fmtPctFr(pct) + '</span>';
+}
+
+function cardAvatar(p) {
+  return p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+}
+
 function playerCardHtml(p) {
   const cs = computeContractStatus(p);
-  const avatar = p.photo
-    ? '<img src="' + escapeAttr(p.photo) + '" />'
-    : (p.pseudo || '?').charAt(0).toUpperCase();
-  const flag = p.country ? flagImg(p.country, 18) : '';
+  const team = p.team || 'main';
+  const flag = p.country ? flagImg(p.country, 16) : '';
   const salary = formatSalary(p.salary, p.salaryFreq);
+  const pr = playerPrInfo(p);
+  const rank = playerPrRank(p);
+  const gains = totalGains(p);
+  const cups = (p.cups || []).length;
 
-  // Build social links HTML
+  const realAge = p.birthdate ? ageFromBirthdate(p.birthdate) : (p.age ? Number(p.age) : null);
+  const isBirthday = (function () {
+    if (!p.birthdate) return false;
+    const b = new Date(p.birthdate + 'T00:00:00'), n = new Date();
+    return b.getDate() === n.getDate() && b.getMonth() === n.getMonth();
+  })();
+  const subParts = [];
+  if (flag) subParts.push(flag);
+  subParts.push(escapeHtml(p.game || 'Jeu non précisé'));
+  if (realAge != null && !isNaN(realAge)) subParts.push(realAge + ' ans' + (isBirthday ? ' 🎂' : ''));
+
   const socials = [];
   if (p.twitter) socials.push(socialLinkHtml('twitter', p.twitter));
   if (p.twitch) socials.push(socialLinkHtml('twitch', p.twitch));
   if (p.youtube) socials.push(socialLinkHtml('youtube', p.youtube));
   if (p.tracker) socials.push(socialLinkHtml('tracker', p.tracker));
-  const socialsHtml = socials.length
-    ? '<div class="card-socials">' + socials.join('') + '</div>'
-    : '';
 
-  return '<div class="card" onclick="openPlayerModal(\'' + p.id + '\')">' +
-    '<div class="card-header">' +
-      '<div class="card-avatar">' + avatar + '</div>' +
-      '<div class="card-id">' +
-        '<div class="card-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
-        '<div class="card-meta">' +
-          (flag ? '<span>' + flag + '</span><span class="dot"></span>' : '') +
-          '<span>' + escapeHtml(p.game || 'Jeu non précisé') + '</span>' +
+  // Contrat : barre du temps écoulé + jours restants, colorée selon l'urgence
+  let contract = '';
+  if (p.contractIndefinite) {
+    contract = '<div class="pc-contract" style="--c:var(--green)"><div class="pc-contract-row"><span>Contrat</span><b>CDI</b></div>' +
+      '<div class="pc-contract-dates">' + (p.contractStart ? 'Depuis le ' + formatDate(p.contractStart) : 'Durée indéterminée') + (salary ? ' · ' + salary : '') + '</div></div>';
+  } else if (p.contractEnd && cs) {
+    const color = { red: 'var(--danger)', amber: 'var(--amber)', blue: 'var(--blue)', green: 'var(--green)' }[cs.tone] || 'var(--red)';
+    let label;
+    if (cs.days < 0) label = 'Expiré depuis ' + pluralFr(-cs.days, 'jour');
+    else if (cs.days === 0) label = 'Se termine aujourd\'hui';
+    else label = pluralFr(cs.days, 'jour') + ' restant' + (cs.days > 1 ? 's' : '');
+    let pct = 100;
+    if (p.contractStart) {
+      const s = Date.parse(p.contractStart + 'T00:00:00'), e = Date.parse(p.contractEnd + 'T00:00:00');
+      if (e > s) pct = Math.max(0, Math.min(100, (Date.now() - s) / (e - s) * 100));
+    }
+    contract = '<div class="pc-contract" style="--c:' + color + '">' +
+      '<div class="pc-contract-row"><span>Contrat</span><b>' + label + '</b></div>' +
+      '<div class="pc-bar" title="Part du contrat écoulée"><i style="width:' + pct.toFixed(0) + '%"></i></div>' +
+      '<div class="pc-contract-dates">' + (p.contractStart ? formatDate(p.contractStart) + ' → ' : 'Jusqu\'au ') + formatDate(p.contractEnd) + (salary ? ' · ' + salary : '') + '</div>' +
+    '</div>';
+  } else if (salary) {
+    contract = '<div class="pc-contract"><div class="pc-contract-row"><span>Salaire</span><b>' + salary + '</b></div></div>';
+  }
+
+  const statusBadge = cs && cs.tone !== 'green' ? '<span class="pc-status tone-' + cs.tone + '">' + cs.label + '</span>' : '';
+
+  return '<div class="pcard" style="--team:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '" onclick="openPlayerModal(\'' + p.id + '\')">' +
+    '<div class="pc-banner"><span class="pc-team">' + escapeHtml(teamLabelFull(team)) + '</span>' + statusBadge + '</div>' +
+    '<div class="pc-body">' +
+      '<div class="pc-id">' +
+        '<div class="pc-av">' + cardAvatar(p) + '</div>' +
+        '<div class="pc-idtext">' +
+          '<div class="pc-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
+          '<div class="pc-sub">' + subParts.join('<span class="dot"></span>') + '</div>' +
+          (p.realName ? '<div class="pc-real">' + escapeHtml(p.realName) + '</div>' : '') +
         '</div>' +
-        '<div style="margin-top:6px;">' + teamBadge(p.team || 'main') + '</div>' +
       '</div>' +
-      (cs ? '<span class="badge badge-' + cs.tone + '">' + cs.label + '</span>' : '') +
-    '</div>' +
-    '<div class="card-body">' +
-      (p.realName ? '<div class="info-row"><span class="lbl">Identité</span><span class="val">' + escapeHtml(p.realName) + '</span></div>' : '') +
-      (p.contractStart || p.contractEnd ? '<div class="info-row"><span class="lbl">Contrat</span><span class="val">' + formatDate(p.contractStart) + ' → ' + (p.contractIndefinite ? 'CDI' : formatDate(p.contractEnd)) + '</span></div>' : '') +
-      (salary ? '<div class="info-row"><span class="lbl">Salaire</span><span class="val">' + salary + '</span></div>' : '') +
-      ((function(){
-        const realAge = p.birthdate ? ageFromBirthdate(p.birthdate) : (p.age ? Number(p.age) : null);
-        if (realAge == null || isNaN(realAge)) return '';
-        const bdSuffix = p.birthdate ? ' <span style="color:var(--text-mute);font-size:11px;">(' + formatDate(p.birthdate) + ')</span>' : '';
-        const isBirthdayToday = (function(){
-          if (!p.birthdate) return false;
-          const b = new Date(p.birthdate + 'T00:00:00');
-          const n = new Date();
-          return b.getDate() === n.getDate() && b.getMonth() === n.getMonth();
-        })();
-        const cake = isBirthdayToday ? ' 🎂' : '';
-        return '<div class="info-row"><span class="lbl">Âge</span><span class="val">' + realAge + ' ans' + cake + bdSuffix + '</span></div>';
-      })()) +
-      ((function(){ const c = currentPR(p); return c ? '<div class="info-row"><span class="lbl">Power Ranking</span><span class="val" style="color:var(--red-bright);font-weight:700;">' + fmtPRPoints(c.points) + '</span></div>' : ''; })()) +
-      ((p.cups && p.cups.length) ? '<div class="info-row"><span class="lbl">Cups réalisées</span><span class="val">' + p.cups.length + ((function(){ const g = totalGains(p); return g > 0 ? ' · <span style="color:var(--green);font-family:var(--font-mono);">' + fmtNumber(g) + ' €</span>' : ''; })()) + '</span></div>' : '') +
-    '</div>' +
-    socialsHtml +
-    '<div class="card-footer">' +
-      '<button onclick="event.stopPropagation();openPlayerModal(\'' + p.id + '\')">Éditer</button>' +
-      '<button onclick="event.stopPropagation();openPlayerReport(\'' + p.id + '\')">📊 Rapport</button>' +
-      '<button class="danger" onclick="event.stopPropagation();deletePlayer(\'' + p.id + '\')">Supprimer</button>' +
+      '<div class="pc-pr">' +
+        '<div><div class="pc-lab">Power Ranking</div><div class="pc-pr-val">' + (pr.cur != null ? fmtNumber(pr.cur) + '<small>pts</small>' : '<span class="pc-none">Pas encore de PR</span>') + '</div></div>' +
+        prDeltaChip(pr.pct) +
+      '</div>' +
+      contract +
+      '<div class="pc-stats">' +
+        '<div><b>' + cups + '</b>' + (cups > 1 ? 'cups' : 'cup') + '</div>' +
+        '<div><b class="' + (gains > 0 ? 'pos' : '') + '">' + fmtNumber(gains) + ' €</b>gains</div>' +
+        '<div><b>' + (rank ? '#' + rank : '—') + '</b>roster</div>' +
+      '</div>' +
+      (socials.length ? '<div class="card-socials pc-socials">' + socials.join('') + '</div>' : '') +
+      '<div class="pc-actions">' +
+        '<button type="button" onclick="event.stopPropagation();openPlayerModal(\'' + p.id + '\')">Éditer</button>' +
+        '<button type="button" onclick="event.stopPropagation();openPlayerReport(\'' + p.id + '\')">Rapport</button>' +
+        '<div class="pc-menu">' +
+          '<button type="button" class="pc-more" aria-label="Plus d\'actions" aria-haspopup="menu" aria-expanded="false" onclick="event.stopPropagation();togglePcMenu(this)">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>' +
+          '<div class="pc-menu-pop" role="menu">' +
+            '<button type="button" role="menuitem" class="danger" onclick="event.stopPropagation();closePcMenus();deletePlayer(\'' + p.id + '\')">Supprimer le joueur</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
     '</div>' +
   '</div>';
 }
@@ -13584,34 +14352,37 @@ function renderData() {
 }
 
 function dataPlayerCardHtml(p) {
-  const avatar = p.photo
-    ? '<img src="' + escapeAttr(p.photo) + '" />'
-    : (p.pseudo || '?').charAt(0).toUpperCase();
-  const flag = p.country ? flagImg(p.country, 18) : '';
-  const cur = currentPR(p);
-  const cupCount = (p.cups || []).length;
+  const team = p.team || 'main';
+  const flag = p.country ? flagImg(p.country, 16) : '';
+  const pr = playerPrInfo(p);
+  const rank = playerPrRank(p);
+  const cups = (p.cups || []).filter(c => c);
   const gains = totalGains(p);
+  const lastCup = cups.filter(c => c.date).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+  const color = playerColor(p, players.indexOf(p));
+  const spark = pr.hist.length >= 2 ? areaSparkSvg(pr.hist.slice(-12).map(e => e.points), color, 'pc-spark') : '';
 
-  return '<div class="card" onclick="openDataModal(\'' + p.id + '\')">' +
-    '<div class="card-header">' +
-      '<div class="card-avatar">' + avatar + '</div>' +
-      '<div class="card-id">' +
-        '<div class="card-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
-        '<div class="card-meta">' +
-          (flag ? '<span>' + flag + '</span><span class="dot"></span>' : '') +
-          '<span>' + escapeHtml(p.game || 'Jeu non précisé') + '</span>' +
+  return '<div class="pcard pcard-data" style="--team:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '" onclick="openDataModal(\'' + p.id + '\')">' +
+    '<div class="pc-banner"><span class="pc-team">' + escapeHtml(teamLabelFull(team)) + '</span>' + (rank ? '<span class="pc-rank">#' + rank + '</span>' : '') + '</div>' +
+    '<div class="pc-body">' +
+      '<div class="pc-id">' +
+        '<div class="pc-av">' + cardAvatar(p) + '</div>' +
+        '<div class="pc-idtext">' +
+          '<div class="pc-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
+          '<div class="pc-sub">' + (flag ? flag + '<span class="dot"></span>' : '') + escapeHtml(p.game || 'Jeu non précisé') + '</div>' +
         '</div>' +
       '</div>' +
-    '</div>' +
-    '<div class="card-body">' +
-      '<div class="info-row"><span class="lbl">Power Ranking</span><span class="val" style="color:var(--red-bright);font-weight:700;font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;">' +
-        (cur ? fmtPRPoints(cur.points) : '—') +
-      '</span></div>' +
-      '<div class="info-row"><span class="lbl">Cups réalisées</span><span class="val">' + cupCount + '</span></div>' +
-      '<div class="info-row"><span class="lbl">Gains cumulés</span><span class="val" style="color:var(--green);font-family:var(--font-mono);">' + fmtNumber(gains) + ' €</span></div>' +
-    '</div>' +
-    '<div class="card-footer">' +
-      '<button onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button>' +
+      '<div class="pc-pr">' +
+        '<div><div class="pc-lab">Power Ranking</div><div class="pc-pr-val">' + (pr.cur != null ? fmtNumber(pr.cur) + '<small>pts</small>' : '<span class="pc-none">Pas encore de PR</span>') + '</div></div>' +
+        prDeltaChip(pr.pct) +
+      '</div>' +
+      (spark ? '<div class="pc-spark-wrap">' + spark + '</div>' : '') +
+      '<div class="pc-stats">' +
+        '<div><b>' + cups.length + '</b>' + (cups.length > 1 ? 'cups' : 'cup') + '</div>' +
+        '<div><b class="' + (gains > 0 ? 'pos' : '') + '">' + fmtNumber(gains) + ' €</b>gains</div>' +
+        '<div><b>' + (lastCup ? formatDate(lastCup.date).replace(/\s\d{4}$/, '') : '—') + '</b>dernière cup</div>' +
+      '</div>' +
+      '<div class="pc-actions"><button type="button" class="primary" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button></div>' +
     '</div>' +
   '</div>';
 }
@@ -17573,6 +18344,184 @@ init();
     setTimeout(() => e.target.querySelectorAll && e.target.querySelectorAll('input[type="date"]').forEach(i => i._dp && sync(i._dp)), 0);
   }, true);
   scan(document.body);
+})();
+</script>
+<script>
+/* ============================================================
+   CARTES JOUEUR — menu « ⋯ » et halo qui suit la souris
+   ============================================================ */
+function closePcMenus(except) {
+  document.querySelectorAll('.pc-menu.open').forEach(m => {
+    if (m === except) return;
+    m.classList.remove('open');
+    const b = m.querySelector('.pc-more');
+    if (b) b.setAttribute('aria-expanded', 'false');
+  });
+}
+function togglePcMenu(btn) {
+  const menu = btn.closest('.pc-menu');
+  closePcMenus(menu);
+  const open = !menu.classList.contains('open');
+  menu.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('click', e => { if (!e.target.closest('.pc-menu')) closePcMenus(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePcMenus(); });
+document.addEventListener('pointermove', e => {
+  const card = e.target.closest && e.target.closest('.pcard');
+  if (!card) return;
+  const r = card.getBoundingClientRect();
+  card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+  card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}, { passive: true });
+
+/* ============================================================
+   ÉCRAN DE CHARGEMENT — squelette de l'app pendant que Supabase répond
+   (uniquement quand une session est déjà ouverte)
+   ============================================================ */
+(function () {
+  let hasSession = false;
+  try { hasSession = !!sessionStorage.getItem('sovereign_current_user'); } catch (e) {}
+  const shell = document.getElementById('appShell');
+  if (!hasSession || !shell || shell.style.display === 'block') return;
+
+  const sk = (cls, style) => '<div class="sk ' + (cls || '') + '"' + (style ? ' style="' + style + '"' : '') + '></div>';
+  const boot = document.createElement('div');
+  boot.id = 'bootSkeleton';
+  boot.setAttribute('role', 'status');
+  boot.setAttribute('aria-label', 'Chargement des données');
+  boot.innerHTML =
+    '<div class="boot-inner">' +
+      '<div class="boot-top">' + sk('', 'width:92px;height:34px') + '<div class="boot-row">' + sk('', 'width:36px;height:36px') + sk('', 'width:36px;height:36px') + sk('', 'width:150px;height:36px') + '</div></div>' +
+      sk('boot-pill') +
+      sk('', 'width:260px;height:40px;margin-top:8px') + sk('', 'width:200px;height:12px') +
+      '<div class="boot-kpis">' + [1, 2, 3, 4].map(() => '<div class="boot-card">' + sk('', 'width:55%') + sk('', 'width:45%;height:30px') + sk('', 'width:70%') + '</div>').join('') + '</div>' +
+      '<div class="boot-grid"><div class="boot-card tall">' + sk('', 'width:40%') + sk('boot-chart') + '</div><div class="boot-card tall">' + sk('', 'width:50%') + [1, 2, 3, 4].map(() => sk('', 'height:40px')).join('') + '</div></div>' +
+      '<div class="boot-label">Chargement des données…</div>' +
+    '</div>';
+  document.body.appendChild(boot);
+
+  let done = false;
+  function hide() {
+    if (done) return;
+    done = true;
+    boot.classList.add('leaving');
+    setTimeout(() => boot.remove(), 260);
+  }
+  ['showApp', 'showOnboarding', 'showConfigScreen'].forEach(name => {
+    const fn = window[name];
+    if (typeof fn !== 'function') return;
+    window[name] = function () { hide(); return fn.apply(this, arguments); };
+  });
+  const origLoadAll = window.loadAll;
+  if (typeof origLoadAll === 'function') {
+    window.loadAll = async function () {
+      try { return await origLoadAll.apply(this, arguments); } finally { hide(); }
+    };
+  }
+  setTimeout(hide, 20000); // sécurité : ne jamais bloquer l'écran
+})();
+
+/* ============================================================
+   NAVIGATION MOBILE — barre fixe en bas + feuille « Plus »
+   ============================================================ */
+(function () {
+  const nav = document.querySelector('nav.tabs');
+  if (!nav) return;
+  const PRIMARY = ['dashboard', 'roster', 'data', 'calendar'];
+  const SHORT = { dashboard: 'Accueil', calendar: 'Agenda', data: 'Données', tracking: 'Suivi' };
+  const MORE_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+
+  const bar = document.createElement('nav');
+  bar.className = 'mnav';
+  bar.setAttribute('aria-label', 'Navigation');
+  const sheet = document.createElement('div');
+  sheet.className = 'mnav-sheet';
+  sheet.innerHTML = '<div class="mnav-backdrop" data-close></div><div class="mnav-panel" role="dialog" aria-label="Autres onglets"><div class="mnav-grip"></div><div class="mnav-title">Autres onglets</div><div class="mnav-grid"></div></div>';
+  document.body.appendChild(bar);
+  document.body.appendChild(sheet);
+  const grid = sheet.querySelector('.mnav-grid');
+
+  const tabs = () => Array.from(nav.querySelectorAll('.tab'));
+  const visible = t => t.style.display !== 'none';
+  const labelOf = t => {
+    const key = t.dataset.tab;
+    if (SHORT[key]) return SHORT[key];
+    const span = t.querySelector('.pill-text');
+    return span ? span.dataset.text : t.textContent.trim();
+  };
+  const countOf = t => {
+    const c = t.querySelector('.count');
+    return c && c.textContent.trim() !== '' ? c.textContent.trim() : '';
+  };
+  const iconOf = t => { const s = t.querySelector('svg'); return s ? s.outerHTML.replace(/width="14" height="14"/, 'width="20" height="20"') : ''; };
+
+  function item(t, cls) {
+    const n = countOf(t);
+    return '<button type="button" class="' + cls + '" data-tab="' + t.dataset.tab + '">' +
+      '<span class="mnav-ico">' + iconOf(t) + (n && n !== '0' ? '<span class="mnav-count">' + n + '</span>' : '') + '</span>' +
+      '<span class="mnav-label">' + labelOf(t) + '</span></button>';
+  }
+
+  function build() {
+    const vis = tabs().filter(visible);
+    let main, more;
+    if (vis.length <= 5) { main = vis; more = []; }
+    else {
+      main = PRIMARY.map(k => vis.find(t => t.dataset.tab === k)).filter(Boolean);
+      vis.forEach(t => { if (main.length < 4 && !main.includes(t)) main.push(t); });
+      more = vis.filter(t => !main.includes(t));
+    }
+    bar.innerHTML = '<div class="mnav-inner">' + main.map(t => item(t, 'mnav-item')).join('') +
+      (more.length ? '<button type="button" class="mnav-item" data-more aria-haspopup="dialog"><span class="mnav-ico">' + MORE_ICON +
+        (more.some(t => countOf(t) && countOf(t) !== '0') ? '<span class="mnav-dot"></span>' : '') + '</span><span class="mnav-label">Plus</span></button>' : '') +
+      '</div>';
+    grid.innerHTML = more.map(t => item(t, 'mnav-tile')).join('');
+    bar.dataset.more = more.map(t => t.dataset.tab).join(',');
+    syncActive();
+  }
+
+  function syncActive() {
+    const active = nav.querySelector('.tab.active');
+    const key = active ? active.dataset.tab : '';
+    const inMore = (bar.dataset.more || '').split(',').includes(key);
+    bar.querySelectorAll('.mnav-item').forEach(b => {
+      const on = b.hasAttribute('data-more') ? inMore : b.dataset.tab === key;
+      b.classList.toggle('active', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    grid.querySelectorAll('.mnav-tile').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+  }
+
+  function openSheet() { sheet.classList.add('open'); document.documentElement.classList.add('mnav-lock'); }
+  function closeSheet() { sheet.classList.remove('open'); document.documentElement.classList.remove('mnav-lock'); }
+
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.hasAttribute('data-more')) { sheet.classList.contains('open') ? closeSheet() : openSheet(); return; }
+    closeSheet();
+    switchTab(b.dataset.tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  sheet.addEventListener('click', e => {
+    if (e.target.hasAttribute('data-close')) { closeSheet(); return; }
+    const b = e.target.closest('.mnav-tile');
+    if (!b) return;
+    closeSheet();
+    switchTab(b.dataset.tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet(); });
+
+  // Onglet changé, onglets masqués selon le rôle, compteurs mis à jour → on suit
+  const prevSwitch = window.switchTab;
+  window.switchTab = function () { const r = prevSwitch.apply(this, arguments); syncActive(); return r; };
+  new MutationObserver(muts => {
+    if (muts.every(m => m.target.classList && m.target.classList.contains('pill-indicator'))) return;
+    build();
+  }).observe(nav, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style'] });
+  build();
 })();
 </script>
 </body>
