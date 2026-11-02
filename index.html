@@ -10593,9 +10593,7 @@ function renderKPIs() {
 
   players.forEach(p => {
     if (typeof migratePlayerPRIfNeeded === 'function') migratePlayerPRIfNeeded(p);
-    const hist = (p.prHistory || []).slice().sort((a, b) =>
-      new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
-    );
+    const hist = (p.prHistory || []).slice().sort(comparePrAsc);
     if (hist.length > 0) {
       const cur = Number(hist[hist.length - 1].points);
       if (!isNaN(cur)) { prSum += cur; prPlayers++; }
@@ -10814,9 +10812,7 @@ function computeTotalPrTimeline(days) {
     const iso = d.toISOString().slice(0, 10);
     let sum = 0;
     players.forEach(p => {
-      const hist = (p.prHistory || []).slice().sort((a, b) =>
-        new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
-      );
+      const hist = (p.prHistory || []).slice().sort(comparePrAsc);
       const valid = hist.filter(e => e.date && e.date <= iso);
       if (valid.length > 0) {
         const v = Number(valid[valid.length - 1].points);
@@ -10920,9 +10916,7 @@ function renderPRChart() {
   // Séries en escalier : le PR garde sa dernière valeur connue jusqu'à aujourd'hui.
   // La couleur dépend de l'index dans le roster complet (identique aux autres blocs).
   const series = playersWithPR.map(p => {
-    const sorted = (p.prHistory || []).slice().sort((a, b) =>
-      new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
-    );
+    const sorted = (p.prHistory || []).slice().sort(comparePrAsc);
     const pts = [];
     const beforeStart = sorted.filter(e => new Date(e.date + 'T00:00:00').getTime() <= startTs);
     if (beforeStart.length > 0) {
@@ -11074,9 +11068,7 @@ function renderDashLeaderboard() {
   const items = players
     .map((p, idx) => {
       if (typeof migratePlayerPRIfNeeded === 'function') migratePlayerPRIfNeeded(p);
-      const sorted = (p.prHistory || []).slice().sort((a, b) =>
-        new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
-      );
+      const sorted = (p.prHistory || []).slice().sort(comparePrAsc);
       if (sorted.length === 0) return null;
       const cur = Number(sorted[sorted.length - 1].points);
       if (isNaN(cur)) return null;
@@ -11365,9 +11357,7 @@ function renderPayroll() {
    VOLATILITY (PR consistency) — kept (used by health score)
    ============================================================ */
 function computePlayerVolatility(p) {
-  const hist = (p.prHistory || []).slice().sort((a, b) =>
-    new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
-  );
+  const hist = (p.prHistory || []).slice().sort(comparePrAsc);
   if (hist.length < 2) return null;
   // Compute deltas between consecutive entries
   const deltas = [];
@@ -12971,7 +12961,7 @@ function buildReportHtml(p) {
   // PR evolution: first vs current
   const prHistSorted = (p.prHistory || []).slice()
     .filter(e => e.points != null && e.date)
-    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    .sort(comparePrAsc);
   let prDelta = null, prLastDate = null, prFirstVal = null;
   if (prHistSorted.length >= 1) {
     prLastDate = prHistSorted[prHistSorted.length - 1].date;
@@ -13021,7 +13011,7 @@ function buildReportHtml(p) {
   // PR evolution sparkline (SVG)
   const prHist = (p.prHistory || []).slice()
     .filter(e => e.points != null)
-    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    .sort(comparePrAsc);
   let prChartSvg = '';
   if (prHist.length >= 2) {
     const vals = prHist.map(e => Number(e.points));
@@ -13443,9 +13433,7 @@ const TEAM_CARD_COLORS = { main: 'var(--red)', academy: 'var(--blue)', cdf: '#a8
 
 // PR actuel, évolution depuis l'entrée précédente et historique trié
 function playerPrInfo(p) {
-  const hist = (p.prHistory || []).slice().sort((a, b) =>
-    new Date((a.date || '1970-01-01') + 'T00:00:00') - new Date((b.date || '1970-01-01') + 'T00:00:00')
-  );
+  const hist = (p.prHistory || []).slice().sort(comparePrAsc);
   const cur = hist.length ? Number(hist[hist.length - 1].points) : null;
   const prev = hist.length > 1 ? Number(hist[hist.length - 2].points) : null;
   const pct = (cur != null && prev != null && !isNaN(cur) && !isNaN(prev) && prev !== 0) ? ((cur - prev) / prev) * 100 : null;
@@ -14645,15 +14633,23 @@ function migratePlayerPRIfNeeded(p) {
   if (!Array.isArray(p.cups)) p.cups = [];
 }
 
-// Returns current PR points (most recent prHistory entry by date desc)
+// Ordre chronologique des relevés : par date, puis par moment de saisie.
+// Deux relevés du même jour : le dernier saisi est le plus récent.
+function prEntryTime(e) {
+  if (!e) return 0;
+  if (e.createdAt) return Number(e.createdAt) || 0;
+  const m = /^pr_([0-9a-z]+)_/.exec(e.id || '');   // l'id contient l'heure de saisie
+  return m ? parseInt(m[1], 36) || 0 : 0;
+}
+function comparePrAsc(a, b) {
+  return (a.date || '1970-01-01').localeCompare(b.date || '1970-01-01') || (prEntryTime(a) - prEntryTime(b));
+}
+
+// Relevé de PR actuel (le plus récent)
 function currentPR(p) {
   if (!Array.isArray(p.prHistory) || p.prHistory.length === 0) return null;
-  const sorted = p.prHistory.slice().sort((a, b) => {
-    const da = new Date((a.date || '1970-01-01') + 'T00:00:00').getTime();
-    const db = new Date((b.date || '1970-01-01') + 'T00:00:00').getTime();
-    return db - da;
-  });
-  return sorted[0];
+  // Tri croissant stable puis dernier élément : à égalité, l'ordre de saisie l'emporte
+  return p.prHistory.slice().sort(comparePrAsc).pop();
 }
 
 
@@ -14914,11 +14910,7 @@ function refreshDataModalView() {
 
 function renderPrHistoryList(p) {
   const container = document.getElementById('prHistoryList');
-  const sorted = (p.prHistory || []).slice().sort((a, b) => {
-    const da = new Date((a.date || '1970-01-01') + 'T00:00:00').getTime();
-    const db = new Date((b.date || '1970-01-01') + 'T00:00:00').getTime();
-    return db - da;
-  });
+  const sorted = (p.prHistory || []).slice().sort(comparePrAsc).reverse();
   renderPrMiniChart(sorted.slice().reverse());
   updatePrHint();
   if (sorted.length === 0) {
@@ -15251,7 +15243,8 @@ async function addPrEntry() {
     id: 'pr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
     points: Number(pts),
     date,
-    note
+    note,
+    createdAt: Date.now()
   });
   p.updatedAt = Date.now();
   await persistPlayers();
