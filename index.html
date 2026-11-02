@@ -9280,8 +9280,136 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 22;  // bump this when you add an entry
+const CHANGELOG_VERSION = 23;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-02",
+    title: "Historique des modifications par joueur",
+    items: [
+      "Nouvel onglet « Historique » dans la fiche de chaque joueur : qui a modifié quoi, et quand, avec l'ancienne et la nouvelle valeur.",
+      "Enregistré pour la fiche (équipe, contrat, salaire, réseaux…), les relevés de PR et les cups (ajout, modification, suppression, annulation).",
+      "L'onglet reprend aussi les suivis du joueur et les anciennes lignes du journal d'activité qui le citent. Les 100 dernières modifications sont conservées.",
+      "Le point orange de l'onglet Contrat n'apparaît plus que si le contrat se termine dans 30 jours ou moins."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Classement du roster sur le dashboard",
+    items: [
+      "Un seul tableau remplace « Forme du moment », « Place moyenne », « Top gains cumulés » et « Joueur vs moyenne roster ».",
+      "Colonnes PR, forme, place moyenne, cups, gains et 5 dernières places en couleur. Clique sur un titre de colonne pour trier.",
+      "Un trait sur chaque barre marque la moyenne du roster. Un clic sur une ligne ouvre la fiche Données du joueur."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Nouvelles cartes joueur",
+    items: [
+      "Les cartes du Roster et de l'onglet Données sont carrées et plus compactes : photo encadrée, pseudo, drapeau, PR et sa tendance.",
+      "Cadre or, argent ou bronze pour le top 3 du roster. L'alerte de contrat ne s'affiche que sous 30 jours.",
+      "Au survol : cups, gains, âge, contrat, réseaux et boutons Éditer, Rapport et « ⋯ » (Supprimer). Sur téléphone, le bouton « ⋯ » affiche ces actions.",
+      "Dans l'onglet Données, le bouton « Saisir / modifier » est toujours visible."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Correctif : relevés de PR du même jour",
+    items: [
+      "Quand deux relevés de PR ont la même date, c'est maintenant le dernier saisi qui compte comme PR actuel, partout dans l'app."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Confirmations et bouton « Annuler »",
+    items: [
+      "Les confirmations utilisent une fenêtre aux couleurs de l'app au lieu de la boîte du navigateur. Échap annule.",
+      "Les notifications s'affichent en bas de l'écran, avec une icône et une barre de temps.",
+      "Après une suppression (joueur, prospect, relevé, cup, note, suivi, grinder, FGP, événement), un bouton « Annuler » reste disponible 6 secondes."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Scouting en pipeline",
+    items: [
+      "Le Scouting s'ouvre sur des colonnes À suivre → Contacté → Intéressé → Signé. L'ancienne grille reste disponible.",
+      "Les relances en retard sont en rouge et en haut de leur colonne. Le bouton « Avancer » fait passer le prospect à l'étape suivante.",
+      "Les refusés et pas intéressants sont rangés dans « Voir les archivés »."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Calendrier plus lisible",
+    items: [
+      "Un événement de plusieurs jours (bootcamp, absence) s'affiche en une seule barre.",
+      "Aujourd'hui est marqué d'une pastille dorée, et une colonne « Cette semaine » donne le compte à rebours des 7 prochains jours."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Fiche joueur en onglets",
+    items: [
+      "La fiche joueur est rangée en onglets Profil, Contrat, Réseaux, Notes et Historique.",
+      "La photo est dans l'en-tête et peut être glissée-déposée. L'onglet Contrat montre une frise du temps écoulé."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Suivi en fil d'activité",
+    items: [
+      "Une seule zone de saisie avec le choix Suivi ou Besoin (Ctrl + Entrée pour ajouter).",
+      "Compteurs cliquables (à traiter, en cours, résolus ce mois) et historique groupé par jour avec la photo du joueur."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Saisie du Power Ranking",
+    items: [
+      "La courbe du PR s'affiche en haut de la saisie, et l'écart avec le dernier relevé s'affiche pendant la frappe.",
+      "Entrée enregistre le relevé. Chaque ligne de l'historique montre l'évolution par rapport au relevé précédent."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Grinder du mois et Notes",
+    items: [
+      "Grinder : carte « Grinder du mois » avec les FGP du mois, l'avance sur le 2e et le top 3 du mois. L'aperçu des FGP est affiché en grand.",
+      "Notes : couleur du groupe en bord de carte, priorité en couleur, et les lignes « - [ ] » deviennent des cases à cocher directement sur la carte."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Refonte du dashboard",
+    items: [
+      "Bloc « À traiter » en haut : contrats qui se terminent, besoins en attente, joueurs sans cup depuis 3 semaines, anniversaires.",
+      "Cartes chiffres avec tendance en vert ou en rouge et une courbe sous chaque chiffre. Podium or, argent, bronze pour le classement PR.",
+      "Graphique PR : le nom est écrit au bout de chaque courbe, et un clic sur un joueur le met en avant.",
+      "Messages plus clairs quand un bloc est vide, et écran de chargement pendant la connexion."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Navigation mobile",
+    items: [
+      "Sur téléphone, une barre fixe en bas donne accès à Accueil, Roster, Données, Agenda et « Plus » pour les autres onglets.",
+      "Les cartes chiffres du dashboard s'affichent en grille 2 × 2."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Nouveau calendrier pour les dates",
+    items: [
+      "Tous les champs date utilisent un calendrier aux couleurs de l'app, avec saisie au clavier (02092026 → 02/09/2026).",
+      "Clic sur le titre pour choisir le mois ou l'année. Une date de naissance vide s'ouvre directement sur le choix de l'année."
+    ]
+  },
+  {
+    date: "2026-11-02",
+    title: "Nouvelle barre d'onglets et listes déroulantes",
+    items: [
+      "La barre d'onglets du haut est une pilule : l'onglet actif est surligné en doré, avec une animation au survol.",
+      "Toutes les listes déroulantes ont un nouveau menu animé, utilisable au clavier (flèches, Entrée, Échap, premières lettres)."
+    ]
+  },
   {
     date: '2026-08-14',
     title: 'Nouveau palier Top 300',
