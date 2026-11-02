@@ -1959,6 +1959,192 @@
     .gm-blob, .gm-hl, .gm-option, .gm-caret { transition: opacity 0.12s !important; transform: none !important; }
   }
 
+  /* ============================================================
+     DATE PICKER — calendrier personnalisé pour les champs date
+     ============================================================ */
+  .dp { position: relative; display: block; min-width: 0; }
+  .he-edit-row .dp { min-width: 140px; }
+  .dp-native {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+  }
+  .dp-text { width: 100%; padding-right: 40px !important; font-variant-numeric: tabular-nums; }
+  .dp-text::placeholder { color: var(--text-mute); letter-spacing: 0.04em; }
+  .dp-text.dp-invalid { border-color: #ef4444 !important; animation: dpShake 0.3s; }
+  @keyframes dpShake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+  .dp-icon {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    width: 28px;
+    height: 28px;
+    margin-top: -14px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    color: var(--text-mute);
+    transition: color 0.15s, background 0.15s, transform 0.15s;
+  }
+  .dp-icon:hover { color: var(--red-bright); background: rgba(201,164,92,0.1); }
+  .dp-icon:active { transform: scale(0.92); }
+  .dp-icon[aria-expanded="true"] { color: #0d0b07; background: var(--red); }
+  .dp-text:disabled ~ .dp-icon { opacity: 0.4; pointer-events: none; }
+
+  .dp-panel {
+    position: fixed;
+    z-index: 10000;
+    width: 288px;
+    padding: 14px;
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+    color: var(--text);
+    font-family: var(--font-body);
+    user-select: none;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+    transform-origin: top left;
+    transition: opacity 0.16s ease-out, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.22s;
+  }
+  .dp-panel.up { transform-origin: bottom left; transform: translateY(6px) scale(0.97); }
+  .dp-panel.open { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
+
+  .dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .dp-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    margin-left: -6px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    text-transform: capitalize;
+    transition: background 0.15s;
+  }
+  .dp-title:hover { background: var(--bg-3); }
+  .dp-title svg { color: var(--red-bright); transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+  .dp-panel[data-view="months"] .dp-title svg,
+  .dp-panel[data-view="years"] .dp-title svg { transform: rotate(180deg); }
+  .dp-nav { display: flex; gap: 4px; }
+  .dp-arrow {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.12s;
+  }
+  .dp-arrow:hover { color: var(--red-bright); border-color: var(--border-red); background: rgba(201,164,92,0.08); }
+  .dp-arrow:active { transform: scale(0.9); }
+
+  .dp-body { position: relative; overflow: hidden; min-height: 252px; }
+  .dp-week, .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .dp-week span {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    padding: 4px 0 8px;
+  }
+  .dp-grid { gap: 2px; }
+  .dp-day {
+    position: relative;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    transition: background 0.12s, color 0.12s;
+    outline: none;
+  }
+  .dp-day.out { color: var(--text-mute); }
+  .dp-day:hover:not(:disabled) { background: var(--bg-3); }
+  .dp-day:focus-visible { box-shadow: inset 0 0 0 2px var(--red); }
+  .dp-day.today::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--red-bright);
+  }
+  .dp-day.today { color: var(--red-bright); font-weight: 700; }
+  .dp-day.selected {
+    background: linear-gradient(180deg, var(--red-bright), var(--red));
+    color: #0d0b07;
+    font-weight: 700;
+    box-shadow: 0 4px 14px var(--red-glow);
+    animation: dpPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .dp-day.selected::after { background: #0d0b07; }
+  .dp-day:disabled { color: var(--text-mute); opacity: 0.3; cursor: not-allowed; }
+  @keyframes dpPop { from { transform: scale(0.8); } to { transform: scale(1); } }
+
+  .dp-cells { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-top: 4px; }
+  .dp-cell {
+    height: 54px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: capitalize;
+    transition: background 0.12s, color 0.12s;
+  }
+  .dp-cell:hover:not(:disabled) { background: var(--bg-3); color: var(--text); }
+  .dp-cell.current { color: var(--red-bright); }
+  .dp-cell.selected { background: linear-gradient(180deg, var(--red-bright), var(--red)); color: #0d0b07; }
+  .dp-cell.out { color: var(--text-mute); }
+  .dp-cell:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .dp-anim-next { animation: dpNext 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+  .dp-anim-prev { animation: dpPrev 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+  .dp-anim-zoom { animation: dpZoom 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes dpNext { from { opacity: 0; transform: translateX(18px); } }
+  @keyframes dpPrev { from { opacity: 0; transform: translateX(-18px); } }
+  @keyframes dpZoom { from { opacity: 0; transform: scale(0.94); } }
+
+  .dp-foot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .dp-btn {
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color 0.15s, background 0.15s;
+  }
+  .dp-btn:hover { color: var(--text); background: var(--bg-3); }
+  .dp-btn.primary { color: var(--red-bright); }
+  .dp-btn.primary:hover { background: rgba(201,164,92,0.12); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dp-panel, .dp-day, .dp-anim-next, .dp-anim-prev, .dp-anim-zoom { animation: none !important; transition: opacity 0.12s !important; transform: none !important; }
+  }
+
   .tab-content { display: none; }
   .tab-content.active { display: block; animation: fadeIn 0.2s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -17023,6 +17209,368 @@ init();
   mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'style'], characterData: true });
   document.addEventListener('reset', e => {
     setTimeout(() => e.target.querySelectorAll && e.target.querySelectorAll('select').forEach(s => s._gm && sync(s._gm)), 0);
+  }, true);
+  scan(document.body);
+})();
+</script>
+<script>
+/* ============================================================
+   DATE PICKER — remplace le calendrier natif des <input type="date">
+   L'input natif reste dans le DOM (caché) avec sa valeur AAAA-MM-JJ :
+   .value, onchange, min/max et required continuent de fonctionner.
+   ============================================================ */
+(function () {
+  const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  const MONTHS_SHORT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  const WEEK = ['lu', 'ma', 'me', 'je', 've', 'sa', 'di'];
+  const DAY_NAMES = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+  const CARET = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  const ARROW = d => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="' + d + '"/></svg>';
+
+  const pad = n => String(n).padStart(2, '0');
+  const iso = (y, m, d) => y + '-' + pad(m + 1) + '-' + pad(d);
+  const parseIso = v => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
+    return m ? { y: +m[1], m: +m[2] - 1, d: +m[3] } : null;
+  };
+  const toFr = v => { const p = parseIso(v); return p ? pad(p.d) + '/' + pad(p.m + 1) + '/' + p.y : ''; };
+  const todayIso = () => { const t = new Date(); return iso(t.getFullYear(), t.getMonth(), t.getDate()); };
+  const daysIn = (y, m) => new Date(y, m + 1, 0).getDate();
+  const addDays = (v, n) => { const p = parseIso(v); const d = new Date(p.y, p.m, p.d + n); return iso(d.getFullYear(), d.getMonth(), d.getDate()); };
+  const addMonths = (v, n) => {
+    const p = parseIso(v);
+    const d = new Date(p.y, p.m + n, 1);
+    return iso(d.getFullYear(), d.getMonth(), Math.min(p.d, daysIn(d.getFullYear(), d.getMonth())));
+  };
+
+  // Accepte jj/mm/aaaa, j/m/aa, jj-mm-aaaa, jj.mm.aaaa, jjmmaaaa ou aaaa-mm-jj
+  function parseFr(text) {
+    const t = text.trim();
+    let y, m, d, r;
+    if ((r = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t))) { y = +r[1]; m = +r[2]; d = +r[3]; }
+    else if ((r = /^(\d{1,2})[\/.\-\s](\d{1,2})[\/.\-\s](\d{2}|\d{4})$/.exec(t))) { d = +r[1]; m = +r[2]; y = +r[3]; }
+    else if ((r = /^(\d{2})(\d{2})(\d{4})$/.exec(t))) { d = +r[1]; m = +r[2]; y = +r[3]; }
+    else return null;
+    if (y < 100) { const cut = (new Date().getFullYear() % 100) + 10; y += y <= cut ? 2000 : 1900; }
+    if (m < 1 || m > 12 || d < 1 || d > daysIn(y, m - 1)) return null;
+    return iso(y, m - 1, d);
+  }
+
+  const valueDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  const pending = new Set();
+  function schedule(dp) {
+    if (!pending.size) queueMicrotask(() => { const l = Array.from(pending); pending.clear(); l.forEach(sync); });
+    pending.add(dp);
+  }
+  // Quand le code existant fait input.value = '2026-09-02', on met l'affichage à jour
+  Object.defineProperty(HTMLInputElement.prototype, 'value', {
+    configurable: true,
+    enumerable: valueDesc.enumerable,
+    get: valueDesc.get,
+    set(v) { valueDesc.set.call(this, v); if (this._dp) schedule(this._dp); }
+  });
+
+  let openDp = null;
+  let uid = 0;
+
+  // Un seul panneau partagé par tous les champs
+  const panel = document.createElement('div');
+  panel.className = 'dp-panel';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'false');
+  panel.setAttribute('aria-label', 'Choisir une date');
+  panel.innerHTML =
+    '<div class="dp-head">' +
+      '<button type="button" class="dp-title" data-act="view" aria-live="polite"></button>' +
+      '<div class="dp-nav">' +
+        '<button type="button" class="dp-arrow" data-act="prev" aria-label="Précédent">' + ARROW('15 18 9 12 15 6') + '</button>' +
+        '<button type="button" class="dp-arrow" data-act="next" aria-label="Suivant">' + ARROW('9 18 15 12 9 6') + '</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="dp-body"></div>' +
+    '<div class="dp-foot">' +
+      '<button type="button" class="dp-btn" data-act="clear">Effacer</button>' +
+      '<button type="button" class="dp-btn primary" data-act="today">Aujourd\'hui</button>' +
+    '</div>';
+  const titleBtn = panel.querySelector('.dp-title');
+  const body = panel.querySelector('.dp-body');
+  const state = { y: 0, m: 0, view: 'days', focus: '' };
+
+  function limits(dp) { return { min: dp.input.min || '', max: dp.input.max || '' }; }
+  function inRange(dp, v) { const l = limits(dp); return (!l.min || v >= l.min) && (!l.max || v <= l.max); }
+
+  function sync(dp) {
+    const inp = dp.input;
+    if (document.activeElement !== dp.text || !dp.text.value) dp.text.value = toFr(inp.value);
+    dp.text.disabled = inp.disabled;
+    dp.text.readOnly = inp.readOnly;
+    dp.text.required = inp.required;
+    dp.text.className = 'dp-text' + (inp.className ? ' ' + inp.className.replace(/\bdp-native\b/g, '').trim() : '');
+    if (openDp === dp && document.activeElement !== dp.text) render('');
+  }
+
+  function enhance(inp) {
+    if (inp._dp || inp.type !== 'date' || inp.dataset.native !== undefined) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'dp';
+    const text = document.createElement('input');
+    text.type = 'text';
+    text.inputMode = 'numeric';
+    text.autocomplete = 'off';
+    text.placeholder = 'jj/mm/aaaa';
+    text.maxLength = 10;
+    const icon = document.createElement('button');
+    icon.type = 'button';
+    icon.className = 'dp-icon';
+    icon.innerHTML = ICON;
+    icon.setAttribute('aria-label', 'Ouvrir le calendrier');
+    icon.setAttribute('aria-haspopup', 'dialog');
+    icon.setAttribute('aria-expanded', 'false');
+    const lbl = inp.closest('.form-group') && inp.closest('.form-group').querySelector('label');
+    if (lbl) text.setAttribute('aria-label', lbl.textContent.replace(/\s*\*$/, '').trim());
+
+    inp.parentNode.insertBefore(wrap, inp);
+    wrap.appendChild(text);
+    wrap.appendChild(icon);
+    wrap.appendChild(inp);
+    inp.classList.add('dp-native');
+    inp.tabIndex = -1;
+    inp.setAttribute('aria-hidden', 'true');
+    inp.id && (text.dataset.for = inp.id);
+
+    const dp = { input: inp, wrap, text, icon, id: ++uid };
+    inp._dp = dp;
+
+    inp.addEventListener('focus', () => text.focus());
+    inp.addEventListener('invalid', () => flashInvalid(dp));
+    text.addEventListener('click', () => { if (openDp !== dp) open(dp); });
+    icon.addEventListener('click', () => { if (openDp === dp) close(); else { open(dp); text.focus(); } });
+    icon.addEventListener('pointerdown', e => e.preventDefault());
+    text.addEventListener('input', e => {
+      // Ajoute les « / » automatiquement pendant la saisie de chiffres
+      let v = text.value.replace(/[^\d\/.\-\s]/g, '');
+      if (e.inputType === 'insertText' && /^\d{2}$|^\d{2}\/\d{2}$/.test(v)) v += '/';
+      if (v !== text.value) text.value = v;
+      const parsed = parseFr(v);
+      if (parsed && openDp === dp) { const p = parseIso(parsed); state.y = p.y; state.m = p.m; state.focus = parsed; state.view = 'days'; render(''); }
+    });
+    text.addEventListener('change', () => commitText(dp));
+    text.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); commitText(dp); close(); }
+      else if (e.key === 'Escape' && openDp === dp) { e.preventDefault(); e.stopPropagation(); close(); }
+      else if (e.key === 'ArrowDown' || (e.altKey && e.key === 'ArrowDown')) {
+        e.preventDefault();
+        if (openDp !== dp) open(dp);
+        focusDay();
+      } else if (e.key === 'Tab' && openDp === dp) close();
+    });
+    sync(dp);
+  }
+
+  function flashInvalid(dp) {
+    dp.text.classList.remove('dp-invalid');
+    void dp.text.offsetWidth;
+    dp.text.classList.add('dp-invalid');
+    setTimeout(() => dp.text.classList.remove('dp-invalid'), 1600);
+  }
+
+  function commitText(dp) {
+    const raw = dp.text.value.trim();
+    if (!raw) { setValue(dp, ''); return; }
+    const v = parseFr(raw);
+    if (!v || !inRange(dp, v)) { flashInvalid(dp); dp.text.value = toFr(dp.input.value); return; }
+    setValue(dp, v);
+  }
+
+  function setValue(dp, v) {
+    const changed = dp.input.value !== v;
+    valueDesc.set.call(dp.input, v);
+    dp.text.value = toFr(v);
+    if (changed) {
+      dp.input.dispatchEvent(new Event('input', { bubbles: true }));
+      dp.input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  function render(dir) {
+    const dp = openDp;
+    if (!dp) return;
+    panel.dataset.view = state.view;
+    const sel = dp.input.value;
+    const today = todayIso();
+    const l = limits(dp);
+    let html = '';
+    if (state.view === 'days') {
+      titleBtn.innerHTML = MONTHS[state.m] + ' ' + state.y + ' ' + CARET;
+      const first = (new Date(state.y, state.m, 1).getDay() + 6) % 7; // lundi = 0
+      const start = new Date(state.y, state.m, 1 - first);
+      html = '<div class="dp-week">' + WEEK.map(w => '<span>' + w + '</span>').join('') + '</div><div class="dp-grid" role="grid">';
+      for (let i = 0; i < 42; i++) {
+        const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+        const v = iso(d.getFullYear(), d.getMonth(), d.getDate());
+        const cls = ['dp-day'];
+        if (d.getMonth() !== state.m) cls.push('out');
+        if (v === today) cls.push('today');
+        if (v === sel) cls.push('selected');
+        const dis = !inRange(dp, v);
+        html += '<button type="button" class="' + cls.join(' ') + '" data-date="' + v + '" tabindex="' + (v === state.focus ? 0 : -1) + '"' +
+          (dis ? ' disabled' : '') + (v === sel ? ' aria-pressed="true"' : '') +
+          ' aria-label="' + DAY_NAMES[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear() + '">' + d.getDate() + '</button>';
+      }
+      html += '</div>';
+    } else if (state.view === 'months') {
+      titleBtn.innerHTML = state.y + ' ' + CARET;
+      const s = parseIso(sel), t = parseIso(today);
+      html = '<div class="dp-cells">' + MONTHS_SHORT.map((name, i) => {
+        const startM = iso(state.y, i, 1), endM = iso(state.y, i, daysIn(state.y, i));
+        const dis = (l.max && startM > l.max) || (l.min && endM < l.min);
+        const cls = ['dp-cell'];
+        if (s && s.y === state.y && s.m === i) cls.push('selected');
+        if (t.y === state.y && t.m === i) cls.push('current');
+        return '<button type="button" class="' + cls.join(' ') + '" data-month="' + i + '"' + (dis ? ' disabled' : '') + '>' + name + '</button>';
+      }).join('') + '</div>';
+    } else {
+      const base = Math.floor(state.y / 12) * 12;
+      titleBtn.innerHTML = base + ' – ' + (base + 11) + ' ' + CARET;
+      const s = parseIso(sel), t = parseIso(today);
+      html = '<div class="dp-cells">';
+      for (let y = base; y < base + 12; y++) {
+        const dis = (l.max && y + '-01-01' > l.max) || (l.min && y + '-12-31' < l.min);
+        const cls = ['dp-cell'];
+        if (s && s.y === y) cls.push('selected');
+        if (t.y === y) cls.push('current');
+        html += '<button type="button" class="' + cls.join(' ') + '" data-year="' + y + '"' + (dis ? ' disabled' : '') + '>' + y + '</button>';
+      }
+      html += '</div>';
+    }
+    const view = document.createElement('div');
+    if (dir) view.className = 'dp-anim-' + dir;
+    view.innerHTML = html;
+    body.replaceChildren(view);
+  }
+
+  function focusDay() {
+    const b = body.querySelector('.dp-day[tabindex="0"]') || body.querySelector('.dp-day.selected') || body.querySelector('.dp-day:not(.out)');
+    if (b) b.focus();
+  }
+
+  function moveFocus(v) {
+    if (openDp && !inRange(openDp, v)) return;
+    const p = parseIso(v);
+    const dir = p.y * 12 + p.m > state.y * 12 + state.m ? 'next' : p.y * 12 + p.m < state.y * 12 + state.m ? 'prev' : '';
+    state.focus = v;
+    if (dir) { state.y = p.y; state.m = p.m; }
+    render(dir);
+    focusDay();
+  }
+
+  function position() {
+    const dp = openDp;
+    const r = dp.text.getBoundingClientRect();
+    if (!r.width) { close(); return; }
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const up = vh - r.bottom < h + 12 && r.top > vh - r.bottom;
+    panel.classList.toggle('up', up);
+    panel.style.left = Math.min(Math.max(8, r.left), vw - w - 8) + 'px';
+    panel.style.top = Math.max(8, up ? r.top - h - 6 : r.bottom + 6) + 'px';
+  }
+
+  function open(dp) {
+    if (dp.text.disabled || dp.text.readOnly) return;
+    if (openDp && openDp !== dp) close();
+    openDp = dp;
+    const cur = parseFr(dp.text.value) || dp.input.value;
+    let base = parseIso(cur) ? cur : todayIso();
+    if (!inRange(dp, base)) base = dp.input.max && base > dp.input.max ? dp.input.max : (dp.input.min || base);
+    const p = parseIso(base);
+    state.y = p.y; state.m = p.m; state.focus = base;
+    // Champ vide limité au passé (ex. date de naissance) : on commence par l'année
+    state.view = (!dp.input.value && dp.input.max && !dp.input.min && dp.input.max <= todayIso()) ? 'years' : 'days';
+    if (state.view === 'years') state.y -= 18;
+    if (!panel.isConnected) document.body.appendChild(panel);
+    panel.classList.remove('open');
+    render('');
+    position();
+    void panel.offsetWidth;
+    panel.classList.add('open');
+    dp.icon.setAttribute('aria-expanded', 'true');
+  }
+
+  function close() {
+    if (!openDp) return;
+    openDp.icon.setAttribute('aria-expanded', 'false');
+    openDp = null;
+    panel.classList.remove('open');
+  }
+
+  function pick(v) {
+    const dp = openDp;
+    if (!dp) return;
+    setValue(dp, v);
+    close();
+    dp.text.focus();
+  }
+
+  panel.addEventListener('pointerdown', e => e.preventDefault()); // le focus reste dans le champ texte
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b || b.disabled || !openDp) return;
+    const act = b.dataset.act;
+    if (b.dataset.date) { pick(b.dataset.date); return; }
+    if (b.dataset.month) { state.m = +b.dataset.month; state.view = 'days'; state.focus = iso(state.y, state.m, 1); render('zoom'); return; }
+    if (b.dataset.year) { state.y = +b.dataset.year; state.view = 'months'; render('zoom'); return; }
+    if (act === 'view') { state.view = state.view === 'days' ? 'months' : state.view === 'months' ? 'years' : 'days'; render('zoom'); return; }
+    if (act === 'prev' || act === 'next') {
+      const n = act === 'next' ? 1 : -1;
+      if (state.view === 'days') { const d = new Date(state.y, state.m + n, 1); state.y = d.getFullYear(); state.m = d.getMonth(); }
+      else state.y += state.view === 'months' ? n : 12 * n;
+      render(act);
+      return;
+    }
+    if (act === 'clear') { const dp = openDp; setValue(dp, ''); close(); dp.text.focus(); return; }
+    if (act === 'today') {
+      const t = todayIso();
+      if (inRange(openDp, t)) pick(t);
+      else { const p = parseIso(t); state.y = p.y; state.m = p.m; state.view = 'days'; render('zoom'); }
+    }
+  });
+  panel.addEventListener('keydown', e => {
+    if (!openDp) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); const dp = openDp; close(); dp.text.focus(); return; }
+    const day = e.target.closest && e.target.closest('.dp-day');
+    if (!day) return;
+    const v = day.dataset.date;
+    const moves = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    if (moves[e.key]) { e.preventDefault(); moveFocus(addDays(v, moves[e.key])); }
+    else if (e.key === 'PageUp' || e.key === 'PageDown') { e.preventDefault(); moveFocus(addMonths(v, (e.key === 'PageDown' ? 1 : -1) * (e.shiftKey ? 12 : 1))); }
+    else if (e.key === 'Home' || e.key === 'End') {
+      e.preventDefault();
+      const p = parseIso(v), wd = (new Date(p.y, p.m, p.d).getDay() + 6) % 7;
+      moveFocus(addDays(v, e.key === 'Home' ? -wd : 6 - wd));
+    } else if (e.key === 'Tab') { const dp = openDp; e.preventDefault(); close(); dp.text.focus(); }
+  });
+
+  document.addEventListener('pointerdown', e => {
+    if (openDp && !panel.contains(e.target) && !openDp.wrap.contains(e.target)) close();
+  }, true);
+  window.addEventListener('resize', () => { if (openDp) position(); });
+  document.addEventListener('scroll', e => { if (openDp && !panel.contains(e.target)) position(); }, true);
+
+  function scan(root) {
+    if (root.tagName === 'INPUT') enhance(root);
+    else if (root.querySelectorAll) root.querySelectorAll('input[type="date"]').forEach(enhance);
+  }
+  new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.type === 'childList') m.addedNodes.forEach(n => { if (n.nodeType === 1) scan(n); });
+      else if (m.target._dp) schedule(m.target._dp);
+    }
+    if (openDp && !openDp.input.isConnected) close();
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'readonly', 'required', 'min', 'max', 'value'] });
+  document.addEventListener('reset', e => {
+    setTimeout(() => e.target.querySelectorAll && e.target.querySelectorAll('input[type="date"]').forEach(i => i._dp && sync(i._dp)), 0);
   }, true);
   scan(document.body);
 })();
