@@ -6509,6 +6509,95 @@
   .kx-flag span { font-size: 12px; color: var(--text); }
   .kx-flag small { display: block; font-size: 10px; color: var(--text-mute); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   @media (max-width: 560px) { .kx-leg { grid-template-columns: 1fr 1fr; } .kx-trophies { grid-template-columns: 1fr; } }
+
+  /* ===== Agenda mobile : bande semaine + liste du jour ===== */
+  .cwk { display: none; }
+  .cwk-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .cwk-bar span { font-size: 12px; color: var(--text-dim); }
+  .cwk-nav { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-1); color: var(--text); display: grid; place-items: center; font-size: 16px; cursor: pointer; }
+  .cwk-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; touch-action: pan-y; }
+  .cwk-strip button { display: grid; justify-items: center; gap: 3px; padding: 7px 0 8px; border: 0; border-radius: 12px; background: none; font: inherit; font-size: 10px; text-transform: lowercase; color: var(--text-mute); cursor: pointer; }
+  .cwk-strip button b { font-family: var(--font-display); font-weight: 400; font-size: 20px; line-height: 1; color: var(--text); }
+  .cwk-strip button.other b { color: var(--text-mute); }
+  .cwk-strip button.today b { color: var(--red-bright); }
+  .cwk-strip button[aria-pressed="true"] { background: var(--red); color: #14110a; }
+  .cwk-strip button[aria-pressed="true"] b { color: #14110a; }
+  .cwk-dots { display: flex; gap: 2px; height: 5px; }
+  .cwk-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--c); }
+  .cwk-list { display: grid; gap: 8px; margin-top: 12px; }
+  .cwk-day { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-mute); }
+  .cwk-day button { flex-shrink: 0; padding: 4px 2px; border: 0; background: none; font: inherit; font-size: 11px; letter-spacing: 0; text-transform: none; color: var(--red-bright); cursor: pointer; }
+  .cwk-ev { --c: var(--red); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--c); background: var(--bg-1); font: inherit; text-align: left; color: var(--text); cursor: pointer; }
+  .cwk-ev b { display: block; font-size: 13px; font-weight: 600; }
+  .cwk-ev small { display: block; font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+  .cwk-ev em { font-style: normal; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+  .cwk-empty { padding: 22px 12px; text-align: center; font-size: 13px; color: var(--text-mute); border: 1px dashed var(--border-strong); border-radius: 12px; }
+  @media (max-width: 700px) {
+    .cmv .cwk { display: block; }
+    .cmv .cmv-main, .cmv .cmv-side { display: none; }
+  }
+
+  /* ===== Frise des contrats ===== */
+  .ctl { position: relative; padding-top: 20px; }
+  .ctl-grid { display: grid; grid-template-columns: 130px minmax(0, 1fr); }
+  .ctl-axis { position: relative; height: 22px; border-bottom: 1px solid var(--border); }
+  .ctl-axis span { position: absolute; transform: translateX(-50%); font-size: 10px; color: var(--text-mute); white-space: nowrap; text-transform: capitalize; }
+  .ctl-name { display: flex; align-items: center; gap: 8px; height: 44px; border-bottom: 1px solid var(--border); min-width: 0; padding: 0 8px 0 0; border: 0; border-bottom: 1px solid var(--border); background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer; }
+  .ctl-name:hover b { color: var(--red-bright); }
+  .ctl-name .av { width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center; overflow: hidden; font-family: var(--font-display); font-size: 15px; background: var(--bg-3); border: 1px solid var(--border); }
+  .ctl-name .av img { width: 100%; height: 100%; object-fit: cover; }
+  .ctl-name b { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ctl-lane { position: relative; height: 44px; border-bottom: 1px solid var(--border); }
+  .ctl-bar { position: absolute; top: 12px; height: 20px; min-width: 6px; border-radius: 7px; display: flex; align-items: center; padding: 0 8px; font-size: 10px; font-weight: 700; white-space: nowrap; color: #14110a; overflow: hidden; }
+  .ctl-bar.ok { background: linear-gradient(90deg, rgba(34,197,94,.25), var(--green)); justify-content: flex-end; }
+  .ctl-bar.warn { background: linear-gradient(90deg, rgba(245,158,11,.25), var(--amber)); box-shadow: 0 0 0 2px rgba(245,158,11,.25); justify-content: flex-end; }
+  .ctl-bar.bad { background: linear-gradient(90deg, rgba(239,68,68,.2), #ef4444); justify-content: flex-end; color: #fff; }
+  .ctl-bar.open { background: linear-gradient(90deg, rgba(59,130,246,.25), rgba(59,130,246,.7) 85%, transparent); color: var(--text); }
+  .ctl-bar.cut-l { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .ctl-bar.cut-r { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .ctl-over { position: absolute; top: 0; bottom: 0; left: 130px; right: 0; pointer-events: none; }
+  .ctl-today { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--red-bright); box-shadow: 0 0 10px var(--red-glow); }
+  .ctl-today span { position: absolute; top: 0; left: 6px; font-size: 10px; font-weight: 700; color: var(--red-bright); white-space: nowrap; }
+  .ctl-alerts { display: grid; gap: 8px; margin-top: 12px; }
+  .ctl-alert { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(245,158,11,.35); background: rgba(245,158,11,.07); font: inherit; font-size: 12px; color: var(--text-dim); text-align: left; cursor: pointer; }
+  .ctl-alert.bad { border-color: rgba(239,68,68,.4); background: rgba(239,68,68,.07); }
+  .ctl-alert b { color: var(--text); }
+  .ctl-pill { padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--amber); background: rgba(245,158,11,.14); white-space: nowrap; }
+  .ctl-alert.bad .ctl-pill { color: #ef4444; background: rgba(239,68,68,.14); }
+  .ctl-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 11px; color: var(--text-mute); }
+  .ctl-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  @media (max-width: 560px) { .ctl-grid { grid-template-columns: 92px minmax(0, 1fr); } .ctl-over { left: 92px; } .ctl-axis span.odd { display: none; } .ctl-name .av { display: none; } }
+
+  /* ===== Discord : interrupteurs + aperçu ===== */
+  .dcx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 16px; align-items: start; }
+  .dcx-list { display: grid; gap: 6px; }
+  .dcx-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 11px; border: 1px solid var(--border); background: var(--bg-1); font-size: 13px; color: var(--text-dim); cursor: pointer; transition: border-color .15s, background .15s; }
+  .dcx-row:hover { background: var(--bg-2); }
+  .dcx-row.sel { border-color: var(--red); color: var(--text); background: rgba(201,164,92,.07); }
+  .dcx-row .eye { font-size: 11px; color: var(--text-mute); }
+  .dcx-row.sel .eye { color: var(--red-bright); }
+  .dcx-sw { position: relative; width: 34px; height: 20px; flex-shrink: 0; }
+  .dcx-sw input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+  .dcx-sw span { position: absolute; inset: 0; border-radius: 99px; background: var(--bg-4); transition: background .2s; }
+  .dcx-sw span::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .2s; }
+  .dcx-sw input:checked + span { background: var(--green); }
+  .dcx-sw input:checked + span::after { transform: translateX(14px); }
+  .dcx-sw input:focus-visible + span { outline: 2px solid var(--red-bright); outline-offset: 2px; }
+  .dcx-prev { border-radius: 12px; background: #313338; padding: 14px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #dbdee1; }
+  .dcx-who { display: flex; gap: 10px; align-items: flex-start; }
+  .dcx-bot { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; background: var(--red); color: #14110a; font-family: var(--font-display); font-size: 15px; }
+  .dcx-name { font-size: 14px; font-weight: 600; color: #f2f3f5; }
+  .dcx-name small { margin-left: 6px; font-size: 10px; font-weight: 600; padding: 1px 4px; border-radius: 3px; background: #5865f2; color: #fff; vertical-align: 1px; }
+  .dcx-name time { margin-left: 6px; font-size: 11px; font-weight: 400; color: #949ba4; }
+  .dcx-ment { display: inline-block; margin: 2px 0 6px; padding: 0 3px; border-radius: 3px; background: rgba(88,101,242,.3); color: #c9cdfb; font-size: 14px; }
+  .dcx-embed { border-left: 4px solid var(--c); border-radius: 4px; background: #2b2d31; padding: 10px 12px 12px; display: grid; gap: 6px; }
+  .dcx-et { font-size: 14px; font-weight: 700; color: #f2f3f5; }
+  .dcx-ed { font-size: 13px; line-height: 1.4; } .dcx-ed b { color: #f2f3f5; }
+  .dcx-ef { display: flex; gap: 22px; flex-wrap: wrap; font-size: 13px; } .dcx-ef b { display: block; font-size: 12px; color: #f2f3f5; }
+  .dcx-foot { font-size: 11px; color: #949ba4; }
+  .dcx-note { margin-top: 8px; font-size: 11px; color: var(--text-mute); }
+  .dcx-note.off { color: var(--amber); }
+  @media (max-width: 760px) { .dcx { grid-template-columns: 1fr; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -6848,6 +6937,19 @@ window.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
         <div id="agePyramidBlock"></div>
+      </div>
+    </div>
+
+    <!-- Row: Frise des contrats -->
+    <div class="dash-grid">
+      <div class="dash-card span-12">
+        <div class="dash-card-header">
+          <div>
+            <div class="dash-card-title">Frise des contrats</div>
+            <div class="dash-card-sub">Début et fin du contrat de chaque joueur · clic pour ouvrir sa page</div>
+          </div>
+        </div>
+        <div id="contractTimelineBlock"></div>
       </div>
     </div>
 
@@ -7270,15 +7372,14 @@ window.addEventListener('DOMContentLoaded', function() {
         <input type="number" id="dc_bigPrize" min="0" placeholder="1000" style="max-width:160px;" />
       </div>
 
-      <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-mute);margin:16px 0 8px;">Événements à notifier</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_cupWin" /> 🏆 Victoire en cup (Top 1)</label>
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_cupTop10" /> 🔟 Top 10 en cup</label>
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_bigPrize" /> 💰 Gros gain</label>
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_prRecord" /> 📈 Nouveau record PR</label>
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_promotion" /> ✍️ Signature (prospect promu)</label>
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_newPlayer" /> 🆕 Nouveau joueur</label>
-        <label class="checkbox-row"><input type="checkbox" id="dc_ev_contractExpiring" /> ⚠️ Contrat bientôt expiré</label>
+      <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-mute);margin:16px 0 8px;">Événements à notifier · clique sur une ligne pour voir le message</div>
+      <div class="dcx">
+        <div class="dcx-list" id="dcxList"></div>
+        <div>
+          <div class="dcx-prev" id="dcxPreview"></div>
+          <p class="dcx-note" id="dcxNote"></p>
+          <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="testDiscordPreview()">Envoyer ce message en test</button>
+        </div>
       </div>
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
@@ -8566,6 +8667,7 @@ let editingCalendarEventId = null;
 // Calendar state
 let calCurrentDate = new Date();         // anchor month
 let calView = 'month';                    // 'month' | 'list'
+let calMobileDay = null;                  // jour choisi dans la vue semaine (téléphone)
 let calTypeFilters = new Set();           // disabled types (set of type ids)
 
 // Event types config: id → { label, icon, color (CSS class) }
@@ -9009,6 +9111,7 @@ async function saveDiscordConfig() {
 
 // Populate the admin form fields from discordConfig
 function fillDiscordForm() {
+  renderDiscordPreview();
   const set = (id, val) => { const el = document.getElementById(id); if (el) { if (el.type === 'checkbox') el.checked = !!val; else el.value = val; } };
   set('dc_enabled', discordConfig.enabled);
   set('dc_webhookUrl', discordConfig.webhookUrl || '');
@@ -9020,10 +9123,105 @@ function fillDiscordForm() {
   set('dc_ev_promotion', discordConfig.events.promotion);
   set('dc_ev_newPlayer', discordConfig.events.newPlayer);
   set('dc_ev_contractExpiring', discordConfig.events.contractExpiring);
+  renderDiscordPreview();
+}
+
+// Aperçu des messages Discord : mêmes titres, couleurs et champs que les vrais envois
+const DISCORD_EVENT_LIST = [
+  { k: 'cupWin', label: '🏆 Victoire en cup (Top 1)' },
+  { k: 'cupTop10', label: '🔟 Top 10 en cup' },
+  { k: 'bigPrize', label: '💰 Gros gain' },
+  { k: 'prRecord', label: '📈 Nouveau record PR' },
+  { k: 'promotion', label: '✍️ Signature (prospect promu)' },
+  { k: 'newPlayer', label: '🆕 Nouveau joueur' },
+  { k: 'contractExpiring', label: '⚠️ Contrat bientôt expiré' }
+];
+const DISCORD_COLORS = { cupWin: 0x22c55e, cupTop10: 0x4ade80, bigPrize: 0xfacc15, prRecord: 0x3b82f6, promotion: 0x22c55e, newPlayer: 0x3b82f6, contractExpiring: 0xf59e0b };
+let discordPreviewKey = 'cupWin';
+
+// Exemple de message pour un type, avec un vrai pseudo du roster quand il y en a un
+function discordSamplePayload(k) {
+  const name = (players[0] && players[0].pseudo) || 'Joueur';
+  const threshold = Number((document.getElementById('dc_bigPrize') || {}).value) || discordConfig.bigPrizeThreshold || 1000;
+  const inDays = 29;
+  const endIso = dateToLocalISO(new Date(Date.now() + inDays * 86400000));
+  switch (k) {
+    case 'cupWin': return { title: '🏆 Victoire en cup !', description: '**' + name + '** remporte **Cash Cup**', fields: [{ name: 'Place', value: '🥇 #1' }, { name: 'Gain', value: '500 €' }] };
+    case 'cupTop10': return { title: '🔟 Top 10 en cup !', description: '**' + name + '** se classe dans le Top 10 sur **Cash Cup**', fields: [{ name: 'Place', value: '#7' }, { name: 'Gain', value: '150 €' }] };
+    case 'bigPrize': return { title: '💰 Gros gain !', description: '**' + name + '** sur **FNCS Grand Finals**', fields: [{ name: 'Place', value: '#3' }, { name: 'Gain', value: fmtNumber(Math.round(threshold * 1.5)) + ' €' }] };
+    case 'prRecord': return { title: '📈 Nouveau record PR !', description: '**' + name + '** bat son record de Power Ranking', fields: [{ name: 'Nouveau PR', value: '2 390 pts' }, { name: 'Ancien', value: '2 210 pts' }] };
+    case 'promotion': return { title: '✍️ Nouvelle signature !', description: '**' + name + '** signe avec FLC et rejoint le roster', fields: [{ name: 'Équipe', value: 'Académie' }] };
+    case 'newPlayer': return { title: '🆕 Nouveau joueur', description: '**' + name + '** rejoint le roster', fields: [{ name: 'Équipe', value: 'Main' }, { name: 'Jeu', value: 'Fortnite' }] };
+    default: return { title: '⚠️ Contrat bientôt expiré', description: 'Le contrat de **' + name + '** arrive à échéance', fields: [{ name: 'Échéance', value: fmtDateFR(endIso) }, { name: 'Dans', value: inDays + ' jours' }] };
+  }
+}
+
+function renderDiscordPreview() {
+  const list = document.getElementById('dcxList');
+  const prev = document.getElementById('dcxPreview');
+  if (!list || !prev) return;
+  // Les cases dc_ev_* sont créées une seule fois (saveDiscordSettings et fillDiscordForm les lisent)
+  if (!list.children.length) {
+    list.innerHTML = DISCORD_EVENT_LIST.map(ev =>
+      '<div class="dcx-row" data-k="' + ev.k + '" onclick="if(!event.target.closest(\'.dcx-sw\'))selectDiscordPreview(\'' + ev.k + '\')">' +
+        '<label class="dcx-sw" title="Activer ou couper ce message"><input type="checkbox" id="dc_ev_' + ev.k + '" aria-label="' + escapeAttr(ev.label) + '" onchange="selectDiscordPreview(\'' + ev.k + '\')"><span></span></label>' +
+        '<span>' + ev.label + '</span><span class="eye">Aperçu</span>' +
+      '</div>').join('');
+  }
+  list.querySelectorAll('.dcx-row').forEach(r => r.classList.toggle('sel', r.dataset.k === discordPreviewKey));
+  const ev = DISCORD_EVENT_LIST.find(e => e.k === discordPreviewKey) || DISCORD_EVENT_LIST[0];
+  const pl = discordSamplePayload(ev.k);
+  const color = '#' + (DISCORD_COLORS[ev.k] || 0xc9a45c).toString(16).padStart(6, '0');
+  const md = t => escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  prev.innerHTML =
+    '<div class="dcx-who"><span class="dcx-bot">FLC</span><div style="min-width:0;flex:1">' +
+      '<div class="dcx-name">FLC<small>APP</small><time>Aujourd\'hui à ' + time + '</time></div>' +
+      '<span class="dcx-ment">@everyone</span>' +
+      '<div class="dcx-embed" style="--c:' + color + '"><div class="dcx-et">' + escapeHtml(pl.title) + '</div><div class="dcx-ed">' + md(pl.description) + '</div>' +
+        '<div class="dcx-ef">' + pl.fields.map(f => '<div><b>' + escapeHtml(f.name) + '</b>' + escapeHtml(f.value) + '</div>').join('') + '</div>' +
+        '<div class="dcx-foot">FLC Esports · aujourd\'hui à ' + time + '</div></div>' +
+    '</div></div>';
+  const box = document.getElementById('dc_ev_' + ev.k);
+  const enabled = (document.getElementById('dc_enabled') || {}).checked;
+  const note = document.getElementById('dcxNote');
+  note.className = 'dcx-note' + (box && box.checked && enabled ? '' : ' off');
+  note.textContent = !enabled ? 'Les notifications Discord sont désactivées : aucun message ne part.'
+    : box && box.checked ? 'Exemple : le vrai message reprend le joueur, la cup et les montants réels. Il mentionne @everyone.'
+    : 'Ce message est coupé : il ne sera pas envoyé sur Discord.';
+}
+
+function selectDiscordPreview(k) { discordPreviewKey = k; renderDiscordPreview(); }
+
+// Envoie l'exemple affiché dans le salon, sans @everyone, marqué comme test
+async function testDiscordPreview() {
+  const url = document.getElementById('dc_webhookUrl').value.trim();
+  if (!url) { showToast('Renseigne d\'abord l\'URL du webhook', 'error'); return; }
+  if (!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//.test(url)) { showToast('URL de webhook Discord invalide', 'error'); return; }
+  const pl = discordSamplePayload(discordPreviewKey);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'FLC',
+        embeds: [{
+          title: pl.title, description: pl.description, color: DISCORD_COLORS[discordPreviewKey] || 0xc9a45c,
+          fields: pl.fields.map(f => Object.assign({ inline: true }, f)),
+          footer: { text: 'FLC Esports · message de test' }, timestamp: new Date().toISOString()
+        }]
+      })
+    });
+    if (res.ok || res.status === 204) showToast('Message test envoyé ! Vérifie ton Discord', 'success');
+    else showToast('Échec de l\'envoi (code ' + res.status + ')', 'error');
+  } catch (e) {
+    showToast('Erreur réseau : ' + (e.message || e), 'error');
+  }
 }
 
 function onDiscordToggle() {
   // (visual only — actual save happens on "Enregistrer")
+  renderDiscordPreview();
 }
 
 async function saveDiscordSettings() {
@@ -9443,8 +9641,17 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 28;  // bump this when you add an entry
+const CHANGELOG_VERSION = 29;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Agenda sur téléphone, frise des contrats et aperçu Discord",
+    items: [
+      "Calendrier sur téléphone : la grille du mois laisse la place à une bande des 7 jours de la semaine (des points de couleur montrent les jours chargés) et à la liste complète des événements du jour choisi. Balaie la bande ou utilise les flèches pour changer de semaine.",
+      "Dashboard : nouvelle « Frise des contrats ». Chaque joueur a une barre du début à la fin de son contrat, avec un trait pour aujourd'hui. Les fins à 60 jours ou moins passent en orange, les contrats expirés en rouge, et un bandeau liste les contrats à renouveler.",
+      "Admin › Intégration Discord : chaque type de message a son interrupteur. Un clic affiche un aperçu du message tel qu'il arrivera sur Discord, et le bouton « Envoyer ce message en test » envoie cet exemple dans le salon, sans @everyone."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Nouveau design des blocs du dashboard",
@@ -10718,6 +10925,7 @@ function renderDashboard() {
   renderDashRanking();
   renderBestPerf();
   renderAgePyramid();
+  renderContractTimeline();
   renderMonthComparison();
   renderHallOfFame();
   renderManagerActivity();
@@ -12305,6 +12513,82 @@ function renderBestPerf() {
 /* ============================================================
    PYRAMIDE DES ÂGES
    ============================================================ */
+// ============================================================
+// FRISE DES CONTRATS
+// ============================================================
+function renderContractTimeline() {
+  const container = document.getElementById('contractTimelineBlock');
+  if (!container) return;
+  const DAY = 86400000;
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const parse = iso => { const d = new Date(String(iso).slice(0, 10) + 'T00:00:00'); return isNaN(d) ? null : d; };
+
+  const rows = [], missing = [];
+  players.forEach(p => {
+    const start = p.contractStart ? parse(p.contractStart) : null;
+    const end = !p.contractIndefinite && p.contractEnd ? parse(p.contractEnd) : null;
+    if (!p.contractIndefinite && !end) { missing.push(p.pseudo); return; }
+    const days = end ? Math.round((end - now) / DAY) : null;
+    const tone = p.contractIndefinite ? 'open' : days < 0 ? 'bad' : days <= 60 ? 'warn' : 'ok';
+    rows.push({ p, start, end, days, tone });
+  });
+
+  if (rows.length === 0) {
+    container.innerHTML = '<div class="dash-empty">Aucun contrat renseigné. Ajoute les dates de contrat dans la fiche de chaque joueur.</div>';
+    return;
+  }
+
+  // Fenêtre affichée : de 6 mois avant aujourd'hui jusqu'à la fin de contrat la plus lointaine (entre 12 et 30 mois après)
+  const winStart = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+  const lastEnd = Math.max(...rows.filter(r => r.end).map(r => r.end.getTime()), 0);
+  let monthsAfter = lastEnd ? Math.ceil((lastEnd - now) / (30.44 * DAY)) + 2 : 12;
+  monthsAfter = Math.min(30, Math.max(12, monthsAfter));
+  const winEnd = new Date(now.getFullYear(), now.getMonth() + monthsAfter + 1, 0);
+  const span = winEnd - winStart;
+  const X = d => Math.max(0, Math.min(100, (d - winStart) / span * 100));
+
+  // Les fins de contrat les plus proches en premier, les CDI à la fin
+  rows.sort((a, b) => (a.end ? a.end.getTime() : Infinity) - (b.end ? b.end.getTime() : Infinity) || a.p.pseudo.localeCompare(b.p.pseudo));
+
+  const step = monthsAfter + 6 > 20 ? 6 : 3;
+  let axis = '';
+  for (let m = new Date(winStart), i = 0; m <= winEnd; m = new Date(m.getFullYear(), m.getMonth() + step, 1), i++) {
+    axis += '<span class="' + (i % 2 ? 'odd' : '') + '" style="left:' + X(m).toFixed(2) + '%">' + escapeHtml(m.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })) + '</span>';
+  }
+
+  let grid = '<div class="ctl-grid"><div></div><div class="ctl-axis">' + axis + '</div>';
+  rows.forEach(r => {
+    const s = r.start && r.start > winStart ? r.start : winStart;
+    const e = r.end ? (r.end < winEnd ? r.end : winEnd) : winEnd;
+    const left = X(s), width = Math.max(0.8, X(e) - left);
+    const cut = (r.start && r.start >= winStart ? '' : ' cut-l') + (r.end && r.end <= winEnd ? '' : r.end ? ' cut-r' : '');
+    let label, tip;
+    if (r.tone === 'open') { label = 'CDI'; tip = 'CDI' + (r.start ? ' depuis le ' + fmtDateFR(dateToLocalISO(r.start)) : ''); }
+    else if (r.days < 0) { label = 'Expiré'; tip = 'Contrat expiré le ' + fmtDateFR(dateToLocalISO(r.end)) + ' (il y a ' + (-r.days) + ' j)'; }
+    else { label = r.days <= 60 ? 'J-' + r.days : fmtDateFR(dateToLocalISO(r.end)); tip = 'Fin le ' + fmtDateFR(dateToLocalISO(r.end)) + ' · dans ' + r.days + ' j'; }
+    if (r.start) tip = 'Début le ' + fmtDateFR(dateToLocalISO(r.start)) + ' · ' + tip;
+    grid += '<button type="button" class="ctl-name" data-pid="' + escapeAttr(r.p.id) + '" onclick="kxOpenPlayer(this.dataset.pid)" title="Ouvrir la page de ' + escapeAttr(r.p.pseudo) + '"><span class="av">' + cardAvatar(r.p) + '</span><b>' + escapeHtml(r.p.pseudo) + '</b></button>' +
+      '<div class="ctl-lane"><div class="ctl-bar ' + r.tone + cut + '" style="left:' + left.toFixed(2) + '%;width:' + width.toFixed(2) + '%" title="' + escapeAttr(r.p.pseudo + ' : ' + tip) + '">' + (width > 7 ? escapeHtml(label) : '') + '</div></div>';
+  });
+  grid += '</div>';
+
+  const alerts = rows.filter(r => r.tone === 'warn' || r.tone === 'bad').map(r => {
+    const bad = r.tone === 'bad';
+    const txt = bad
+      ? 'contrat expiré le ' + fmtDateFR(dateToLocalISO(r.end)) + ', il y a ' + (-r.days) + ' jour' + (-r.days > 1 ? 's' : '')
+      : 'fin de contrat le ' + fmtDateFR(dateToLocalISO(r.end)) + (r.days === 0 ? ", aujourd'hui" : ', dans ' + r.days + ' jour' + (r.days > 1 ? 's' : ''));
+    return '<button type="button" class="ctl-alert' + (bad ? ' bad' : '') + '" data-pid="' + escapeAttr(r.p.id) + '" onclick="kxOpenPlayer(this.dataset.pid)"><span><b>' + escapeHtml(r.p.pseudo) + '</b> : ' + txt + '</span><span class="ctl-pill">' + (bad ? 'À régulariser' : 'À renouveler') + '</span></button>';
+  }).join('');
+
+  container.innerHTML =
+    '<div class="ctl">' + grid +
+      '<div class="ctl-over"><div class="ctl-today" style="left:' + X(now).toFixed(2) + '%"><span>Aujourd\'hui</span></div></div>' +
+    '</div>' +
+    (alerts ? '<div class="ctl-alerts">' + alerts + '</div>' : '') +
+    '<div class="ctl-legend"><span><i style="background:var(--green)"></i>En cours</span><span><i style="background:var(--amber)"></i>Fin dans 60 jours ou moins</span><span><i style="background:#ef4444"></i>Expiré</span><span><i style="background:var(--blue)"></i>CDI</span>' +
+      (missing.length ? '<span>Sans date de fin : ' + escapeHtml(missing.length <= 3 ? missing.join(', ') : missing.length + ' joueurs') + '</span>' : '') + '</div>';
+}
+
 function renderAgePyramid() {
   const container = document.getElementById('agePyramidBlock');
   if (!container) return;
@@ -16478,6 +16762,7 @@ function calendarNav(deltaMonths) {
 }
 function calendarGoToday() {
   calCurrentDate = new Date();
+  calMobileDay = todayISO();
   renderCalendar();
 }
 function setCalendarView(v) {
@@ -17931,8 +18216,88 @@ function renderCalendarMonthView() {
     html += '</div>';
   }
 
-  html += '</div>' + calendarWeekAgendaHtml(all, todayIso) + '</div>';
+  html += '</div>' + calendarWeekAgendaHtml(all, todayIso) + calendarMobileWeekHtml(all, todayIso, year, month) + '</div>';
   container.innerHTML = html;
+  wireCalendarSwipe(container);
+}
+
+// Téléphone : bande des 7 jours de la semaine + liste complète du jour choisi
+function calendarMobileWeekHtml(all, todayIso, year, month) {
+  // Jour choisi : on le garde s'il est dans le mois affiché, sinon aujourd'hui ou le 1er du mois
+  const inMonth = iso => { const d = new Date(iso + 'T00:00:00'); return d.getFullYear() === year && d.getMonth() === month; };
+  if (!calMobileDay || !inMonth(calMobileDay)) {
+    calMobileDay = inMonth(todayIso) ? todayIso : dateToLocalISO(new Date(year, month, 1));
+  }
+  const sel = new Date(calMobileDay + 'T00:00:00');
+  const monday = new Date(sel.getFullYear(), sel.getMonth(), sel.getDate() - ((sel.getDay() + 6) % 7));
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+    days.push({ d, iso: dateToLocalISO(d) });
+  }
+  const on = iso => all.filter(e => { const s = e.dateStart, en = e.dateEnd || e.dateStart; return s && s <= iso && iso <= en; });
+  const fmt = d => d.getDate() + ' ' + d.toLocaleDateString('fr-FR', { month: 'short' });
+
+  const strip = days.map(x => {
+    const types = [...new Set(on(x.iso).map(e => e.type))].slice(0, 3);
+    const cls = [x.iso === todayIso ? 'today' : '', x.d.getMonth() !== month ? 'other' : ''].join(' ').trim();
+    return '<button type="button" class="' + cls + '" aria-pressed="' + (x.iso === calMobileDay) + '" onclick="calendarPickMobileDay(\'' + x.iso + '\')" aria-label="' + escapeAttr(x.d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })) + '">' +
+      x.d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '') + '<b>' + x.d.getDate() + '</b>' +
+      '<span class="cwk-dots">' + types.map(t => '<i style="--c:' + (CAL_TYPE_COLORS[t] || CAL_TYPE_COLORS.custom) + '"></i>').join('') + '</span></button>';
+  }).join('');
+
+  const evs = sortEventsForDay(on(calMobileDay));
+  const list = evs.length ? evs.map(e => {
+    const cfg = CAL_EVENT_TYPES[e.type] || CAL_EVENT_TYPES.custom;
+    const player = e.playerId ? players.find(p => p.id === e.playerId) : null;
+    const meta = [cfg.label];
+    if (player) meta.push(player.pseudo);
+    if (e.dateEnd && e.dateEnd > e.dateStart) {
+      const total = Math.round((new Date(e.dateEnd + 'T00:00:00') - new Date(e.dateStart + 'T00:00:00')) / 86400000) + 1;
+      const nth = Math.round((sel - new Date(e.dateStart + 'T00:00:00')) / 86400000) + 1;
+      meta.push('jour ' + nth + ' sur ' + total);
+    }
+    const time = (!e.allDay && e.timeStart) ? e.timeStart + (e.timeEnd ? '–' + e.timeEnd : '') : '';
+    return '<button type="button" class="cwk-ev" style="--c:' + (CAL_TYPE_COLORS[e.type] || CAL_TYPE_COLORS.custom) + '" onclick="onCalendarEventClick(\'' + escapeAttr(e.id) + '\')">' +
+      '<span style="min-width:0"><b>' + escapeHtml(e.title) + '</b><small>' + escapeHtml(meta.join(' · ')) + '</small></span>' +
+      (time ? '<em>' + escapeHtml(time) + '</em>' : '<span></span>') + '</button>';
+  }).join('') : '<div class="cwk-empty">Rien de prévu ce jour-là.</div>';
+
+  const dayTitle = (calMobileDay === todayIso ? 'Aujourd\'hui · ' : '') + sel.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  return '<div class="cwk">' +
+    '<div class="cwk-bar"><button type="button" class="cwk-nav" onclick="calendarShiftMobileWeek(-1)" aria-label="Semaine précédente">‹</button>' +
+      '<span>Semaine du ' + fmt(days[0].d) + ' au ' + fmt(days[6].d) + '</span>' +
+      '<button type="button" class="cwk-nav" onclick="calendarShiftMobileWeek(1)" aria-label="Semaine suivante">›</button></div>' +
+    '<div class="cwk-strip">' + strip + '</div>' +
+    '<div class="cwk-list"><div class="cwk-day"><span>' + escapeHtml(dayTitle) + '</span><button type="button" onclick="openCalendarEventModal(null, \'' + calMobileDay + '\')">+ Ajouter</button></div>' + list + '</div>' +
+  '</div>';
+}
+
+function calendarPickMobileDay(iso) {
+  calMobileDay = iso;
+  const d = new Date(iso + 'T00:00:00');
+  if (d.getMonth() !== calCurrentDate.getMonth() || d.getFullYear() !== calCurrentDate.getFullYear()) calCurrentDate = new Date(d.getFullYear(), d.getMonth(), 1);
+  renderCalendar();
+}
+
+function calendarShiftMobileWeek(dir) {
+  const d = new Date((calMobileDay || todayISO()) + 'T00:00:00');
+  d.setDate(d.getDate() + dir * 7);
+  calendarPickMobileDay(dateToLocalISO(d));
+}
+
+// Balayer la bande des jours vers la gauche ou la droite change de semaine
+function wireCalendarSwipe(container) {
+  const strip = container.querySelector('.cwk-strip');
+  if (!strip) return;
+  let x0 = null, y0 = null;
+  strip.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  strip.addEventListener('touchend', e => {
+    if (x0 == null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) calendarShiftMobileWeek(dx < 0 ? 1 : -1);
+  }, { passive: true });
 }
 
 // Colonne « Cette semaine » : les 7 prochains jours avec compte à rebours
