@@ -3200,73 +3200,6 @@
   }
   .dash-section-title:first-of-type { margin-top: 8px; }
 
-  /* === Comparaison des structures === */
-  .ts-card {
-    border-top: 3px solid var(--ts-color);
-    display: flex;
-    flex-direction: column;
-  }
-  .ts-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-    padding-bottom: 12px;
-    margin-bottom: 4px;
-    border-bottom: 1px solid var(--border);
-  }
-  .ts-name {
-    font-family: var(--font-display);
-    font-size: 17px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ts-color);
-  }
-  .ts-count {
-    font-size: 11px;
-    color: var(--text-mute);
-    font-family: var(--font-mono);
-    white-space: nowrap;
-  }
-  .ts-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-  .ts-row:last-child { border-bottom: none; }
-  .ts-lbl {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-  }
-  .ts-val {
-    font-family: var(--font-mono);
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .ts-row.ts-best .ts-val { color: var(--green); }
-  .ts-crown { font-size: 11px; color: var(--green); }
-  .ts-empty { opacity: 0.65; }
-  .ts-none {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-mute);
-    font-style: italic;
-    padding: 24px 8px;
-    line-height: 1.5;
-  }
   .dash-card-header {
     display: flex;
     justify-content: space-between;
@@ -6581,10 +6514,6 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
 
-    <!-- ============ COMPARAISON DES STRUCTURES ============ -->
-    <div class="dash-section-title">Comparaison des structures</div>
-    <div class="dash-grid" id="teamCompareRow"></div>
-
     <!-- ============ COMPARATEUR DE JOUEURS ============ -->
     <div class="dash-section-title">Comparateur de joueurs</div>
     <div class="dash-grid">
@@ -9280,8 +9209,15 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 23;  // bump this when you add an entry
+const CHANGELOG_VERSION = 24;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Dashboard allégé",
+    items: [
+      "La section « Comparaison des structures » (Main, Académie, FLC Future) est retirée du dashboard."
+    ]
+  },
   {
     date: "2026-11-02",
     title: "Historique des modifications par joueur",
@@ -10496,7 +10432,6 @@ function playerColor(p, idx) {
 function renderDashboard() {
   renderDashAlerts();
   renderKPIs();
-  renderTeamComparison();
   renderPlayerComparator();
   renderPRChart();
   renderDashLeaderboard();
@@ -10513,96 +10448,6 @@ function renderDashboard() {
   renderActivity();
 }
 
-// ============================================================
-// ============================================================
-// COMPARAISON DES STRUCTURES (Main / Académie / CDF)
-// ============================================================
-const TEAM_STRUCTURES = [
-  { key: 'main',    label: 'Main',        color: 'var(--red)',       accent: 'var(--red-bright)' },
-  { key: 'academy', label: 'Académie',    color: 'var(--blue)',      accent: 'var(--blue)' },
-  { key: 'cdf',     label: 'FLC Future',  color: '#a855f7',          accent: '#c084fc' }
-];
-
-// Aggregate stats for one structure
-function teamStructureStats(teamKey) {
-  const members = players.filter(p => (p.team || 'main') === teamKey);
-  let prSum = 0, prCount = 0, cupsTotal = 0, gains = 0;
-  let placeSum = 0, placeCount = 0, top10 = 0;
-
-  members.forEach(p => {
-    const cur = currentPR(p);
-    if (cur && !isNaN(Number(cur.points))) { prSum += Number(cur.points); prCount++; }
-    (p.cups || []).forEach(c => {
-      cupsTotal++;
-      gains += Number(c.prize) || 0;
-      const m = String(c.position || '').match(/(\d+)/);
-      if (m) {
-        const n = parseInt(m[1], 10);
-        if (!isNaN(n)) { placeSum += n; placeCount++; if (n <= 10) top10++; }
-      }
-    });
-  });
-
-  return {
-    count: members.length,
-    prTotal: prSum,
-    prAvg: prCount > 0 ? Math.round(prSum / prCount) : null,
-    avgPlace: placeCount > 0 ? (placeSum / placeCount) : null,
-    gains, top10, cupsTotal
-  };
-}
-
-function renderTeamComparison() {
-  const container = document.getElementById('teamCompareRow');
-  if (!container) return;
-
-  const stats = TEAM_STRUCTURES.map(s => ({ ...s, ...teamStructureStats(s.key) }));
-
-  // Work out the best structure per metric so it can be highlighted.
-  // Only structures with players compete; for avgPlace, LOWER is better.
-  const active = stats.filter(s => s.count > 0);
-  function bestOf(key, lowerIsBetter) {
-    const vals = active.map(s => s[key]).filter(v => v != null);
-    if (vals.length < 2) return null;   // no point highlighting a single competitor
-    return lowerIsBetter ? Math.min(...vals) : Math.max(...vals);
-  }
-  const best = {
-    prAvg:    bestOf('prAvg', false),
-    prTotal:  bestOf('prTotal', false),
-    avgPlace: bestOf('avgPlace', true),
-    gains:    bestOf('gains', false),
-    top10:    bestOf('top10', false)
-  };
-
-  container.innerHTML = stats.map(s => {
-    const empty = s.count === 0;
-    function row(label, value, isBest) {
-      return '<div class="ts-row' + (isBest ? ' ts-best' : '') + '">' +
-        '<span class="ts-lbl">' + label + '</span>' +
-        '<span class="ts-val">' + value + (isBest ? '<span class="ts-crown" title="Meilleure structure sur ce critère">★</span>' : '') + '</span>' +
-      '</div>';
-    }
-
-    if (empty) {
-      return '<div class="dash-card span-4 ts-card ts-empty" style="--ts-color:' + s.color + ';">' +
-        '<div class="ts-head"><span class="ts-name">' + s.label + '</span><span class="ts-count">0 joueur</span></div>' +
-        '<div class="ts-none">Aucun joueur dans cette structure.<br>Assigne-les depuis leur fiche.</div>' +
-      '</div>';
-    }
-
-    return '<div class="dash-card span-4 ts-card" style="--ts-color:' + s.color + ';">' +
-      '<div class="ts-head">' +
-        '<span class="ts-name">' + s.label + '</span>' +
-        '<span class="ts-count">' + s.count + ' joueur' + (s.count > 1 ? 's' : '') + '</span>' +
-      '</div>' +
-      row('PR moyen',    s.prAvg != null ? fmtNumber(s.prAvg) : '—',            s.prAvg != null && s.prAvg === best.prAvg) +
-      row('PR total',    fmtNumber(s.prTotal),                                   s.prTotal === best.prTotal) +
-      row('Place moy.',  s.avgPlace != null ? '#' + s.avgPlace.toFixed(1) : '—', s.avgPlace != null && s.avgPlace === best.avgPlace) +
-      row('Gains',       fmtNumber(s.gains) + ' €',                              s.gains === best.gains && s.gains > 0) +
-      row('Top 10',      s.top10,                                                s.top10 === best.top10 && s.top10 > 0) +
-    '</div>';
-  }).join('');
-}
 
 // ============================================================
 // COMPARATEUR DE JOUEURS
