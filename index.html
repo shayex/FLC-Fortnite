@@ -6329,6 +6329,98 @@
   .cmp-details[open] summary::before { transform: rotate(90deg); }
   .cmp-details summary:hover { background: var(--bg-2); color: var(--text); }
   @media (max-width: 860px) { .rd-wrap { grid-template-columns: 1fr; } .rd-svg { max-width: 380px; } }
+
+  /* --- Page grinder --- */
+  .gdp-modal { max-width: 860px; padding: 0; overflow: hidden auto; max-height: calc(100vh - 40px); }
+  .gdp-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 24px 64px 16px 26px; background: radial-gradient(circle at 0% 0%, rgba(168,85,247,0.28), transparent 60%); border-bottom: 1px solid var(--border); }
+  .gdp-photo { width: 76px; height: 76px; border-radius: 22px; overflow: hidden; display: grid; place-items: center; background: var(--bg-3); border: 3px solid #a855f7; box-shadow: 0 10px 26px rgba(168,85,247,0.25); }
+  .gdp-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .gdp-photo span { font-family: var(--font-display); font-size: 38px; color: var(--white); }
+  .gdp-id { min-width: 0; }
+  .gdp-id h2 { margin: 0; }
+  .gdp-id .modal-sub { margin: 4px 0 0; }
+  .gdp-links { display: flex; gap: 8px; margin-top: 10px; }
+  .gdp-rank { text-align: right; line-height: 1; }
+  .gdp-rank b { font-family: var(--font-display); font-weight: 400; font-size: 46px; color: #c99bff; }
+  .gdp-rank span { display: block; margin-top: 2px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-mute); }
+  .gdp-body { padding: 18px 26px 6px; display: grid; gap: 14px; }
+  .gdp-tier-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .gdp-tier { display: grid; gap: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); }
+  .gdp-tier-bar { height: 8px; border-radius: 99px; background: var(--bg-4); overflow: hidden; }
+  .gdp-tier-bar i { display: block; height: 100%; border-radius: inherit; background: var(--c); }
+  .gdp-tier.on span { color: var(--c); font-weight: 800; }
+  .gdp-tier small { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0; text-transform: none; }
+  .gdp-tier-note { margin-top: 8px; font-size: 13px; color: var(--text-dim); }
+  .gdp-tier-note b { color: var(--text); }
+  .gdp-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .gdp-kpi { padding: 10px 12px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--border); font-size: 11px; color: var(--text-mute); }
+  .gdp-kpi b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1.05; color: var(--white); }
+  .gdp-kpi b.pos { color: var(--green); }
+  .gdp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .gdp-card { min-width: 0; padding: 14px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--border); }
+  .gdp-card.gdp-wide { grid-column: 1 / -1; }
+  .gdp-card h4 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .gdp-card h4 > span { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text-mute); }
+  .gdp-card h4 .kpi-delta { font-size: 10px; }
+  .gdp-chart { display: block; width: 100%; height: 140px; }
+  .gdp-notes { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--bg-3); font-size: 13px; color: var(--text-dim); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .gdp-hist { max-height: 300px; overflow-y: auto; display: grid; gap: 0; }
+  .gdp-ev { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .gdp-ev:last-child { border-bottom: 0; }
+  .gdp-ev-fgp { min-width: 48px; padding: 3px 6px; border-radius: 8px; text-align: center; font-family: var(--font-display); font-size: 18px; color: var(--green); background: var(--good-bg); }
+  .gdp-ev-main { min-width: 0; font-size: 13px; }
+  .gdp-ev-main b { display: block; color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gdp-ev-main small { display: block; font-size: 11px; color: var(--text-mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gdp-ev-del { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--text-mute); opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s; }
+  .gdp-ev:hover .gdp-ev-del, .gdp-ev-del:focus-visible { opacity: 1; }
+  .gdp-ev-del:hover { background: var(--danger-bg); color: var(--danger); }
+  @media (hover: none) { .gdp-ev-del { opacity: 1; } }
+  .gdp-actions { margin: 6px 0 0; padding: 14px 26px; background: var(--bg-2); flex-wrap: wrap; }
+  @media (max-width: 700px) {
+    #grinderDetailModal { padding: 0; align-items: stretch; }
+    .gdp-modal { max-height: none; min-height: 100%; border-radius: 0; }
+    .gdp-head { grid-template-columns: auto minmax(0, 1fr); padding: 20px 56px 14px 16px; gap: 12px; }
+    .gdp-photo { width: 60px; height: 60px; border-radius: 18px; }
+    .gdp-rank { grid-column: 1 / -1; text-align: left; display: flex; align-items: baseline; gap: 8px; }
+    .gdp-rank b { font-size: 30px; }
+    .gdp-body { padding: 14px 16px 4px; }
+    .gdp-tier span { font-size: 9px; letter-spacing: 0.02em; }
+    .gdp-kpis { grid-template-columns: 1fr 1fr; }
+    .gdp-grid { grid-template-columns: 1fr; }
+    .gdp-actions { padding: 12px 16px calc(100px + env(safe-area-inset-bottom, 0px)); }
+  }
+
+  /* --- En-tête : enregistrement + staff en ligne --- */
+  .save-status { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-2); font-size: 12px; color: var(--text-dim); white-space: nowrap; cursor: default; }
+  .save-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-mute); flex-shrink: 0; }
+  .save-status.ok i { background: var(--green); }
+  .save-status.busy { color: var(--amber); }
+  .save-status.busy i { background: var(--amber); animation: ssBlink 1s ease-in-out infinite; }
+  .save-status.err { color: var(--danger); border-color: rgba(239,68,68,0.4); background: var(--danger-bg); }
+  .save-status.err i { background: var(--danger); }
+  .save-status.off { color: var(--text-mute); }
+  @keyframes ssBlink { 50% { opacity: 0.3; } }
+  .presence-bar { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px 0 4px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-2); font-size: 12px; color: var(--text-dim); cursor: default; }
+  .presence-bar[hidden] { display: none; }
+  .pr-stack { display: inline-flex; }
+  .pr-av { position: relative; width: 26px; height: 26px; margin-left: -8px; border-radius: 50%; overflow: visible; display: grid; place-items: center; font-family: var(--font-display); font-size: 14px; color: var(--c); background: var(--bg-3); border: 2px solid var(--bg-2); }
+  .pr-av:first-child { margin-left: 0; }
+  .pr-av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .pr-av::after { content: ''; position: absolute; right: -2px; bottom: -2px; width: 9px; height: 9px; border-radius: 50%; background: var(--green); border: 2px solid var(--bg-2); }
+  .pr-av.pr-more { font-family: var(--font-body); font-size: 10px; font-weight: 700; color: var(--text-dim); }
+  .pr-av.pr-more::after { display: none; }
+  .pr-txt { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pr-warn { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 14px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.09); font-size: 13px; line-height: 1.45; color: var(--text); }
+  .pm-modal .pr-warn { margin: 14px 64px 0 26px; }
+  .modal > .pr-warn { margin-right: 44px; }
+  .pr-warn b { color: var(--amber); }
+  .pr-warn-ico { width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 12px; background: var(--amber); color: #1a1205; }
+  @media (max-width: 700px) {
+    .save-status { width: 32px; padding: 0; justify-content: center; }
+    .save-status .ss-txt { display: none; }
+    .pr-txt { display: none; }
+    .presence-bar { padding: 0 4px; }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -6444,6 +6536,8 @@ window.addEventListener('DOMContentLoaded', function() {
       <div class="brand-mark"><span>F</span></div>
     </div>
     <div class="user-bar">
+      <span class="save-status idle" id="saveStatus" role="status" aria-live="polite"><i></i><span class="ss-txt">À jour</span></span>
+      <span class="presence-bar" id="presenceBar" hidden></span>
       <button class="notif-btn" id="changelogBtn" title="Mises à jour du site" onclick="openChangelog()" style="position:relative;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/></svg>
         <span class="notif-badge" id="changelogBadge" style="display:none;">!</span>
@@ -7572,27 +7666,38 @@ window.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <div class="modal-overlay" id="grinderDetailModal">
-  <div class="modal modal-lg">
-    <button class="modal-close" onclick="closeModal('grinderDetailModal')">
+  <div class="modal modal-lg gdp-modal">
+    <button class="modal-close" onclick="closeModal('grinderDetailModal')" aria-label="Fermer">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
-    <h2 id="grDetailTitle">Fiche grinder</h2>
-    <p class="modal-sub" id="grDetailSub"></p>
-    <div id="grDetailLinks" style="display:flex;gap:8px;margin:-6px 0 14px;"></div>
-    <div id="grDetailTitleBadge" class="gr-detail-title"></div>
-    <div class="data-stat-row">
-      <div class="data-stat"><div class="data-stat-label">Total FGP</div><div class="data-stat-value" id="grDetailTotal">0</div></div>
-      <div class="data-stat"><div class="data-stat-label">Ce mois</div><div class="data-stat-value" id="grDetailMonth" style="color:var(--green);">0</div></div>
+    <div class="gdp-head">
+      <div class="gdp-photo" id="grDetailPhoto"></div>
+      <div class="gdp-id">
+        <h2 id="grDetailTitle">Fiche grinder</h2>
+        <p class="modal-sub" id="grDetailSub"></p>
+        <div id="grDetailLinks" class="gdp-links"></div>
+      </div>
+      <div class="gdp-rank" id="grDetailRank"></div>
     </div>
-    <div id="grDetailRatings"></div>
-    <div class="data-block">
-      <div class="data-block-title">Historique des FGP</div>
-      <div class="data-block-list" id="grDetailHistory"></div>
+    <div class="gdp-body">
+      <div id="grDetailTitleBadge" class="gdp-tiers"></div>
+      <div class="gdp-kpis">
+        <div class="gdp-kpi"><span>Total FGP</span><b id="grDetailTotal">0</b></div>
+        <div class="gdp-kpi"><span>Ce mois</span><b id="grDetailMonth" class="pos">0</b></div>
+        <div class="gdp-kpi"><span>Performances</span><b id="grDetailPerfs">0</b></div>
+        <div class="gdp-kpi"><span>Meilleure place</span><b id="grDetailBest">—</b></div>
+      </div>
+      <div class="gdp-grid">
+        <div class="gdp-card gdp-wide"><h4>FGP cumulés <span id="grDetailChartSub"></span></h4><div id="grDetailChart"></div></div>
+        <div class="gdp-card"><h4>Appréciation du staff</h4><div id="grDetailRatings"></div><div id="grDetailNotes"></div></div>
+        <div class="gdp-card"><h4>Historique des FGP <span id="grDetailHistCount"></span></h4><div class="data-block-list gdp-hist" id="grDetailHistory"></div></div>
+      </div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-actions gdp-actions">
       <button type="button" class="btn btn-ghost" onclick="closeModal('grinderDetailModal')">Fermer</button>
-      <button type="button" class="btn btn-ghost" id="grDetailOnbBtn" onclick="openOnboardingFromDetail()">✅ Checklist d'accueil</button>
-      <button type="button" class="btn btn-primary" id="grDetailEditBtn" onclick="editGrinderFromDetail()">Modifier la fiche</button>
+      <button type="button" class="btn btn-ghost" id="grDetailOnbBtn" onclick="openOnboardingFromDetail()">Checklist d'accueil</button>
+      <button type="button" class="btn btn-ghost" id="grDetailEditBtn" onclick="editGrinderFromDetail()">Modifier la fiche</button>
+      <button type="button" class="btn btn-primary" onclick="giveFgpFromDetail()">Attribuer des FGP</button>
     </div>
   </div>
 </div>
@@ -9250,8 +9355,18 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 26;  // bump this when you add an entry
+const CHANGELOG_VERSION = 27;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Staff en ligne et page grinder",
+    items: [
+      "En haut de l'écran, un témoin indique l'état de l'enregistrement : « Enregistrement… », « Enregistré il y a 2 min », « Hors ligne » ou « Échec de l'enregistrement ».",
+      "Les membres du staff connectés en même temps que toi apparaissent à côté, avec leur avatar.",
+      "Si un autre membre modifie la même fiche ou les mêmes données de joueur que toi, un avertissement s'affiche dans la fenêtre.",
+      "La fiche d'un grinder devient une page complète : rang dans le programme, frise des paliers (Recrue → Légende), chiffres clés, courbe des FGP cumulés, appréciation du staff et historique, avec un bouton « Attribuer des FGP »."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Onglet Données simplifié",
@@ -17127,8 +17242,13 @@ function openGrinderDetail(id) {
   detailGrinderId = id;
   document.getElementById('grDetailTitle').textContent = g.pseudo;
   const div = FGP_DIVISIONS.find(d => d.key === g.division);
+  const country = g.country ? ((COUNTRIES.find(c => c.code === String(g.country).toUpperCase()) || {}).name || g.country) : '';
+  const since = g.createdAt ? Math.max(0, Math.floor((Date.now() - g.createdAt) / 86400000)) : null;
   document.getElementById('grDetailSub').textContent =
-    [g.realName, div ? div.label : null, g.country || null].filter(Boolean).join(' · ') || 'Grinder FLC';
+    [g.realName, div ? div.label : null, country || null, since != null ? 'inscrit depuis ' + pluralFr(since, 'jour') : null].filter(Boolean).join(' · ') || 'Grinder FLC';
+  const ph = document.getElementById('grDetailPhoto');
+  if (ph) ph.innerHTML = g.photo ? '<img src="' + escapeAttr(g.photo) + '" alt="" />' : '<span>' + escapeHtml((g.pseudo || '?').charAt(0).toUpperCase()) + '</span>';
+
   const totalFgp = grinderTotalFGP(id);
   const linksEl = document.getElementById('grDetailLinks');
   if (linksEl) {
@@ -17140,28 +17260,70 @@ function openGrinderDetail(id) {
     linksEl.innerHTML = lh;
     linksEl.style.display = lh ? 'flex' : 'none';
   }
+
+  // Rang dans le programme (grinders encore inscrits, au total de FGP)
+  const ranked = grinders.filter(x => (x.status || 'active') !== 'left')
+    .map(x => ({ id: x.id, t: grinderTotalFGP(x.id) })).sort((a, b) => b.t - a.t);
+  const rank = ranked.findIndex(x => x.id === id) + 1;
+  document.getElementById('grDetailRank').innerHTML = rank ? '<b>#' + rank + '</b><span>sur ' + ranked.length + ' du programme</span>' : '';
+
   document.getElementById('grDetailTotal').textContent = fmtNumber(totalFgp);
   const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
   document.getElementById('grDetailMonth').textContent = '+' + fmtNumber(grinderFGPSince(id, monthStart.getTime()));
+  const evts = grinderEvents.filter(e => e.grinderId === id);
+  const perfs = evts.filter(e => e.kind === 'perf' && Number(e.placement) > 0);
+  document.getElementById('grDetailPerfs').textContent = String(perfs.length);
+  const best = perfs.length ? Math.min(...perfs.map(e => Number(e.placement))) : null;
+  document.getElementById('grDetailBest').textContent = best ? 'Top ' + best : '—';
 
-  // Titre honorifique + progression vers le palier suivant
+  // Frise des paliers : Recrue → Grinder → Confirmé → Élite → Légende
   const title = grinderTitle(totalFgp);
   const next = grinderNextTitle(totalFgp);
   const tEl = document.getElementById('grDetailTitleBadge');
   if (tEl) {
-    let html = '<span class="gr-title-badge lg" style="color:' + title.color + ';border-color:' + title.color + '66;background:' + title.color + '18;">' + title.label + '</span>';
-    if (next) {
-      const span = next.min - title.min;
-      const pct = Math.max(0, Math.min(100, ((totalFgp - title.min) / span) * 100));
-      html += '<div class="gr-title-progress"><div class="gr-tp-bar"><div class="gr-tp-fill" style="width:' + pct.toFixed(1) + '%;background:' + next.color + ';"></div></div>' +
-        '<span class="gr-tp-label">' + fmtNumber(next.min - totalFgp) + ' FGP avant « ' + next.label + ' »</span></div>';
-    } else {
-      html += '<div class="gr-title-progress"><span class="gr-tp-label">Palier maximum atteint 🏆</span></div>';
-    }
-    tEl.innerHTML = html;
+    const segs = GRINDER_TITLES.map((t, i) => {
+      const nx = GRINDER_TITLES[i + 1];
+      let pct;
+      if (totalFgp < t.min) pct = 0;
+      else if (!nx || totalFgp >= nx.min) pct = 100;
+      else pct = ((totalFgp - t.min) / (nx.min - t.min)) * 100;
+      return '<div class="gdp-tier' + (t === title ? ' on' : '') + '" style="--c:' + t.color + '"><div class="gdp-tier-bar"><i style="width:' + Math.max(0, Math.min(100, pct)).toFixed(1) + '%"></i></div>' +
+        '<span>' + t.label + '</span><small>' + fmtNumber(t.min) + '</small></div>';
+    }).join('');
+    tEl.innerHTML = '<div class="gdp-tier-row">' + segs + '</div>' +
+      '<div class="gdp-tier-note">' + (next
+        ? 'Palier actuel : <b style="color:' + title.color + '">' + title.label + '</b> · encore <b>' + fmtNumber(next.min - totalFgp) + ' FGP</b> avant « ' + next.label + ' »'
+        : 'Palier maximum atteint : <b style="color:' + title.color + '">' + title.label + '</b>') + '</div>';
   }
 
-  // Appréciation manager
+  // Courbe des FGP cumulés
+  const chartEl = document.getElementById('grDetailChart');
+  const dated = evts.map(e => ({ d: e.date || dateToLocalISO(new Date(e.createdAt || 0)), f: Number(e.fgp) || 0, ts: e.createdAt || 0 }))
+    .sort((a, b) => a.d.localeCompare(b.d) || a.ts - b.ts);
+  if (dated.length >= 1) {
+    let cum = 0;
+    const pts = dated.map(x => ({ d: x.d, v: (cum += x.f) }));
+    const t0 = new Date(pts[0].d + 'T00:00:00').getTime();
+    const t1 = Math.max(Date.now(), t0 + 86400000);
+    const W = 600, H = 140, pad = 8, max = Math.max(1, pts[pts.length - 1].v);
+    const X = t => pad + ((t - t0) / (t1 - t0)) * (W - pad * 2);
+    const Y = v => H - pad - (v / max) * (H - pad * 2 - 10);
+    let path = 'M ' + X(t0).toFixed(1) + ',' + Y(0).toFixed(1);
+    pts.forEach(p => { const x = X(new Date(p.d + 'T00:00:00').getTime()); path += ' H ' + x.toFixed(1) + ' V ' + Y(p.v).toFixed(1); });
+    path += ' H ' + X(t1).toFixed(1);
+    chartEl.innerHTML = '<svg class="gdp-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-label="FGP cumulés">' +
+      '<defs><linearGradient id="gdpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a855f7" stop-opacity="0.35"/><stop offset="1" stop-color="#a855f7" stop-opacity="0"/></linearGradient></defs>' +
+      '<path d="' + path + ' V ' + (H - pad) + ' H ' + X(t0).toFixed(1) + ' Z" fill="url(#gdpg)"/>' +
+      '<path d="' + path + '" fill="none" stroke="#c99bff" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>' +
+      '<div class="ppg-axis"><span>' + fmtDateFR(pts[0].d) + '</span><span>' + fmtNumber(max) + ' FGP</span><span>Aujourd\'hui</span></div>';
+    const weekFgp = evts.filter(e => (e.createdAt || 0) >= Date.now() - 7 * 86400000).reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+    document.getElementById('grDetailChartSub').innerHTML = weekFgp ? '<span class="kpi-delta up">+' + fmtNumber(weekFgp) + ' cette semaine</span>' : '';
+  } else {
+    chartEl.innerHTML = '<div class="ppg-empty">Pas encore de FGP : la courbe apparaîtra après la première performance.</div>';
+    document.getElementById('grDetailChartSub').innerHTML = '';
+  }
+
+  // Appréciation du staff + notes
   const rEl = document.getElementById('grDetailRatings');
   const hasRatings = GRINDER_CRITERIA.some(c => (g.ratings || {})[c.key] > 0);
   rEl.innerHTML = hasRatings
@@ -17170,15 +17332,18 @@ function openGrinderDetail(id) {
         return '<div class="gr-dr-row"><span>' + c.label + '</span>' +
           '<span class="gr-dr-stars">' + ('★★★★★'.slice(0, v) + '☆☆☆☆☆'.slice(0, 5 - v)) + '</span></div>';
       }).join('') + '</div>'
-    : '';
+    : '<div class="ppg-empty">Pas encore d\'appréciation. Ajoute-la depuis « Modifier la fiche ».</div>';
+  const nEl = document.getElementById('grDetailNotes');
+  nEl.innerHTML = g.notes ? '<div class="gdp-notes">' + escapeHtml(g.notes) + '</div>' : '';
 
   // Historique
-  const evts = grinderEvents.filter(e => e.grinderId === id).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const sorted = evts.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  document.getElementById('grDetailHistCount').textContent = sorted.length ? pluralFr(sorted.length, 'entrée') : '';
   const hEl = document.getElementById('grDetailHistory');
-  if (evts.length === 0) {
-    hEl.innerHTML = '<div class="tags-empty">Aucun FGP enregistré pour l\'instant.</div>';
+  if (sorted.length === 0) {
+    hEl.innerHTML = '<div class="ppg-empty">Aucun FGP enregistré pour l\'instant.</div>';
   } else {
-    hEl.innerHTML = evts.map(e => {
+    hEl.innerHTML = sorted.map(e => {
       let label, detail = '';
       if (e.kind === 'perf') {
         const cup = FGP_CUP_TYPES.find(c => c.key === e.cupType);
@@ -17200,16 +17365,28 @@ function openGrinderDetail(id) {
         label = e.label || 'Implication';
         detail = 'Point d\'implication';
       }
-      return '<div class="history-entry">' +
-        '<div class="he-date">' + fmtDateFR(e.date) + '</div>' +
-        '<div class="he-main"><div class="he-primary">' + escapeHtml(label) + '</div>' +
-          '<div class="he-tertiary">' + escapeHtml(detail) + ' · ' + escapeHtml(e.author || '—') + '</div></div>' +
-        '<div class="gr-ev-fgp">+' + e.fgp + '</div>' +
-        '<button class="rt-btn" onclick="deleteGrinderEvent(\'' + e.id + '\')" title="Supprimer">🗑</button>' +
+      return '<div class="gdp-ev">' +
+        '<span class="gdp-ev-fgp">+' + e.fgp + '</span>' +
+        '<div class="gdp-ev-main"><b>' + escapeHtml(label) + '</b><small>' + fmtDateFR(e.date) + ' · ' + escapeHtml(detail) + ' · ' + escapeHtml(e.author || '—') + '</small></div>' +
+        '<button type="button" class="gdp-ev-del" onclick="deleteGrinderEvent(\'' + e.id + '\')" title="Supprimer" aria-label="Supprimer l\'entrée">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
       '</div>';
     }).join('');
   }
   document.getElementById('grinderDetailModal').classList.add('active');
+}
+
+// Depuis la page grinder : aller au formulaire « Enregistrer une performance », grinder présélectionné
+function giveFgpFromDetail() {
+  const id = detailGrinderId;
+  closeModal('grinderDetailModal');
+  switchTab('grinder');
+  setTimeout(() => {
+    const sel = document.getElementById('gr_ev_grinder');
+    if (sel) { sel.value = id; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+    const pl = document.getElementById('gr_ev_placement');
+    if (pl) { pl.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => pl.focus(), 350); }
+  }, 120);
 }
 
 function openOnboardingFromDetail() {
@@ -19484,6 +19661,154 @@ function renderPlayerPage() {
   el.innerHTML = head + kpis + tabs + '<div class="ppg-pane">' + pane + '</div>';
   if (playerPageTab === 'hi') renderPlayerHistory(p.id, 'ppgHistory');
 }
+</script>
+<script>
+/* ============================================================
+   STAFF EN LIGNE + ÉTAT DE L'ENREGISTREMENT
+   ============================================================ */
+(function () {
+  // --- État de l'enregistrement : on suit chaque envoi vers Supabase ---
+  const save = { pending: 0, last: 0, error: null };
+  function wrap(name) {
+    const orig = appStorage[name];
+    if (typeof orig !== 'function') return;
+    appStorage[name] = async function () {
+      save.pending++; renderSave();
+      try {
+        const r = await orig.apply(this, arguments);
+        save.last = Date.now(); save.error = null;
+        return r;
+      } catch (e) {
+        save.error = (e && e.message) || 'Erreur inconnue';
+        throw e;
+      } finally {
+        save.pending = Math.max(0, save.pending - 1); renderSave();
+      }
+    };
+  }
+  wrap('set'); wrap('delete');
+
+  function ago(ts) {
+    const s = Math.round((Date.now() - ts) / 1000);
+    if (s < 10) return 'à l\'instant';
+    if (s < 60) return 'il y a ' + s + ' s';
+    const m = Math.round(s / 60);
+    if (m < 60) return 'il y a ' + m + ' min';
+    return 'à ' + new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  }
+  function renderSave() {
+    const el = document.getElementById('saveStatus');
+    if (!el) return;
+    let cls = '', txt = '', tip = '';
+    if (!navigator.onLine) { cls = 'off'; txt = 'Hors ligne'; tip = 'Pas de connexion : les modifications ne peuvent pas être enregistrées.'; }
+    else if (save.pending) { cls = 'busy'; txt = 'Enregistrement…'; tip = 'Envoi vers la base en cours'; }
+    else if (save.error) { cls = 'err'; txt = 'Échec de l\'enregistrement'; tip = save.error + ' · refais la modification ou recharge la page'; }
+    else if (save.last) { cls = 'ok'; txt = 'Enregistré ' + ago(save.last); tip = 'Dernier enregistrement : ' + new Date(save.last).toLocaleTimeString('fr-FR'); }
+    else { cls = 'idle'; txt = 'À jour'; tip = 'Aucune modification depuis l\'ouverture'; }
+    el.className = 'save-status ' + cls;
+    el.title = tip;
+    el.querySelector('.ss-txt').textContent = txt;
+  }
+  setInterval(renderSave, 10000);
+  window.addEventListener('online', renderSave);
+  window.addEventListener('offline', renderSave);
+  // Prévenir avant de fermer l'onglet pendant un envoi
+  window.addEventListener('beforeunload', e => { if (save.pending) { e.preventDefault(); e.returnValue = ''; } });
+
+  // --- Présence : qui est connecté, et quelle fiche il modifie ---
+  const tabId = Math.random().toString(36).slice(2, 10);
+  let channel = null, others = [], editing = null;
+  const COLORS = ['#ddbd80', '#7fb0ff', '#c99bff', '#5eead4', '#f9a8d4', '#fdba74'];
+  const colorFor = id => { let h = 0; String(id).split('').forEach(c => { h = (h * 31 + c.charCodeAt(0)) >>> 0; }); return COLORS[h % COLORS.length]; };
+  const nameOf = u => (u && (u.displayName || u.pseudo)) || '—';
+
+  function payload() {
+    return { userId: currentUser.id, name: nameOf(currentUser), editing, at: Date.now() };
+  }
+  function track() { if (channel) { try { channel.track(payload()); } catch (e) {} } }
+
+  window.setupPresence = function () {
+    if (channel || typeof sb === 'undefined' || !sb || !currentUser || typeof sb.channel !== 'function') { renderPresence(); return; }
+    try {
+      channel = sb.channel('sovereign_presence', { config: { presence: { key: currentUser.id + ':' + tabId } } });
+      channel.on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState() || {};
+        const byUser = {};
+        Object.values(state).forEach(arr => (arr || []).forEach(m => {
+          if (!m || !m.userId || m.userId === currentUser.id) return;
+          const prev = byUser[m.userId];
+          // Un même membre dans plusieurs onglets : on garde l'onglet qui modifie quelque chose
+          if (!prev || (!prev.editing && m.editing)) byUser[m.userId] = m;
+        }));
+        others = Object.values(byUser);
+        renderPresence();
+        renderEditWarnings();
+      });
+      channel.subscribe(status => { if (status === 'SUBSCRIBED') track(); });
+    } catch (e) { console.warn('[presence]', e); channel = null; }
+    renderPresence();
+  };
+
+  function renderPresence() {
+    const el = document.getElementById('presenceBar');
+    if (!el) return;
+    if (!others.length) { el.innerHTML = ''; el.hidden = true; return; }
+    el.hidden = false;
+    const shown = others.slice(0, 4);
+    const names = others.map(m => m.name);
+    const label = names.length === 1 ? names[0] + ' est en ligne' : names.slice(0, -1).join(', ') + ' et ' + names[names.length - 1] + ' sont en ligne';
+    el.title = label + (others.some(m => m.editing) ? '\n' + others.filter(m => m.editing).map(m => m.name + ' modifie ' + editingLabel(m.editing)).join('\n') : '');
+    el.innerHTML = '<span class="pr-stack">' + shown.map(m => {
+      const u = (users || []).find(x => x.id === m.userId);
+      const photo = u && u.photo;
+      return '<span class="pr-av" style="--c:' + colorFor(m.userId) + '">' + (photo ? '<img src="' + escapeAttr(photo) + '" alt="" />' : escapeHtml(String(m.name).charAt(0).toUpperCase())) + '</span>';
+    }).join('') + (others.length > 4 ? '<span class="pr-av pr-more">+' + (others.length - 4) + '</span>' : '') + '</span>' +
+      '<span class="pr-txt">' + escapeHtml(others.length === 1 ? names[0] : others.length + ' en ligne') + '</span>';
+  }
+
+  function editingLabel(ed) {
+    if (!ed) return '';
+    const p = (players || []).find(x => x.id === ed.id);
+    return (ed.what === 'data' ? 'les données de ' : 'la fiche de ') + (p ? p.pseudo : 'un joueur');
+  }
+
+  // Avertissement dans la fiche ouverte si un autre membre modifie le même joueur
+  function renderEditWarnings() {
+    [['playerModal', 'fiche'], ['dataModal', 'data']].forEach(([mid, what]) => {
+      const modal = document.getElementById(mid);
+      if (!modal) return;
+      const box = modal.querySelector('.modal');
+      let warn = box && box.querySelector('.pr-warn');
+      const mine = editing && editing.modal === mid ? editing : null;
+      const clash = mine ? others.filter(m => m.editing && m.editing.id === mine.id) : [];
+      if (!clash.length) { if (warn) warn.remove(); return; }
+      if (!warn) { warn = document.createElement('div'); warn.className = 'pr-warn'; warn.setAttribute('role', 'status'); box.insertBefore(warn, box.firstElementChild ? box.firstElementChild.nextSibling : null); }
+      const who = clash.map(m => m.name).join(' et ');
+      warn.innerHTML = '<span class="pr-warn-ico">!</span><span><b>' + escapeHtml(who) + '</b> ' + (clash.length > 1 ? 'modifient' : 'modifie') + ' aussi ' + escapeHtml(editingLabel(clash[0].editing)) +
+        '. Si vous enregistrez tous les deux, la dernière version enregistrée remplacera l\'autre.</span>';
+    });
+  }
+
+  // Ce que je modifie : suivi de l'ouverture / fermeture des fenêtres d'édition
+  function computeEditing() {
+    const pm = document.getElementById('playerModal'), dm = document.getElementById('dataModal');
+    let ed = null;
+    if (dm && dm.classList.contains('active') && typeof editingDataPlayerId !== 'undefined' && editingDataPlayerId) ed = { modal: 'dataModal', what: 'data', id: editingDataPlayerId };
+    else if (pm && pm.classList.contains('active') && typeof editingPlayerId !== 'undefined' && editingPlayerId) ed = { modal: 'playerModal', what: 'fiche', id: editingPlayerId };
+    const changed = JSON.stringify(ed) !== JSON.stringify(editing);
+    editing = ed;
+    if (changed) { track(); renderEditWarnings(); }
+  }
+  const mo = new MutationObserver(() => setTimeout(computeEditing, 0));
+  ['playerModal', 'dataModal'].forEach(id => { const el = document.getElementById(id); if (el) mo.observe(el, { attributes: true, attributeFilter: ['class'] }); });
+
+  // Démarrage une fois connecté
+  const prevShowApp = window.showApp;
+  if (typeof prevShowApp === 'function') {
+    window.showApp = function () { const r = prevShowApp.apply(this, arguments); setTimeout(window.setupPresence, 0); renderSave(); return r; };
+  }
+  renderSave();
+})();
 </script>
 </body>
 </html>
