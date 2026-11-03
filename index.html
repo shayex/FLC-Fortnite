@@ -7314,7 +7314,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Évolution cumulée</div>
-            <div class="dash-card-sub">Cumul des FGP dans le temps, par grinder</div>
+            <div class="dash-card-sub">Cumul des FGP depuis l'inscription, jusqu'à aujourd'hui</div>
           </div>
         </div>
         <div id="grinderChart"></div>
@@ -9641,8 +9641,17 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 29;  // bump this when you add an entry
+const CHANGELOG_VERSION = 30;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Courbe des FGP plus lisible",
+    items: [
+      "Page Grinder : la courbe « Évolution cumulée » passe en escalier. Chaque courbe part de 0 à l'inscription, monte le jour où des FGP sont gagnés et se prolonge jusqu'à aujourd'hui.",
+      "L'axe des dates ne montre plus deux fois la même date, et le nom de chaque grinder s'affiche au bout de sa courbe, avec son total.",
+      "Le texte reste lisible sur téléphone : la courbe s'adapte à la largeur de l'écran."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Agenda sur téléphone, frise des contrats et aperçu Discord",
@@ -17924,6 +17933,10 @@ function openFgpScaleModal() {
 }
 
 // ---------- Courbe de progression ----------
+// Couleurs des courbes : violet du programme en premier, puis des teintes bien distinctes
+const GRINDER_CHART_COLORS = ['#a855f7', '#22d3ee', '#f472b6', '#facc15', '#4ade80', '#fb923c', '#60a5fa', '#e879f9', '#f87171', '#2dd4bf'];
+
+// Courbe en escalier : part de 0 à l'inscription, monte à chaque attribution, continue jusqu'à aujourd'hui
 function renderGrinderChart() {
   const container = document.getElementById('grinderChart');
   const legendEl = document.getElementById('grinderChartLegend');
@@ -17931,87 +17944,128 @@ function renderGrinderChart() {
 
   const active = grinders.filter(g => (g.status || 'active') !== 'left' && grinderEvents.some(e => e.grinderId === g.id));
   if (active.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Aucun FGP enregistr\u00e9. La courbe appara\u00eetra d\u00e8s la premi\u00e8re performance.</div>';
+    container.innerHTML = '<div class="dash-empty">Aucun FGP enregistré. La courbe apparaîtra dès la première performance.</div>';
     if (legendEl) legendEl.innerHTML = '';
     return;
   }
 
-  // Cumul par grinder, tri\u00e9 par date puis par ordre de saisie
-  const series = active.map((g, idx) => {
-    const evts = grinderEvents.filter(e => e.grinderId === g.id).slice().sort((a, b) => {
-      const da = new Date((a.date || '1970-01-01') + 'T00:00:00').getTime();
-      const db = new Date((b.date || '1970-01-01') + 'T00:00:00').getTime();
-      if (da !== db) return da - db;
-      return (a.createdAt || 0) - (b.createdAt || 0);
+  const DAY = 86400000;
+  const dayOf = iso => { const d = new Date(String(iso || '').slice(0, 10) + 'T00:00:00'); return isNaN(d) ? null : d.getTime(); };
+  const midnight = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  const today = midnight(Date.now());
+
+  // Une marche par jour : les FGP d'un même jour sont additionnés
+  const series = active.map(g => {
+    const byDay = {};
+    grinderEvents.filter(e => e.grinderId === g.id).forEach(e => {
+      const t = dayOf(e.date) ?? (e.createdAt ? midnight(e.createdAt) : null);
+      if (t == null) return;
+      (byDay[t] = byDay[t] || []).push(e);
     });
+    const days = Object.keys(byDay).map(Number).sort((a, b) => a - b);
     let cum = 0;
-    const pts = evts.map((e, k) => {
-      cum += Number(e.fgp) || 0;
-      return { t: new Date((e.date || '1970-01-01') + 'T00:00:00').getTime(), v: cum, i: k, e };
+    const steps = days.map(t => {
+      const add = byDay[t].reduce((s, e) => s + (Number(e.fgp) || 0), 0);
+      cum += add;
+      return { t, add, v: cum, n: byDay[t].length };
     });
-    return { g, pts, color: playerColor(g, idx) };
-  }).filter(s => s.pts.length > 0);
+    const joined = g.createdAt ? midnight(g.createdAt) : null;
+    const startT = steps.length ? Math.min(joined != null ? joined : steps[0].t, steps[0].t) : joined;
+    return { g, steps, startT, total: cum };
+  }).filter(s => s.steps.length > 0)
+    .sort((a, b) => b.total - a.total)
+    .map((s, i) => Object.assign(s, { color: GRINDER_CHART_COLORS[i % GRINDER_CHART_COLORS.length] }));
 
-  const allTs = series.flatMap(s => s.pts.map(p => p.t));
-  const minT = Math.min(...allTs), maxT = Math.max(...allTs);
-  // Toutes les entr\u00e9es le m\u00eame jour ? Un axe de dates serait \u00e9cras\u00e9 :
-  // on passe alors sur un axe "par entr\u00e9e" (\u00e9tapes chronologiques).
-  const singleDay = (maxT - minT) < 86400000;
-  const maxSteps = Math.max(...series.map(s => s.pts.length));
-  const maxV = Math.max(...series.flatMap(s => s.pts.map(p => p.v)), 1);
+  let t0 = Math.min(...series.map(s => s.startT));
+  const t1 = Math.max(today, ...series.map(s => s.steps[s.steps.length - 1].t));
+  if (t1 - t0 < DAY) t0 = t1 - DAY;
+  const nDays = Math.round((t1 - t0) / DAY);
 
-  const W = 800, H = 280, PAD_L = 52, PAD_R = 18, PAD_T = 16, PAD_B = 40;
-  const spanT = Math.max(maxT - minT, 1);
-  const x = p => singleDay
-    ? PAD_L + (maxSteps <= 1 ? 0.5 : (p.i / (maxSteps - 1))) * (W - PAD_L - PAD_R)
-    : PAD_L + ((p.t - minT) / spanT) * (W - PAD_L - PAD_R);
+  // Dimensions réelles du bloc, pour garder un texte lisible sur téléphone
+  const W = Math.max(300, Math.round(container.clientWidth || 800));
+  const H = W < 520 ? 220 : 270;
+  const labelW = W < 520 ? 64 : 116;
+  const PAD_L = 38, PAD_R = labelW, PAD_T = 14, PAD_B = 30;
+  const x = t => PAD_L + ((t - t0) / (t1 - t0)) * (W - PAD_L - PAD_R);
+
+  // Échelle verticale arrondie (0, 25, 50…)
+  const rawMax = Math.max(...series.map(s => s.total), 1);
+  const mag = Math.pow(10, Math.floor(Math.log10(rawMax)));
+  const stepY = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => rawMax / k <= 4) || mag * 10;
+  const maxV = Math.ceil(rawMax / stepY) * stepY;
   const y = v => H - PAD_B - (v / maxV) * (H - PAD_T - PAD_B);
 
-  // Grille + axe des ordonn\u00e9es
   let grid = '';
-  for (let k = 0; k <= 4; k++) {
-    const v = (maxV / 4) * k;
-    const yy = y(v);
-    grid += '<line x1="' + PAD_L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + yy.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" />' +
-      '<text x="' + (PAD_L - 10) + '" y="' + (yy + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="#6b7280">' + Math.round(v) + '</text>';
+  for (let v = 0; v <= maxV + 1e-9; v += stepY) {
+    const yy = y(v).toFixed(1);
+    grid += '<line x1="' + PAD_L + '" y1="' + yy + '" x2="' + (W - PAD_R) + '" y2="' + yy + '" stroke="rgba(255,255,255,0.06)" />' +
+      '<text x="' + (PAD_L - 8) + '" y="' + (+yy + 4) + '" text-anchor="end" font-size="11" fill="#6b7280">' + fmtNumber(Math.round(v)) + '</text>';
   }
 
-  // Axe des abscisses : dates r\u00e9elles, ou num\u00e9ro d'entr\u00e9e si tout est le m\u00eame jour
+  // Axe des dates : un repère par jour entier, jamais deux fois la même date
+  const maxTicks = W < 520 ? 4 : 7;
+  const tickStep = [1, 2, 3, 7, 14, 30, 61, 91, 182, 365].find(k => nDays / k <= maxTicks) || 365;
+  const fmtDay = t => { const d = new Date(t); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); };
   let xAxis = '';
-  if (singleDay) {
-    for (let k = 0; k < maxSteps; k++) {
-      const xx = PAD_L + (maxSteps <= 1 ? 0.5 : (k / (maxSteps - 1))) * (W - PAD_L - PAD_R);
-      xAxis += '<text x="' + xx.toFixed(1) + '" y="' + (H - PAD_B + 18) + '" text-anchor="middle" font-size="10" fill="#6b7280">' + (k + 1) + '</text>';
-    }
-    xAxis += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="#4b5563">Entr\u00e9es (toutes le ' + fmtDateFR(dateToLocalISO(new Date(minT))) + ')</text>';
-  } else {
-    const ticks = 5;
-    for (let k = 0; k <= ticks; k++) {
-      const t = minT + (spanT * k / ticks);
-      const xx = PAD_L + (k / ticks) * (W - PAD_L - PAD_R);
-      const d = new Date(t);
-      const lbl = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
-      xAxis += '<text x="' + xx.toFixed(1) + '" y="' + (H - PAD_B + 18) + '" text-anchor="middle" font-size="10" fill="#6b7280">' + lbl + '</text>';
-    }
+  const endIsToday = t1 === today;
+  for (let k = 0; k <= nDays; k += tickStep) {
+    const t = t0 + k * DAY;
+    if (nDays - k < tickStep * 0.6 && k !== nDays) continue; // trop près du dernier repère
+    if (k === nDays) break;
+    xAxis += '<text x="' + x(t).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="11" fill="#6b7280">' + fmtDay(t) + '</text>';
   }
+  xAxis += '<text x="' + x(t1).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="11" font-weight="600" fill="' + (endIsToday ? '#ddbd80' : '#6b7280') + '">' + (endIsToday ? 'auj.' : fmtDay(t1)) + '</text>';
+  const todayLine = endIsToday ? '<line x1="' + x(t1).toFixed(1) + '" x2="' + x(t1).toFixed(1) + '" y1="' + PAD_T + '" y2="' + (H - PAD_B) + '" stroke="#ddbd80" stroke-dasharray="3 3" opacity="0.5" />' : '';
 
   const paths = series.map(s => {
-    const d = s.pts.map((p, k) => (k === 0 ? 'M' : 'L') + x(p).toFixed(1) + ' ' + y(p.v).toFixed(1)).join(' ');
-    const dots = s.pts.map(p =>
-      '<circle cx="' + x(p).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="3.5" fill="' + s.color + '">' +
-        '<title>' + escapeHtml(s.g.pseudo) + ' \u00b7 ' + p.v + ' FGP (+' + (Number(p.e.fgp) || 0) + ')</title>' +
+    let d = 'M' + x(s.startT).toFixed(1) + ' ' + y(0).toFixed(1);
+    s.steps.forEach(p => { d += ' H' + x(p.t).toFixed(1) + ' V' + y(p.v).toFixed(1); });
+    d += ' H' + x(t1).toFixed(1);
+    const area = d + ' V' + y(0).toFixed(1) + ' H' + x(s.startT).toFixed(1) + 'Z';
+    const dots = s.steps.map(p =>
+      '<circle cx="' + x(p.t).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="4" fill="' + s.color + '" stroke="#0a0a0e" stroke-width="1.5">' +
+        '<title>' + escapeHtml(s.g.pseudo) + ' · ' + fmtDateFR(dateToLocalISO(new Date(p.t))) + ' : +' + fmtNumber(p.add) + ' FGP' + (p.n > 1 ? ' (' + p.n + ' entrées)' : '') + ' · total ' + fmtNumber(p.v) + '</title>' +
       '</circle>').join('');
-    // Un seul point : pas de ligne \u00e0 tracer, on garde le rep\u00e8re visible
-    return (s.pts.length > 1 ? '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />' : '') + dots;
+    return '<g class="gc-s" data-gid="' + escapeAttr(s.g.id) + '"><path d="' + area + '" fill="' + s.color + '" opacity="0.07" />' +
+      '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2.5" stroke-linejoin="round" />' + dots + '</g>';
   }).join('');
 
-  container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;">' + grid + xAxis + paths + '</svg>';
+  // Nom de chaque grinder au bout de sa courbe, espacés pour ne pas se chevaucher
+  const labeled = series.slice(0, 8).map(s => ({ s, yy: y(s.total) })).sort((a, b) => a.yy - b.yy);
+  for (let i = 1; i < labeled.length; i++) if (labeled[i].yy - labeled[i - 1].yy < 14) labeled[i].yy = labeled[i - 1].yy + 14;
+  const overflow = labeled.length ? labeled[labeled.length - 1].yy - (H - PAD_B) : 0;
+  if (overflow > 0) labeled.forEach(l => { l.yy -= overflow; });
+  const maxChars = W < 520 ? 7 : 10;
+  const ends = labeled.map(l => {
+    const name = l.s.g.pseudo.length > maxChars ? l.s.g.pseudo.slice(0, maxChars - 1) + '…' : l.s.g.pseudo;
+    return '<text class="gc-s" data-gid="' + escapeAttr(l.s.g.id) + '" x="' + (x(t1) + 8).toFixed(1) + '" y="' + (l.yy + 4).toFixed(1) + '" font-size="12" font-weight="700" fill="' + l.s.color + '">' + escapeHtml(name) + ' ' + fmtNumber(l.s.total) + '</text>';
+  }).join('');
+
+  container.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" style="display:block;" role="img" aria-label="Cumul des FGP par grinder depuis l\'inscription">' +
+    grid + xAxis + todayLine + paths + ends + '</svg>';
+  container.dataset.w = W;
+
+  // Redessine si la largeur du bloc change (onglet ouvert, rotation du téléphone…)
+  if (!container._ro && typeof ResizeObserver !== 'undefined') {
+    container._ro = new ResizeObserver(() => {
+      const w = Math.round(container.clientWidth);
+      if (w && Math.abs(w - Number(container.dataset.w || 0)) > 20) renderGrinderChart();
+    });
+    container._ro.observe(container);
+  }
 
   if (legendEl) {
     legendEl.innerHTML = series.map(s =>
-      '<span class="legend-item"><span class="legend-dot" style="background:' + s.color + ';"></span>' +
-      escapeHtml(s.g.pseudo) + ' <strong>' + fmtNumber(s.pts[s.pts.length - 1].v) + '</strong></span>').join('') +
-      (singleDay ? '<span class="legend-item" style="color:var(--text-mute);font-style:italic;">Toutes les entr\u00e9es datent du m\u00eame jour \u2014 axe par entr\u00e9e</span>' : '');
+      '<span class="legend-item" data-gid="' + escapeAttr(s.g.id) + '"><span class="legend-swatch" style="background:' + s.color + ';"></span>' +
+      escapeHtml(s.g.pseudo) + ' <strong>' + fmtNumber(s.total) + '</strong></span>').join('') +
+      '<span class="legend-item" style="color:var(--text-mute);cursor:default;">Chaque marche = FGP gagnés ce jour-là</span>';
+    // Survol d'un nom : met sa courbe en avant
+    const svg = container.querySelector('svg');
+    const focus = id => svg.querySelectorAll('.gc-s').forEach(el => { el.style.opacity = id == null || el.dataset.gid === id ? '' : '0.15'; });
+    legendEl.querySelectorAll('.legend-item[data-gid]').forEach(li => {
+      li.addEventListener('mouseenter', () => focus(li.dataset.gid));
+      li.addEventListener('mouseleave', () => focus(null));
+    });
   }
 }
 
