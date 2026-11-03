@@ -6277,6 +6277,124 @@
   .ph-note { white-space: pre-wrap; word-break: break-word; color: var(--text); }
   .ph-empty { padding: 18px; border-radius: 12px; border: 1px dashed var(--border-strong); font-size: 13px; color: var(--text-mute); line-height: 1.5; }
   .ph-foot { margin-top: 10px; font-size: 11px; color: var(--text-mute); }
+
+  /* --- Page joueur --- */
+  .ppg-modal { max-width: 880px; padding: 0; overflow: hidden auto; max-height: calc(100vh - 40px); }
+  .ppg-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 24px 26px 16px; padding-right: 64px; background: linear-gradient(135deg, color-mix(in srgb, var(--t) 26%, transparent), transparent 70%); }
+  .ppg-photo { --m: color-mix(in srgb, var(--t) 70%, #3a3a46); width: 84px; height: 84px; border-radius: 24px; overflow: hidden; display: grid; place-items: center; background: var(--bg-3); border: 3px solid var(--m); box-shadow: 0 10px 26px rgba(0,0,0,0.5); }
+  .ppg-photo.r1 { --m: var(--red); } .ppg-photo.r2 { --m: var(--silver); } .ppg-photo.r3 { --m: var(--bronze); }
+  .ppg-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .ppg-photo span { font-family: var(--font-display); font-size: 42px; color: var(--white); }
+  .ppg-id { min-width: 0; }
+  .ppg-name { font-family: var(--font-display); font-size: 40px; line-height: 1; letter-spacing: 0.04em; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ppg-sub { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; color: var(--text-dim); }
+  .ppg-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-mute); }
+  .ppg-sub img { display: inline-block; vertical-align: -2px; border-radius: 2px; }
+  .ppg-team { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; color: #fff; background: color-mix(in srgb, var(--t) 70%, #000); }
+  .ppg-soc { display: flex; gap: 6px; margin-top: 8px; }
+  .ppg-soc .social-link { width: 28px; height: 28px; border-radius: 8px; }
+  .ppg-rank { text-align: right; line-height: 1; }
+  .ppg-rank b { font-family: var(--font-display); font-weight: 400; font-size: 48px; color: var(--white); }
+  .ppg-rank.r1 b { color: var(--red-bright); } .ppg-rank.r2 b { color: var(--silver); } .ppg-rank.r3 b { color: var(--bronze); }
+  .ppg-rank span { display: block; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-mute); }
+  .ppg-actions { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 26px 14px; }
+  .ppg-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 0 26px; }
+  .ppg-kpi { display: grid; gap: 2px; align-content: start; padding: 10px 12px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--border); font-size: 11px; color: var(--text-mute); }
+  .ppg-kpi b { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1.05; color: var(--white); font-variant-numeric: tabular-nums; }
+  .ppg-kpi b small { font-size: 14px; color: var(--text-mute); }
+  .ppg-kpi em { font-style: normal; font-size: 11px; }
+  .ppg-kpi .kpi-delta { justify-self: start; font-size: 10px; padding: 1px 6px; }
+  .ppg-tabs { display: flex; gap: 2px; margin: 16px 0 0; padding: 0 22px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+  .ppg-tabs::-webkit-scrollbar { display: none; }
+  .ppg-tabs button { position: relative; padding: 11px 14px; font-size: 13px; font-weight: 600; color: var(--text-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: color 0.2s, border-color 0.2s; }
+  .ppg-tabs button:hover { color: var(--text); }
+  .ppg-tabs button[aria-selected="true"] { color: var(--white); border-bottom-color: var(--red); }
+  .ppg-badge { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 800; background: var(--amber); color: #1a1205; }
+  .ppg-dot { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--amber); vertical-align: 2px; }
+  .ppg-pane { padding: 16px 26px 24px; animation: fadeIn 0.2s ease-out; }
+  .ppg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .ppg-card { min-width: 0; padding: 14px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--border); }
+  .ppg-card.wide { grid-column: 1 / -1; }
+  .ppg-card h4 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .ppg-card h4 span { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text-mute); }
+  .ppg-chart { margin: 0 -14px; }
+  .ppg-svg { display: block; width: 100%; height: 130px; }
+  .ppg-axis { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--text-mute); }
+  .ppg-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .ppg-row:last-child { border-bottom: 0; }
+  .ppg-rt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+  .ppg-rt small { display: block; font-size: 11px; color: var(--text-mute); overflow: hidden; text-overflow: ellipsis; }
+  .ppg-rt b { font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--red-bright); }
+  .ppg-place { min-width: 46px; padding: 3px 6px; border-radius: 8px; text-align: center; font-family: var(--font-display); font-size: 18px; line-height: 1.1; background: var(--bg-3); color: var(--text-dim); }
+  .ppg-place.g { background: rgba(201,164,92,0.18); color: var(--red-bright); }
+  .ppg-place.v { background: var(--good-bg); color: var(--green); }
+  .ppg-prize { font-family: var(--font-mono); font-size: 12px; color: var(--green); white-space: nowrap; }
+  .ppg-date { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); white-space: nowrap; }
+  .ppg-diff { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-mute); }
+  .ppg-diff.up { color: var(--green); } .ppg-diff.down { color: var(--danger); }
+  .ppg-scroll { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+  .ppg-notes { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 13px; }
+  .ppg-notes li { padding: 7px 10px; border-radius: 9px; background: var(--bg-3); color: var(--text-dim); }
+  .ppg-notes li.warn { color: var(--amber); background: rgba(245,158,11,0.10); }
+  .ppg-notes li.bad { color: var(--danger); background: var(--danger-bg); }
+  .ppg-empty { font-size: 13px; color: var(--text-mute); padding: 6px 0; }
+  .ppg-empty.ok { color: var(--green); }
+  .ppg-tk { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .ppg-tk:last-of-type { border-bottom: 0; }
+  .ppg-tk-body { min-width: 0; white-space: pre-wrap; word-break: break-word; }
+  .ppg-tk small { display: block; margin-top: 3px; font-size: 11px; color: var(--text-mute); }
+  .ppg-tk.need .ppg-tk-body > div::before { content: 'Besoin · '; color: #ff9a9a; font-weight: 600; }
+  .ppg-foot-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
+  .ppg-card.ppg-foot-actions { margin-top: 0; padding: 0; background: none; border: 0; }
+  .ppg-ct-status { margin-bottom: 8px; font-size: 15px; font-weight: 700; color: var(--c); }
+  .ppg-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .ppg-facts div { padding: 8px 10px; border-radius: 10px; background: var(--bg-3); font-size: 11px; color: var(--text-mute); }
+  .ppg-facts b { display: block; margin-top: 2px; font-size: 13px; color: var(--text); }
+  .ppg-card .ph-list { max-height: 380px; }
+  @media (max-width: 700px) {
+    .ppg-modal { max-height: none; min-height: 100%; border-radius: 0; }
+    #playerPageModal { padding: 0; align-items: stretch; }
+    .ppg-head { grid-template-columns: auto minmax(0, 1fr); padding: 20px 16px 12px; padding-right: 56px; gap: 12px; }
+    .ppg-photo { width: 64px; height: 64px; border-radius: 18px; }
+    .ppg-name { font-size: 30px; }
+    .ppg-rank { grid-column: 1 / -1; text-align: left; display: flex; align-items: baseline; gap: 8px; }
+    .ppg-rank b { font-size: 30px; }
+    .ppg-actions, .ppg-kpis { padding-left: 16px; padding-right: 16px; }
+    .ppg-kpis { grid-template-columns: 1fr 1fr; }
+    .ppg-tabs { padding: 0 8px; }
+    .ppg-pane { padding: 14px 16px calc(100px + env(safe-area-inset-bottom, 0px)); }
+    .ppg-grid { grid-template-columns: 1fr; }
+    .ppg-facts { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* --- Comparateur en radar --- */
+  .rd-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: center; }
+  .rd-svg { display: block; width: 100%; max-width: 460px; height: auto; margin: 0 auto; overflow: visible; }
+  .rd-grid { fill: none; stroke: var(--border); stroke-width: 1; }
+  .rd-label { font-family: var(--font-body); font-size: 11px; fill: var(--text-dim); }
+  .rd-serie { transition: opacity 0.2s; }
+  .rd-svg.has-focus .rd-serie:not(.on) { opacity: 0.18; }
+  .rd-svg circle { cursor: help; }
+  .rd-side { display: grid; gap: 14px; }
+  .rd-legend { display: grid; gap: 6px; }
+  .rd-who { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-2); text-align: left; transition: border-color 0.15s, background 0.15s; }
+  .rd-who:hover, .rd-who:focus-visible { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--bg-2)); }
+  .rd-who i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex-shrink: 0; }
+  .rd-who span { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rd-who b { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-dim); }
+  .rd-gaps { display: grid; gap: 6px; padding: 12px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--border); }
+  .rd-gaps-t { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-mute); }
+  .rd-gap { font-size: 13px; color: var(--text-dim); }
+  .rd-gap span { display: block; font-size: 11px; color: var(--text-mute); }
+  .rd-gap em { font-style: normal; color: var(--text-mute); }
+  .rd-note { font-size: 11px; color: var(--text-mute); }
+  .cmp-details { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .cmp-details summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-dim); list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 8px; }
+  .cmp-details summary::-webkit-details-marker { display: none; }
+  .cmp-details summary::before { content: '▸'; transition: transform 0.2s; }
+  .cmp-details[open] summary::before { transform: rotate(90deg); }
+  .cmp-details summary:hover { background: var(--bg-2); color: var(--text); }
+  @media (max-width: 860px) { .rd-wrap { grid-template-columns: 1fr; } .rd-svg { max-width: 380px; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -6521,7 +6639,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Comparer des joueurs</div>
-            <div class="dash-card-sub">Sélectionne 2 ou 3 joueurs pour les comparer côte à côte</div>
+            <div class="dash-card-sub">Choisis 2 ou 3 joueurs · survole un nom pour isoler son profil</div>
           </div>
           <div id="comparePickers" class="compare-pickers"></div>
         </div>
@@ -6537,7 +6655,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Classement du roster</div>
-            <div class="dash-card-sub">Clique sur une colonne pour trier · le trait sur les barres marque la moyenne du roster</div>
+            <div class="dash-card-sub">Clique sur une colonne pour trier, sur un joueur pour ouvrir sa page · le trait marque la moyenne du roster</div>
           </div>
         </div>
         <div id="rosterRankingBlock"></div>
@@ -7105,6 +7223,15 @@ window.addEventListener('DOMContentLoaded', function() {
      ============================================================ -->
 
 <!-- Player / Roster Modal -->
+<div class="modal-overlay" id="playerPageModal">
+  <div class="modal ppg-modal" role="dialog" aria-modal="true" aria-label="Page joueur">
+    <button class="modal-close" onclick="closeModal('playerPageModal')" aria-label="Fermer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div id="playerPageBody"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="playerModal">
   <div class="modal pm-modal">
     <button class="modal-close" onclick="closeModal('playerModal')" aria-label="Fermer">
@@ -9209,8 +9336,19 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 24;  // bump this when you add an entry
+const CHANGELOG_VERSION = 25;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Page joueur et comparateur en radar",
+    items: [
+      "Nouvelle page joueur : photo, équipe, rang, PR, forme, cups et gains, avec des onglets Vue d'ensemble, Résultats, Suivi, Contrat et Historique.",
+      "Elle s'ouvre d'un clic sur une carte du Roster, une ligne de la vue tableau, du classement du roster ou du classement PR, et depuis le bloc « À traiter ».",
+      "Depuis la page : Éditer la fiche, Saisir PR / cups, Rapport, changer le statut d'un besoin ou ajouter un suivi.",
+      "Le comparateur de joueurs devient un radar à 6 axes (PR, forme, place moyenne, top 10, cups, gains) avec les 3 plus gros écarts. Le tableau chiffré reste disponible sous « Voir le détail chiffré ».",
+      "Échap ne ferme plus que la fenêtre du dessus."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Dashboard allégé",
@@ -10454,6 +10592,73 @@ function renderDashboard() {
 // ============================================================
 let compareSlots = [null, null, null];  // up to 3 player ids
 
+// Radar du comparateur : 6 axes ramenés de 0 à 1 par rapport au meilleur du roster
+function compareRadarHtml(chosen) {
+  const all = players.map(p => {
+    const s = comparePlayerStats(p);
+    return { id: p.id, pr: s.pr, form: playerFormScore(p), avgPlace: s.avgPlace, top10: s.top10, cups: s.cups, gains: s.gains };
+  });
+  const max = k => Math.max(0, ...all.map(x => x[k]).filter(v => v != null));
+  const minPlace = Math.min(...all.map(x => x.avgPlace).filter(v => v != null), Infinity);
+  const AXES = [
+    { k: 'pr', l: 'Power Ranking', n: v => (max('pr') ? v / max('pr') : 0), f: v => fmtNumber(v) + ' pts' },
+    { k: 'form', l: 'Forme', n: v => v / 100, f: v => Math.round(v) + '/100' },
+    { k: 'avgPlace', l: 'Place moyenne', n: v => (isFinite(minPlace) && v > 0 ? minPlace / v : 0), f: v => '#' + v.toFixed(1).replace('.', ','), low: true },
+    { k: 'top10', l: 'Top 10', n: v => (max('top10') ? v / max('top10') : 0), f: v => String(v) },
+    { k: 'cups', l: 'Cups jouées', n: v => (max('cups') ? v / max('cups') : 0), f: v => String(v) },
+    { k: 'gains', l: 'Gains', n: v => (max('gains') ? v / max('gains') : 0), f: v => fmtNumber(Math.round(v)) + ' €' }
+  ];
+  const series = chosen.map(p => {
+    const d = all.find(x => x.id === p.id);
+    return { p, color: playerColor(p, players.indexOf(p)), raw: AXES.map(a => d[a.k]), val: AXES.map(a => (d[a.k] == null ? 0 : Math.max(0, Math.min(1, a.n(d[a.k]))))) };
+  });
+
+  const W = 420, H = 360, cx = W / 2, cy = 178, R = 128;
+  const pt = (i, r) => { const ang = -Math.PI / 2 + i * 2 * Math.PI / AXES.length; return [cx + Math.cos(ang) * R * r, cy + Math.sin(ang) * R * r]; };
+  let svg = '';
+  [0.25, 0.5, 0.75, 1].forEach(r => { svg += '<polygon class="rd-grid" points="' + AXES.map((_, i) => pt(i, r).map(n => n.toFixed(1)).join(',')).join(' ') + '"/>'; });
+  AXES.forEach((a, i) => {
+    const [x, y] = pt(i, 1);
+    svg += '<line class="rd-grid" x1="' + cx + '" y1="' + cy + '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '"/>';
+    const [lx, ly] = pt(i, 1.2);
+    svg += '<text class="rd-label" x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) + '" text-anchor="' + (Math.abs(lx - cx) < 8 ? 'middle' : lx > cx ? 'start' : 'end') + '">' + a.l + '</text>';
+  });
+  series.forEach((s, si) => {
+    svg += '<g class="rd-serie" data-i="' + si + '"><polygon points="' + s.val.map((v, i) => pt(i, v).map(n => n.toFixed(1)).join(',')).join(' ') + '" fill="' + s.color + '" fill-opacity="0.16" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round"/>';
+    s.val.forEach((v, i) => {
+      const [x, y] = pt(i, v);
+      svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.5" fill="' + s.color + '"><title>' + escapeHtml(s.p.pseudo) + ' · ' + AXES[i].l + ' : ' + (s.raw[i] == null ? '—' : AXES[i].f(s.raw[i])) + '</title></circle>';
+    });
+    svg += '</g>';
+  });
+
+  // Les 3 critères où les joueurs sont le plus éloignés, avec les vraies valeurs
+  const gaps = AXES.map((a, i) => {
+    const pts = series.map(s => ({ s, v: s.val[i], raw: s.raw[i] })).filter(x => x.raw != null);
+    if (pts.length < 2) return null;
+    pts.sort((x, y) => y.v - x.v);
+    return { a, d: pts[0].v - pts[pts.length - 1].v, best: pts[0], worst: pts[pts.length - 1] };
+  }).filter(x => x && x.d > 0.02).sort((x, y) => y.d - x.d).slice(0, 3);
+
+  const legend = series.map((s, si) => '<button type="button" class="rd-who" data-i="' + si + '" style="--c:' + s.color + '" onmouseenter="compareRadarFocus(this, ' + si + ')" onmouseleave="compareRadarFocus(this, null)" onfocus="compareRadarFocus(this, ' + si + ')" onblur="compareRadarFocus(this, null)" onclick="openPlayerPage(\'' + s.p.id + '\')" title="Ouvrir la page de ' + escapeAttr(s.p.pseudo) + '">' +
+    '<i></i><span>' + escapeHtml(s.p.pseudo) + '</span><b>' + (s.raw[0] != null ? fmtNumber(s.raw[0]) : '—') + '</b></button>').join('');
+  const gapsHtml = gaps.length
+    ? '<div class="rd-gaps"><div class="rd-gaps-t">Plus gros écarts</div>' + gaps.map(g =>
+        '<div class="rd-gap"><span>' + g.a.l + '</span><b style="color:' + g.best.s.color + '">' + escapeHtml(g.best.s.p.pseudo) + '</b> ' + g.a.f(g.best.raw) +
+        ' <em>contre</em> ' + g.a.f(g.worst.raw) + '</div>').join('') + '</div>'
+    : '<div class="rd-gaps"><div class="rd-gaps-t">Profils très proches</div></div>';
+
+  return '<div class="rd-wrap"><svg class="rd-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Radar comparant ' + escapeAttr(series.map(s => s.p.pseudo).join(', ')) + '">' + svg + '</svg>' +
+    '<div class="rd-side"><div class="rd-legend">' + legend + '</div>' + gapsHtml +
+    '<div class="rd-note">Chaque axe compare au meilleur joueur du roster (bord du radar = meilleur).</div></div></div>';
+}
+
+function compareRadarFocus(btn, i) {
+  const svg = btn.closest('.rd-wrap').querySelector('.rd-svg');
+  svg.classList.toggle('has-focus', i != null);
+  svg.querySelectorAll('.rd-serie').forEach(g => g.classList.toggle('on', i != null && +g.dataset.i === i));
+}
+
 function comparePlayerStats(p) {
   const cur = currentPR(p);
   let gains = 0, placeSum = 0, placeCount = 0, top10 = 0, top3 = 0, wins = 0;
@@ -10554,8 +10759,10 @@ function renderPlayerComparator() {
     return '<div class="cmp-row"><div class="cmp-col cmp-label-col">' + m.label + '</div>' + cells + '</div>';
   }).join('');
 
-  body.innerHTML = '<div class="cmp-table" style="--cmp-cols:' + stats.length + ';">' +
-    '<div class="cmp-row cmp-head-row">' + head + '</div>' + rows + '</div>';
+  body.innerHTML = compareRadarHtml(chosen) +
+    '<details class="cmp-details"><summary>Voir le détail chiffré</summary>' +
+    '<div class="cmp-table" style="--cmp-cols:' + stats.length + ';">' +
+    '<div class="cmp-row cmp-head-row">' + head + '</div>' + rows + '</div></details>';
 }
 
 function setCompareSlot(i, value) {
@@ -10756,7 +10963,7 @@ function renderDashAlerts() {
     alerts.push({
       tone: cs.days < 0 ? 'bad' : 'warn', order: cs.days, icon: 'clock', title,
       sub: 'Fin le ' + formatDate(p.contractEnd) + ' · ' + escapeHtml(teamLabelFull(p.team || 'main')),
-      btn: 'Ouvrir la fiche', action: "openPlayerModal('" + p.id + "')"
+      btn: 'Voir le contrat', action: "openPlayerPage('" + p.id + "','ct')"
     });
   });
 
@@ -11124,7 +11331,7 @@ function renderDashLeaderboard() {
     return;
   }
 
-  const open = id => "switchTab('data');setTimeout(function(){openDataModal('" + id + "')},100)";
+  const open = id => "openPlayerPage('" + id + "')";
   const av = p => p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
   const deltaHtml = it => {
     if (it.pct == null) return '<span class="dlb-delta flat">—</span>';
@@ -11137,7 +11344,7 @@ function renderDashLeaderboard() {
   const order = top.length === 1 ? [top[0]] : [top[1], top[0], top[2]].filter(Boolean);
   const podium = '<div class="podium" style="grid-template-columns:repeat(' + order.length + ', minmax(0, 1fr))">' + order.map(it => {
     const r = items.indexOf(it) + 1;
-    return '<button type="button" class="pod-step pod-' + r + '" onclick="' + open(it.player.id) + '" title="Ouvrir les données de ' + escapeAttr(it.player.pseudo) + '">' +
+    return '<button type="button" class="pod-step pod-' + r + '" onclick="' + open(it.player.id) + '" title="Ouvrir la page de ' + escapeAttr(it.player.pseudo) + '">' +
       '<span class="pod-medal" data-rank="' + r + '"><span class="pod-av">' + av(it.player) + '</span></span>' +
       '<span class="pod-name">' + escapeHtml(it.player.pseudo) + '</span>' +
       '<span class="pod-pts">' + fmtNumber(it.cur) + '</span>' +
@@ -11833,13 +12040,13 @@ function renderDashRanking() {
     const p = r.p;
     const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
     const team = p.team || 'main';
-    const open = "switchTab('data');setTimeout(function(){openDataModal('" + p.id + "')},100)";
+    const open = "openPlayerPage('" + p.id + "')";
     const lastHtml = r.last5.length ? r.last5.slice().reverse().map(c => {
       const n = posNum(c);
       const cls = n == null ? '' : n <= 10 ? 't10' : n <= 50 ? 't50' : n <= 100 ? 't100' : '';
       return '<i class="' + cls + '" title="' + escapeAttr((n != null ? '#' + n + ' (' + placeTier(n) + ')' : (c.position || '—')) + ' · ' + (c.name || 'cup') + ' · ' + fmtDateFR(c.date)) + '"></i>';
     }).join('') : '<span class="drk-none">—</span>';
-    return '<tr onclick="' + open + '" title="Ouvrir les données de ' + escapeAttr(p.pseudo || '') + '">' +
+    return '<tr onclick="' + open + '" title="Ouvrir la page de ' + escapeAttr(p.pseudo || '') + '">' +
       '<td class="drk-pos">' + (i + 1) + '</td>' +
       '<td class="drk-l"><div class="drk-who"><span class="drk-av" style="--t:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '">' + av + '</span>' +
         '<span><span class="drk-name">' + escapeHtml(p.pseudo || '—') + '</span><span class="drk-team">' + escapeHtml(teamLabelFull(team)) + '</span></span></div></td>' +
@@ -12512,168 +12719,6 @@ function renderHealthScore() {
   container.innerHTML = legend + rows;
 }
 
-/* ============================================================
-   8. COMPARAISON JOUEURS (RADAR)
-   ============================================================ */
-let compareSelectedIds = [];
-
-function renderCompareRadar() {
-  const selectWrapper = document.getElementById('compareSelectWrapper');
-  const container = document.getElementById('compareRadar');
-  if (!selectWrapper || !container) return;
-
-  // Auto-select top 3 players by PR if nothing selected
-  if (compareSelectedIds.length === 0 && players.length > 0) {
-    const ranked = players.slice()
-      .filter(p => currentPR(p))
-      .sort((a, b) => (Number(currentPR(b)?.points) || 0) - (Number(currentPR(a)?.points) || 0));
-    compareSelectedIds = ranked.slice(0, Math.min(3, ranked.length)).map(p => p.id);
-  }
-
-  // Render chip selector
-  selectWrapper.innerHTML = '<div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:4px;">Joueurs</div>' +
-    '<div class="compare-select-list">' +
-    players.map(p =>
-      '<span class="compare-chip ' + (compareSelectedIds.includes(p.id) ? 'active' : '') + '" onclick="toggleCompareSelect(\'' + p.id + '\')">' +
-        escapeHtml(p.pseudo) +
-      '</span>'
-    ).join('') +
-    '</div>';
-
-  if (compareSelectedIds.length === 0) {
-    container.innerHTML = '<div class="dash-empty">Sélectionne au moins un joueur ci-dessus.</div>';
-    return;
-  }
-
-  // Compute axis values: PR, Cups, Gains, %Top10, Régularité (inverse vol)
-  const axes = ['PR', 'Cups', 'Gains', 'Cup Score', 'Régularité'];
-  function rawValues(p) {
-    const cur = currentPR(p);
-    const pr = cur ? Number(cur.points) : 0;
-    const cups = (p.cups || []).length;
-    const gains = (p.cups || []).reduce((s, c) => s + (Number(c.prize) || 0), 0);
-    // Cup Score: average placement quality across all cups (graduated 0-100)
-    const cupQual = averageCupQuality(p);
-    const cupScore = cupQual ? cupQual.avg : 0;
-    const vol = computePlayerVolatility(p);
-    const allVol = players.map(computePlayerVolatility).filter(v => v !== null).map(v => v.stdDev);
-    const maxVol = allVol.length > 0 ? Math.max(...allVol) : 0;
-    // Regularity: 0 = insufficient data, 100 = perfectly stable, otherwise relative to roster max volatility
-    let regularity = 0;
-    if (vol !== null) {
-      if (vol.stdDev === 0 || maxVol === 0) {
-        regularity = 100;
-      } else {
-        regularity = (1 - vol.stdDev / maxVol) * 100;
-      }
-    }
-    return [pr, cups, gains, cupScore, regularity];
-  }
-
-  const allValues = compareSelectedIds.map(id => {
-    const p = players.find(x => x.id === id);
-    return p ? { player: p, vals: rawValues(p) } : null;
-  }).filter(x => x);
-
-  // Normalize each axis across the SELECTED players (so the chart shows relative comparison)
-  // Find max per axis across all players (not just selected) for context
-  const allPlayersVals = players.map(p => rawValues(p));
-  const axisMaxes = axes.map((_, i) => Math.max(1, ...allPlayersVals.map(v => v[i])));
-
-  // SVG dimensions
-  const W = 460, H = 380;
-  const cx = W / 2, cy = H / 2;
-  const radius = Math.min(cx, cy) - 60;
-  const N = axes.length;
-
-  function angle(i) { return -Math.PI / 2 + i * (2 * Math.PI / N); }
-  function pt(i, r) {
-    const a = angle(i);
-    return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
-  }
-
-  // Grid (5 levels)
-  let grid = '';
-  for (let level = 1; level <= 5; level++) {
-    const r = (radius * level) / 5;
-    const points = [];
-    for (let i = 0; i < N; i++) {
-      const [x, y] = pt(i, r);
-      points.push(x.toFixed(1) + ',' + y.toFixed(1));
-    }
-    grid += '<polygon points="' + points.join(' ') + '" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" />';
-  }
-  // Spokes
-  for (let i = 0; i < N; i++) {
-    const [x, y] = pt(i, radius);
-    grid += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" stroke-width="1" />';
-  }
-  // Axis labels
-  let labels = '';
-  for (let i = 0; i < N; i++) {
-    const [x, y] = pt(i, radius + 22);
-    const anchor = Math.cos(angle(i)) > 0.3 ? 'start' : (Math.cos(angle(i)) < -0.3 ? 'end' : 'middle');
-    labels += '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + anchor + '" fill="var(--text-mute)" font-size="11" font-family="var(--font-mono)" dominant-baseline="middle">' + axes[i] + '</text>';
-  }
-
-  // Player polygons
-  let polys = '';
-  let dots = '';
-  allValues.forEach((item, idx) => {
-    const color = playerColor(item.player, players.indexOf(item.player));
-    const points = [];
-    for (let i = 0; i < N; i++) {
-      const ratio = axisMaxes[i] > 0 ? item.vals[i] / axisMaxes[i] : 0;
-      const [x, y] = pt(i, radius * ratio);
-      points.push(x.toFixed(1) + ',' + y.toFixed(1));
-    }
-    polys += '<polygon points="' + points.join(' ') + '" fill="' + color + '" fill-opacity="0.15" stroke="' + color + '" stroke-width="2" stroke-linejoin="round" />';
-    points.forEach(pStr => {
-      const [x, y] = pStr.split(',');
-      dots += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="' + color + '" />';
-    });
-  });
-
-  const svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="auto" style="max-width:500px;display:block;margin:0 auto;">' +
-    grid + polys + dots + labels +
-  '</svg>';
-
-  // Legend with values
-  const legend = allValues.map((item) => {
-    const color = playerColor(item.player, players.indexOf(item.player));
-    const cur = currentPR(item.player);
-    const cups = (item.player.cups || []).length;
-    const gains = (item.player.cups || []).reduce((s, c) => s + (Number(c.prize) || 0), 0);
-    return '<div class="radar-player-card">' +
-      '<div class="swatch" style="background:' + color + ';"></div>' +
-      '<div>' +
-        '<div class="name">' + escapeHtml(item.player.pseudo) + '</div>' +
-        '<div style="font-size:11px;color:var(--text-mute);margin-top:2px;font-family:var(--font-mono);">' +
-          (cur ? fmtNumber(Number(cur.points)) + ' pts' : '— PR') + ' · ' + cups + ' cup' + (cups > 1 ? 's' : '') + ' · ' + fmtNumber(Math.round(gains)) + ' €' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
-  container.innerHTML = '<div class="radar-wrap">' +
-    '<div class="radar-svg-wrap">' + svg + '</div>' +
-    '<div class="radar-legend-vertical">' + legend + '</div>' +
-  '</div>';
-}
-
-function toggleCompareSelect(playerId) {
-  const idx = compareSelectedIds.indexOf(playerId);
-  if (idx === -1) {
-    if (compareSelectedIds.length >= 4) {
-      showToast('Maximum 4 joueurs à comparer', 'error');
-      return;
-    }
-    compareSelectedIds.push(playerId);
-  } else {
-    compareSelectedIds.splice(idx, 1);
-  }
-  renderCompareRadar();
-}
 
 
 
@@ -13235,6 +13280,7 @@ function setRosterView(view) {
 }
 
 function renderRoster() {
+  setTimeout(refreshPlayerPageIfOpen, 0);
   if (rosterView === 'table') { renderRosterTable(); return; }
 
   const list = getFilteredRoster();
@@ -13335,7 +13381,7 @@ function renderRosterTable() {
       const suffix = r.daysLeft < 0 ? ' (expiré)' : ' (J-' + r.daysLeft + ')';
       contractCell = '<span style="color:' + tone + ';font-size:11px;">' + fmtDateFR(p.contractEnd) + suffix + '</span>';
     }
-    return '<tr class="rt-row" onclick="openPlayerModal(\'' + p.id + '\')">' +
+    return '<tr class="rt-row" onclick="openPlayerPage(\'' + p.id + '\')">' +
       '<td><div class="rt-player">' + avatar +
         '<div style="min-width:0;">' +
           '<div class="rt-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
@@ -13438,8 +13484,8 @@ function playerCardHtml(p) {
   if (p.youtube) socials.push(socialLinkHtml('youtube', p.youtube));
   if (p.tracker) socials.push(socialLinkHtml('tracker', p.tracker));
 
-  return '<div class="sq-card ' + sqRankClass(rank) + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Ouvrir la fiche de ' + escapeAttr(p.pseudo || '') + '" ' +
-    'onclick="openPlayerModal(\'' + p.id + '\')" onkeydown="if(event.target===this&&(event.key===\'Enter\'||event.key===\' \')){event.preventDefault();openPlayerModal(\'' + p.id + '\')}">' +
+  return '<div class="sq-card ' + sqRankClass(rank) + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Ouvrir la page de ' + escapeAttr(p.pseudo || '') + '" ' +
+    'onclick="openPlayerPage(\'' + p.id + '\')" onkeydown="if(event.target===this&&(event.key===\'Enter\'||event.key===\' \')){event.preventDefault();openPlayerPage(\'' + p.id + '\')}">' +
     sqFaceHtml(p, rank, sqContractAlert(p)) +
     '<button type="button" class="sq-touch-more" aria-label="Afficher les actions" onclick="event.stopPropagation();this.closest(\'.sq-card\').classList.toggle(\'open\')">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>' +
@@ -14598,9 +14644,9 @@ const PH_ICONS = {
   legacy: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 
-function renderPlayerHistory(playerId) {
-  const el = document.getElementById('pmHistory');
-  const tab = document.querySelector('#playerModal .pm-tabs [data-pane="historique"]');
+function renderPlayerHistory(playerId, targetId) {
+  const el = document.getElementById(targetId || 'pmHistory');
+  const tab = targetId ? null : document.querySelector('#playerModal .pm-tabs [data-pane="historique"]');
   const p = playerId ? players.find(x => x.id === playerId) : null;
   if (tab) tab.hidden = !p;
   if (!el) return;
@@ -14625,7 +14671,7 @@ function renderPlayerHistory(playerId) {
   }
   items.sort((a, b) => b.ts - a.ts);
 
-  const countEl = document.getElementById('pmHistoryCount');
+  const countEl = targetId ? null : document.getElementById('pmHistoryCount');
   if (countEl) countEl.textContent = items.length ? String(items.length) : '';
 
   if (!items.length) {
@@ -14820,6 +14866,7 @@ function renderAllCups() {
 }
 
 function renderData() {
+  setTimeout(refreshPlayerPageIfOpen, 0);
   const container = document.getElementById('dataList');
   if (!container) return;
 
@@ -16389,6 +16436,7 @@ async function deleteTrackingEntry(id) {
 }
 
 function renderTracking() {
+  setTimeout(refreshPlayerPageIfOpen, 0);
   const container = document.getElementById('trackingTable');
   if (!container) return;
 
@@ -18238,7 +18286,9 @@ document.addEventListener('click', (e) => {
 // Escape to close modal
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    if (document.querySelector('.app-confirm')) return;   // la confirmation gère Échap elle-même
+    const open = document.querySelectorAll('.modal-overlay.active');
+    if (open.length) open[open.length - 1].classList.remove('active');
   }
 });
 
@@ -19363,6 +19413,201 @@ function updatePmTimeline() {
     });
   }
 })();
+</script>
+<script>
+/* ============================================================
+   PAGE JOUEUR — tout un joueur au même endroit
+   ============================================================ */
+let playerPageId = null;
+let playerPageTab = 'ov';
+
+// Forme : qualité moyenne des 5 dernières cups (barème cupQualityScore), sur 100
+function playerFormScore(p) {
+  const last = (p.cups || []).filter(c => c.date).sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 5);
+  const nums = last.map(c => { const m = String(c.position || '').match(/(\d+)/); return m ? parseInt(m[1], 10) : NaN; }).filter(n => !isNaN(n));
+  return nums.length ? nums.reduce((s, n) => s + cupQualityScore(n), 0) / nums.length : null;
+}
+
+function cupPlaceNum(c) { const m = String(c.position || '').match(/(\d+)/); const n = m ? parseInt(m[1], 10) : NaN; return isNaN(n) ? null : n; }
+function cupPlaceHtml(c) {
+  const n = cupPlaceNum(c);
+  const cls = n == null ? '' : n <= 3 ? 'g' : n <= 10 ? 'v' : '';
+  return '<span class="ppg-place ' + cls + '">' + (n != null ? '#' + n : escapeHtml(c.position || '—')) + '</span>';
+}
+
+function openPlayerPage(id, tab) {
+  const p = players.find(x => x.id === id);
+  if (!p) return;
+  playerPageId = id;
+  playerPageTab = tab || 'ov';
+  renderPlayerPage();
+  document.getElementById('playerPageModal').classList.add('active');
+  const box = document.querySelector('#playerPageModal .modal');
+  if (box) box.scrollTop = 0;
+}
+
+function refreshPlayerPageIfOpen() {
+  const m = document.getElementById('playerPageModal');
+  if (!m || !m.classList.contains('active') || !playerPageId) return;
+  if (!players.some(x => x.id === playerPageId)) { m.classList.remove('active'); playerPageId = null; return; }
+  renderPlayerPage();
+}
+
+function setPlayerPageTab(tab) { playerPageTab = tab; renderPlayerPage(); }
+
+function playerPageEdit(pane) {
+  const id = playerPageId;
+  openPlayerModal(id);
+  if (pane && window.pmShowPane) pmShowPane(pane);
+}
+function playerPageData() { openDataModal(playerPageId); }
+function playerPageTracking() {
+  const id = playerPageId;
+  closeModal('playerPageModal');
+  switchTab('tracking');
+  setTimeout(() => {
+    const f = document.getElementById('tk_filterPlayer'); if (f) f.value = id;
+    const s = document.getElementById('tk_player'); if (s) s.value = id;
+    renderTracking();
+    const t = document.getElementById('tk_text'); if (t) t.focus();
+  }, 100);
+}
+
+function renderPlayerPage() {
+  const el = document.getElementById('playerPageBody');
+  const p = players.find(x => x.id === playerPageId);
+  if (!el || !p) return;
+  const team = p.team || 'main';
+  const tcol = TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main;
+  const pr = playerPrInfo(p);
+  const rank = playerPrRank(p);
+  const form = playerFormScore(p);
+  const gains = totalGains(p);
+  const cups = (p.cups || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const cs = computeContractStatus(p);
+  const realAge = p.birthdate ? ageFromBirthdate(p.birthdate) : (p.age ? Number(p.age) : null);
+  const country = p.country ? ((COUNTRIES.find(c => c.code === String(p.country).toUpperCase()) || {}).name || p.country) : '';
+  const needs = (trackingEntries || []).filter(e => e.playerId === p.id && e.type === 'besoin' && e.status !== 'resolved');
+  const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+
+  const sub = [];
+  if (p.country) sub.push((flagImg(p.country, 16) || '') + ' ' + escapeHtml(country));
+  if (realAge != null && !isNaN(realAge)) sub.push(realAge + ' ans');
+  if (p.realName) sub.push(escapeHtml(p.realName));
+  const socials = [];
+  if (p.twitter) socials.push(socialLinkHtml('twitter', p.twitter));
+  if (p.twitch) socials.push(socialLinkHtml('twitch', p.twitch));
+  if (p.youtube) socials.push(socialLinkHtml('youtube', p.youtube));
+  if (p.tracker) socials.push(socialLinkHtml('tracker', p.tracker));
+
+  const head = '<div class="ppg-head" style="--t:' + tcol + '">' +
+    '<div class="ppg-photo ' + rankCls + '">' + (p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : '<span>' + escapeHtml((p.pseudo || '?').charAt(0).toUpperCase()) + '</span>') + '</div>' +
+    '<div class="ppg-id">' +
+      '<div class="ppg-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
+      '<div class="ppg-sub"><span class="ppg-team">' + escapeHtml(teamLabelFull(team)) + '</span>' + sub.join('<span class="dot"></span>') + '</div>' +
+      (socials.length ? '<div class="ppg-soc">' + socials.join('') + '</div>' : '') +
+    '</div>' +
+    (rank ? '<div class="ppg-rank ' + rankCls + '"><b>#' + rank + '</b><span>du roster</span></div>' : '') +
+  '</div>' +
+  '<div class="ppg-actions">' +
+    '<button type="button" class="btn btn-primary btn-sm" onclick="playerPageEdit()">Éditer la fiche</button>' +
+    '<button type="button" class="btn btn-ghost btn-sm" onclick="playerPageData()">Saisir PR / cups</button>' +
+    '<button type="button" class="btn btn-ghost btn-sm" onclick="openPlayerReport(\'' + p.id + '\')">Rapport</button>' +
+  '</div>';
+
+  const kpi = (label, value, extra) => '<div class="ppg-kpi"><span>' + label + '</span><b>' + value + '</b>' + (extra || '') + '</div>';
+  const kpis = '<div class="ppg-kpis">' +
+    kpi('Power Ranking', pr.cur != null ? fmtNumber(pr.cur) : '—', prDeltaChip(pr.pct)) +
+    kpi('Forme', form != null ? Math.round(form) + '<small>/100</small>' : '—', '<em>5 dernières cups</em>') +
+    kpi('Cups', String(cups.length), '<em>' + cups.filter(c => { const n = cupPlaceNum(c); return n != null && n <= 10; }).length + ' top 10</em>') +
+    kpi('Gains', fmtNumber(Math.round(gains)) + ' €') +
+  '</div>';
+
+  const TABS = [['ov', 'Vue d\'ensemble'], ['res', 'Résultats'], ['tk', 'Suivi'], ['ct', 'Contrat'], ['hi', 'Historique']];
+  const tabs = '<div class="ppg-tabs" role="tablist">' + TABS.map(([k, l]) =>
+    '<button type="button" role="tab" aria-selected="' + (k === playerPageTab) + '" onclick="setPlayerPageTab(\'' + k + '\')">' + l +
+    (k === 'tk' && needs.length ? '<span class="ppg-badge">' + needs.length + '</span>' : '') +
+    (k === 'ct' && cs && cs.days != null && cs.days <= 30 ? '<span class="ppg-dot"></span>' : '') + '</button>').join('') + '</div>';
+
+  let pane = '';
+  if (playerPageTab === 'ov') {
+    const vals = pr.hist.map(e => Number(e.points)).filter(v => !isNaN(v));
+    const chart = vals.length >= 2
+      ? '<div class="ppg-chart">' + areaSparkSvg(vals.slice(-24), '#ddbd80', 'ppg-svg') + '</div><div class="ppg-axis"><span>' + fmtDateFR(pr.hist[Math.max(0, pr.hist.length - 24)].date) + '</span><span>' + pluralFr(vals.length, 'relevé') + '</span><span>' + fmtDateFR(pr.hist[pr.hist.length - 1].date) + '</span></div>'
+      : '<div class="ppg-empty">Pas assez de relevés pour tracer la courbe.</div>';
+    const notes = [];
+    if (cs && cs.days != null && cs.days < 0) notes.push('<li class="bad">Contrat expiré depuis ' + pluralFr(-cs.days, 'jour') + '</li>');
+    else if (cs && cs.days != null && cs.days <= 30) notes.push('<li class="warn">Contrat : ' + pluralFr(cs.days, 'jour') + ' restant' + (cs.days > 1 ? 's' : '') + '</li>');
+    if (needs.length) notes.push('<li class="warn">' + pluralFr(needs.length, 'besoin') + ' en attente</li>');
+    if (cups.length && cups[0].date) {
+      const d = Math.floor((Date.now() - new Date(cups[0].date + 'T00:00:00')) / 86400000);
+      if (d >= 21) notes.push('<li>Pas de cup depuis ' + d + ' jours</li>');
+    }
+    if (!pr.hist.length) notes.push('<li>Aucun relevé de Power Ranking</li>');
+    pane = '<div class="ppg-grid">' +
+      '<div class="ppg-card wide"><h4>Power Ranking</h4>' + chart + '</div>' +
+      '<div class="ppg-card"><h4>Derniers résultats</h4>' + (cups.length ? cups.slice(0, 5).map(c =>
+        '<div class="ppg-row">' + cupPlaceHtml(c) + '<div class="ppg-rt">' + escapeHtml(c.name || 'Cup') + '<small>' + fmtDateFR(c.date) + '</small></div><span class="ppg-prize">' + (Number(c.prize) ? fmtNumber(Number(c.prize)) + ' €' : '—') + '</span></div>').join('') : '<div class="ppg-empty">Aucune cup enregistrée.</div>') + '</div>' +
+      '<div class="ppg-card"><h4>À savoir</h4>' + (notes.length ? '<ul class="ppg-notes">' + notes.join('') + '</ul>' : '<div class="ppg-empty ok">Rien à signaler.</div>') + '</div>' +
+    '</div>';
+  } else if (playerPageTab === 'res') {
+    const prRows = pr.hist.slice().reverse();
+    pane = '<div class="ppg-grid">' +
+      '<div class="ppg-card"><h4>Cups <span>' + pluralFr(cups.length, 'cup') + ' · ' + fmtNumber(Math.round(gains)) + ' €</span></h4>' +
+        (cups.length ? '<div class="ppg-scroll">' + cups.map(c => '<div class="ppg-row">' + cupPlaceHtml(c) + '<div class="ppg-rt">' + escapeHtml(c.name || 'Cup') + '<small>' + fmtDateFR(c.date) + '</small></div><span class="ppg-prize">' + (Number(c.prize) ? fmtNumber(Number(c.prize)) + ' €' : '—') + '</span></div>').join('') + '</div>' : '<div class="ppg-empty">Aucune cup enregistrée.</div>') + '</div>' +
+      '<div class="ppg-card"><h4>Relevés de PR <span>' + pluralFr(prRows.length, 'relevé') + '</span></h4>' +
+        (prRows.length ? '<div class="ppg-scroll">' + prRows.map((e, i) => {
+          const older = prRows[i + 1];
+          const d = older ? Number(e.points) - Number(older.points) : null;
+          return '<div class="ppg-row"><span class="ppg-date">' + fmtDateFR(e.date) + '</span><div class="ppg-rt"><b>' + fmtPRPoints(e.points) + '</b>' + (e.note ? '<small>' + escapeHtml(e.note) + '</small>' : '') + '</div>' +
+            '<span class="ppg-diff ' + (d > 0 ? 'up' : d < 0 ? 'down' : '') + '">' + (d == null || isNaN(d) ? '—' : (d > 0 ? '+' : d < 0 ? '−' : '±') + fmtNumber(Math.abs(d))) + '</span></div>';
+        }).join('') + '</div>' : '<div class="ppg-empty">Aucun relevé.</div>') + '</div>' +
+      '<div class="ppg-card wide ppg-foot-actions"><button type="button" class="btn btn-primary btn-sm" onclick="playerPageData()">Ajouter un relevé ou une cup</button></div>' +
+    '</div>';
+  } else if (playerPageTab === 'tk') {
+    const list = (trackingEntries || []).filter(e => e.playerId === p.id).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    pane = '<div class="ppg-card wide"><h4>Suivi et besoins <span>' + pluralFr(list.length, 'entrée') + '</span></h4>' +
+      (list.length ? list.map(e => {
+        const isNeed = e.type === 'besoin';
+        const st = e.status || 'todo';
+        return '<div class="ppg-tk' + (isNeed ? ' need' : '') + '">' +
+          '<div class="ppg-tk-body"><div>' + escapeHtml(e.text || '') + '</div><small>' + (isNeed ? 'Besoin' : 'Suivi') + ' · ' + escapeHtml(e.author || '—') + ' · ' + fmtDateFR(dateToLocalISO(new Date(e.createdAt || 0))) + '</small></div>' +
+          (isNeed ? '<select class="tk-status-select" aria-label="Statut du besoin" style="color:' + TK_STATUS[st].color + ';background:' + TK_STATUS[st].bg + ';" onchange="setTrackingStatus(\'' + e.id + '\', this.value)">' +
+            Object.keys(TK_STATUS).map(k => '<option value="' + k + '"' + (k === st ? ' selected' : '') + '>' + TK_STATUS[k].label + '</option>').join('') + '</select>' : '') +
+        '</div>';
+      }).join('') : '<div class="ppg-empty">Aucun suivi pour ce joueur.</div>') +
+      '<div class="ppg-foot-actions"><button type="button" class="btn btn-primary btn-sm" onclick="playerPageTracking()">Ajouter un suivi ou un besoin</button></div></div>';
+  } else if (playerPageTab === 'ct') {
+    const salary = String(formatSalary(p.salary, p.salaryFreq) || '').replace(/<[^>]+>/g, '');
+    let bar = '';
+    if (p.contractIndefinite) {
+      bar = '<div class="ppg-ct-status" style="--c:var(--green)">CDI</div>';
+    } else if (p.contractEnd && cs) {
+      const color = { red: 'var(--danger)', amber: 'var(--amber)', blue: 'var(--blue)', green: 'var(--green)' }[cs.tone] || 'var(--red)';
+      let pct = 100;
+      if (p.contractStart) { const s = Date.parse(p.contractStart + 'T00:00:00'), e = Date.parse(p.contractEnd + 'T00:00:00'); if (e > s) pct = Math.max(0, Math.min(100, (Date.now() - s) / (e - s) * 100)); }
+      const label = cs.days < 0 ? 'Expiré depuis ' + pluralFr(-cs.days, 'jour') : cs.days === 0 ? 'Se termine aujourd\'hui' : pluralFr(cs.days, 'jour') + ' restant' + (cs.days > 1 ? 's' : '');
+      bar = '<div class="ppg-ct-status" style="--c:' + color + '">' + label + '</div>' +
+        '<div class="pmt-bar" style="--c:' + color + '"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+        '<div class="pmt-labels"><span>' + (p.contractStart ? formatDate(p.contractStart) : 'Début non renseigné') + '</span><span>' + formatDate(p.contractEnd) + '</span></div>';
+    } else {
+      bar = '<div class="ppg-empty">Pas de contrat renseigné.</div>';
+    }
+    pane = '<div class="ppg-card wide"><h4>Contrat</h4>' + bar +
+      '<div class="ppg-facts">' +
+        '<div><span>Type</span><b>' + (p.contractIndefinite ? 'CDI' : p.contractEnd ? 'Durée déterminée' : '—') + '</b></div>' +
+        '<div><span>Début</span><b>' + (p.contractStart ? formatDate(p.contractStart) : '—') + '</b></div>' +
+        '<div><span>Fin</span><b>' + (p.contractIndefinite ? '—' : p.contractEnd ? formatDate(p.contractEnd) : '—') + '</b></div>' +
+        '<div><span>Salaire</span><b>' + (salary || '—') + '</b></div>' +
+      '</div>' +
+      '<div class="ppg-foot-actions"><button type="button" class="btn btn-primary btn-sm" onclick="playerPageEdit(\'contrat\')">Modifier le contrat</button></div></div>';
+  } else {
+    pane = '<div class="ppg-card wide"><h4>Historique des modifications</h4><div id="ppgHistory"></div></div>';
+  }
+
+  el.innerHTML = head + kpis + tabs + '<div class="ppg-pane">' + pane + '</div>';
+  if (playerPageTab === 'hi') renderPlayerHistory(p.id, 'ppgHistory');
+}
 </script>
 </body>
 </html>
