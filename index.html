@@ -6421,6 +6421,94 @@
     .pr-txt { display: none; }
     .presence-bar { padding: 0 4px; }
   }
+
+  /* ===== KPI du dashboard (perfs, places, mois, âges, pays) ===== */
+  .kx-seg { display: inline-flex; flex-wrap: wrap; padding: 3px; border-radius: 999px; background: var(--bg-1); border: 1px solid var(--border); }
+  .kx-seg button { padding: 4px 11px; border: 0; border-radius: 999px; background: none; font: inherit; font-size: 11px; font-weight: 600; color: var(--text-mute); cursor: pointer; transition: background .15s, color .15s; }
+  .kx-seg button:hover { color: var(--text); }
+  .kx-seg button[aria-pressed="true"] { background: var(--red); color: #14110a; }
+  .kx-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; font-size: 12px; color: var(--text-dim); }
+  .kx-head b { color: var(--text); }
+  .kx-note { margin-top: 10px; font-size: 11px; color: var(--text-mute); }
+
+  .kx-trophies { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .kx-trophy { --m: var(--red); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; border-radius: 14px; text-align: left; font: inherit; color: var(--text); cursor: pointer;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--m) 16%, var(--bg-1)), var(--bg-1) 70%); border: 1px solid color-mix(in srgb, var(--m) 35%, transparent); transition: transform .15s, border-color .15s; }
+  .kx-trophy:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--m) 65%, transparent); }
+  .kx-trophy.m2 { --m: #c4c4cf; } .kx-trophy.m3 { --m: #cd8a4b; } .kx-trophy.m10 { --m: var(--green); } .kx-trophy.mx { --m: #6f6f80; }
+  .kx-trophy .pl { width: 58px; height: 58px; border-radius: 16px; display: grid; place-items: center; font-family: var(--font-display); font-size: 26px; color: #14110a;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--m) 70%, #fff), var(--m)); box-shadow: 0 8px 22px color-mix(in srgb, var(--m) 28%, transparent); }
+  .kx-trophy.m10 .pl { color: #052e16; } .kx-trophy.mx .pl { color: var(--text); }
+  .kx-trophy .who { font-family: var(--font-display); font-size: 21px; line-height: 1; letter-spacing: .04em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kx-trophy .cup { font-size: 13px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kx-trophy small { display: block; font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+
+  .kx-stack { display: flex; height: 22px; border-radius: 8px; overflow: hidden; gap: 2px; background: var(--bg-1); }
+  .kx-stack i { display: block; height: 100%; min-width: 3px; background: var(--c); transition: opacity .2s; cursor: pointer; }
+  .kx-stack.has-focus i:not(.on) { opacity: .25; }
+  .kx-leg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 10px; margin-top: 12px; }
+  .kx-leg button { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border: 0; border-radius: 9px; background: none; font: inherit; text-align: left; font-size: 12px; color: var(--text-dim); cursor: pointer; transition: background .15s, color .15s; }
+  .kx-leg button:hover, .kx-leg button.on { background: var(--bg-3); color: var(--text); }
+  .kx-leg i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+  .kx-leg b { font-family: var(--font-mono); font-size: 11px; color: var(--text); white-space: nowrap; }
+  .kx-sum { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-mute); }
+  .kx-sum b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 26px; color: var(--text); line-height: 1; }
+
+  .kx-months { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px; height: 160px; padding-top: 22px; }
+  .kx-mo { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 4px; height: 100%; }
+  .kx-mo .bar-wrap { position: relative; display: flex; align-items: flex-end; min-height: 0; }
+  .kx-mo .bar { width: 100%; border-radius: 6px 6px 3px 3px; background: var(--bg-4); position: relative; transition: height .5s cubic-bezier(.22,1,.36,1), background .2s; }
+  .kx-mo:hover .bar { background: #34343f; }
+  .kx-mo.cur .bar { background: repeating-linear-gradient(135deg, var(--bg-4) 0 5px, var(--bg-3) 5px 10px); }
+  .kx-mo.rec .bar { background: linear-gradient(180deg, var(--red-bright), var(--red)); box-shadow: 0 0 18px var(--red-glow); }
+  .kx-mo .bar span { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 3px; font-family: var(--font-mono); font-size: 10px; color: var(--red-bright); white-space: nowrap; }
+  .kx-mo small { text-align: center; font-size: 10px; color: var(--text-mute); white-space: nowrap; overflow: hidden; }
+  .kx-mo.cur small { color: var(--text-dim); }
+  .kx-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .kx-chips span { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 10px; background: var(--bg-1); border: 1px solid var(--border); font-size: 11px; color: var(--text-dim); }
+  .kx-chips b { color: var(--text); font-weight: 600; }
+  @media (max-width: 480px) { .kx-months { gap: 3px; } .kx-mo small { font-size: 8px; } .kx-mo .bar span { font-size: 9px; } }
+
+  .kx-cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .kx-cm { padding: 12px; border-radius: 12px; background: var(--bg-1); border: 1px solid var(--border); display: grid; gap: 6px; align-content: start; }
+  .kx-cm > span { font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .08em; }
+  .kx-cm .v { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .kx-cm .v b { font-family: var(--font-display); font-weight: 400; font-size: 30px; line-height: 1; }
+  .kx-cm .v em, .kx-cm > em { font-style: normal; font-size: 12px; color: var(--text-mute); }
+  .kx-duo { display: grid; gap: 3px; }
+  .kx-duo i { display: block; height: 6px; min-width: 3px; border-radius: 99px; }
+  .kx-duo i.a { background: var(--red); } .kx-duo i.b { background: var(--bg-4); }
+  .kx-chip { justify-self: start; font-family: var(--font-mono); font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .kx-chip.up { color: var(--green); background: rgba(34,197,94,0.12); } .kx-chip.down { color: #ef4444; background: rgba(239,68,68,0.12); } .kx-chip.eq { color: var(--text-mute); background: var(--bg-3); }
+
+  .kx-ages { position: relative; height: 184px; margin: 4px 22px 0; }
+  .kx-ages .axis { position: absolute; left: -10px; right: -10px; top: 86px; height: 4px; border-radius: 99px; background: var(--bg-4); }
+  .kx-ages .tick { position: absolute; top: 96px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10px; color: var(--text-mute); }
+  .kx-ages .pin { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; gap: 2px; }
+  .kx-ages .pin.up { bottom: calc(100% - 86px); }
+  .kx-ages .pin.down { top: 90px; }
+  .kx-ages .avs { display: flex; }
+  .kx-ages .av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; font-family: var(--font-display); font-size: 17px; color: var(--text); background: var(--bg-3); border: 2px solid var(--c); }
+  .kx-ages .av + .av { margin-left: -12px; }
+  .kx-ages .av img { width: 100%; height: 100%; object-fit: cover; }
+  .kx-ages .pin small { display: grid; justify-items: center; font-size: 10px; line-height: 1.25; color: var(--text-mute); }
+  .kx-ages .pin small b { max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dim); }
+  @media (max-width: 560px) { .kx-ages .pin small b { max-width: 50px; } }
+  .kx-ages .pin > i { width: 2px; height: 12px; background: var(--c); }
+  .kx-ages .pin.down > i { height: 22px; }
+  .kx-ages .avg { position: absolute; top: 78px; width: 3px; height: 18px; margin-left: -1px; border-radius: 2px; background: var(--red-bright); box-shadow: 0 0 0 2px var(--bg-2); }
+  .kx-facts { display: flex; gap: 8px 18px; flex-wrap: wrap; font-size: 12px; color: var(--text-mute); margin-top: 4px; }
+  .kx-facts b { color: var(--text); }
+  .kx-facts .avg-key { display: inline-block; width: 3px; height: 12px; border-radius: 2px; background: var(--red-bright); vertical-align: -2px; margin-right: 6px; }
+
+  .kx-flags { display: flex; gap: 10px; flex-wrap: wrap; }
+  .kx-flag { display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 10px; border-radius: 12px; background: var(--bg-1); border: 1px solid var(--border); }
+  .kx-flag .fl { display: grid; place-items: center; width: 30px; height: 22px; font-size: 13px; color: var(--text-mute); }
+  .kx-flag .fl img { width: 30px !important; height: 22px !important; border-radius: 4px !important; }
+  .kx-flag b { font-family: var(--font-display); font-weight: 400; font-size: 22px; line-height: 1; }
+  .kx-flag span { font-size: 12px; color: var(--text); }
+  .kx-flag small { display: block; font-size: 10px; color: var(--text-mute); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 560px) { .kx-leg { grid-template-columns: 1fr 1fr; } .kx-trophies { grid-template-columns: 1fr; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -6696,7 +6784,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Meilleure perf all-time</div>
-            <div class="dash-card-sub">Meilleure place enregistrée par joueur</div>
+            <div class="dash-card-sub">Meilleure place de chaque joueur · clic pour ouvrir sa page</div>
           </div>
         </div>
         <div id="bestPerfBlock"></div>
@@ -6706,7 +6794,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Distribution des places</div>
-            <div class="dash-card-sub">Cup positions de tout le roster</div>
+            <div class="dash-card-sub">Places obtenues en cup par tout le roster</div>
           </div>
         </div>
         <div id="cupDistribution"></div>
@@ -6721,7 +6809,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Meilleur mois</div>
-            <div class="dash-card-sub">Records all-time de l'organisation</div>
+            <div class="dash-card-sub">Mois par mois, avec les records de l'organisation</div>
           </div>
         </div>
         <div id="bestMonthBlock"></div>
@@ -6731,7 +6819,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Mois en cours vs mois précédent</div>
-            <div class="dash-card-sub">Comparaison mensuelle des indicateurs clés</div>
+            <div class="dash-card-sub">Comparaison sur la même période</div>
           </div>
         </div>
         <div id="monthComparisonBlock"></div>
@@ -6756,7 +6844,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <div class="dash-card-header">
           <div>
             <div class="dash-card-title">Pyramide des âges</div>
-            <div class="dash-card-sub">Distribution du roster</div>
+            <div class="dash-card-sub">Chaque joueur placé à son âge</div>
           </div>
         </div>
         <div id="agePyramidBlock"></div>
@@ -9355,8 +9443,20 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 27;  // bump this when you add an entry
+const CHANGELOG_VERSION = 28;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Nouveau design des blocs du dashboard",
+    items: [
+      "Meilleure perf all-time : une carte par joueur avec sa place sur une médaille (or, argent, bronze, vert pour un top 10). Un clic ouvre la page du joueur.",
+      "Distribution des places : une seule barre qui fait 100 % des cups, avec des tranches exactes (1re, 2e–3e, 4e–10e…) et la part des cups dans le top 10 et le top 50. Les anciens libellés « Top 3 » et « Top 10 » étaient trompeurs.",
+      "Meilleur mois : un graphique des 12 derniers mois, le record en or, avec le choix entre gains, cups, top 10 et victoires.",
+      "Mois en cours vs mois précédent : la comparaison se fait sur le même nombre de jours (par exemple du 1er au 3 de chaque mois), avec des pastilles vertes ou rouges. Le bouton « Mois entier » garde l'ancienne comparaison et ajoute une projection de fin de mois.",
+      "Pyramide des âges : une frise où chaque joueur est placé à son âge, avec un trait pour l'âge moyen.",
+      "Répartition géographique : des pastilles compactes avec le drapeau, le nombre de joueurs et leurs pseudos."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Staff en ligne et page grinder",
@@ -11489,32 +11589,55 @@ function renderActivityHeatmap() {
 // ============================================================
 // CUP DISTRIBUTION (by position bucket)
 // ============================================================
+// Outils communs aux blocs KPI du dashboard
+function kxPos(c) {
+  const m = String((c && c.position) || '').match(/(\d+)/);
+  const n = m ? parseInt(m[1], 10) : NaN;
+  return isNaN(n) || n < 1 ? null : n;
+}
+function kxYmd(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function kxOpenPlayer(id) {
+  const p = players.find(x => String(x.id) === String(id));
+  if (p) openPlayerPage(p.id);
+}
+// Survol d'une tranche : met en avant la tranche et sa ligne de légende
+function kxWireFocus(container) {
+  if (container.dataset.kxWired) return;
+  container.dataset.kxWired = '1';
+  const focus = i => {
+    const stack = container.querySelector('.kx-stack');
+    if (!stack) return;
+    stack.classList.toggle('has-focus', i != null);
+    container.querySelectorAll('[data-i]').forEach(x => x.classList.toggle('on', i != null && x.dataset.i === i));
+  };
+  container.addEventListener('mouseover', e => { const t = e.target.closest('[data-i]'); focus(t ? t.dataset.i : null); });
+  container.addEventListener('mouseleave', () => focus(null));
+  container.addEventListener('focusin', e => { const t = e.target.closest('[data-i]'); if (t) focus(t.dataset.i); });
+  container.addEventListener('focusout', () => focus(null));
+}
+
 function renderCupDistribution() {
   const container = document.getElementById('cupDistribution');
   if (!container) return;
-
-  // Buckets: Top 1, Top 3, Top 10, Top 50, Top 100, +100
+  // Tranches exclusives : chaque cup n'est comptée qu'une fois
   const buckets = [
-    { label: 'Top 1', max: 1, fill: 'gold', count: 0 },
-    { label: 'Top 3', max: 3, fill: 'silver', count: 0 },
-    { label: 'Top 10', max: 10, fill: 'bronze', count: 0 },
-    { label: 'Top 50', max: 50, fill: '', count: 0 },
-    { label: 'Top 100', max: 100, fill: '', count: 0 },
-    { label: '+100', max: Infinity, fill: '', count: 0 }
+    { label: '1re place', max: 1, c: 'var(--red)', count: 0 },
+    { label: '2e–3e', max: 3, c: '#c4c4cf', count: 0 },
+    { label: '4e–10e', max: 10, c: 'var(--green)', count: 0 },
+    { label: '11e–50e', max: 50, c: 'var(--red-deep)', count: 0 },
+    { label: '51e–100e', max: 100, c: '#6b5a33', count: 0 },
+    { label: '101e et +', max: Infinity, c: '#3a3a46', count: 0 }
   ];
-  let totalCups = 0;
+  let totalCups = 0, withPos = 0;
   players.forEach(p => {
     (p.cups || []).forEach(c => {
       totalCups++;
-      // Parse position to a number
-      const raw = String(c.position || '').toLowerCase().trim();
-      const m = raw.match(/(\d+)/);
-      if (!m) return; // no number → skip
-      const n = parseInt(m[1], 10);
-      if (isNaN(n)) return;
-      for (const b of buckets) {
-        if (n <= b.max) { b.count++; break; }
-      }
+      const n = kxPos(c);
+      if (n == null) return;
+      withPos++;
+      for (const b of buckets) { if (n <= b.max) { b.count++; break; } }
     });
   });
 
@@ -11522,18 +11645,32 @@ function renderCupDistribution() {
     container.innerHTML = '<div class="dash-empty">Aucune cup enregistrée.</div>';
     return;
   }
+  if (withPos === 0) {
+    container.innerHTML = '<div class="dash-empty">Aucune cup avec une place renseignée.</div>';
+    return;
+  }
 
-  const max = Math.max(...buckets.map(b => b.count));
-  container.innerHTML = '<div class="dist-bars">' + buckets.map(b => {
-    const pct = max > 0 ? (b.count / max) * 100 : 0;
-    return '<div class="dist-row">' +
-      '<div class="dist-label">' + b.label + '</div>' +
-      '<div class="dist-track">' +
-        '<div class="dist-fill ' + b.fill + '" style="width:' + pct.toFixed(1) + '%;"></div>' +
-      '</div>' +
-      '<div class="dist-count">' + b.count + '</div>' +
+  const pct = n => Math.round(n / withPos * 100) + ' %';
+  const top10 = buckets[0].count + buckets[1].count + buckets[2].count;
+  const top50 = top10 + buckets[3].count;
+  const wins = buckets[0].count;
+  const shown = buckets.map((b, i) => ({ b, i })).filter(x => x.b.count > 0);
+
+  container.innerHTML =
+    '<div class="kx-head"><span><b>' + withPos + '</b> cup' + (withPos > 1 ? 's' : '') + ' classée' + (withPos > 1 ? 's' : '') + '</span>' +
+      (totalCups > withPos ? '<span>' + (totalCups - withPos) + ' sans place renseignée</span>' : '') + '</div>' +
+    '<div class="kx-stack">' + shown.map(x =>
+      '<i data-i="' + x.i + '" style="--c:' + x.b.c + ';flex-grow:' + x.b.count + '" title="' + escapeAttr(x.b.label + ' : ' + x.b.count + ' cup' + (x.b.count > 1 ? 's' : '') + ' (' + pct(x.b.count) + ')') + '"></i>'
+    ).join('') + '</div>' +
+    '<div class="kx-leg">' + buckets.map((b, i) =>
+      '<button type="button" data-i="' + i + '" style="--c:' + b.c + '"><i></i><span>' + b.label + '</span><b>' + b.count + ' · ' + pct(b.count) + '</b></button>'
+    ).join('') + '</div>' +
+    '<div class="kx-sum">' +
+      '<div><b>' + pct(top10) + '</b>dans le top 10</div>' +
+      '<div><b>' + pct(top50) + '</b>dans le top 50</div>' +
+      '<div><b>' + wins + '</b>victoire' + (wins > 1 ? 's' : '') + '</div>' +
     '</div>';
-  }).join('') + '</div>';
+  kxWireFocus(container);
 }
 
 // ============================================================
@@ -11827,10 +11964,12 @@ function renderCupRoi() {
 /* ============================================================
    7. BEST MONTH ALL-TIME
    ============================================================ */
+let bestMonthKey = 'gains';
+function setBestMonthKey(k) { bestMonthKey = k; renderBestMonth(); }
 function renderBestMonth() {
   const container = document.getElementById('bestMonthBlock');
   if (!container) return;
-  // Group events by YYYY-MM
+  // Chiffres par mois (AAAA-MM)
   const months = {};
   players.forEach(p => {
     (p.cups || []).forEach(c => {
@@ -11839,12 +11978,9 @@ function renderBestMonth() {
       if (!months[m]) months[m] = { cups: 0, top1: 0, top10: 0, gains: 0 };
       months[m].cups++;
       months[m].gains += Number(c.prize) || 0;
-      const posMatch = String(c.position || '').match(/(\d+)/);
-      if (posMatch) {
-        const n = parseInt(posMatch[1], 10);
-        if (n === 1) months[m].top1++;
-        if (n <= 10) months[m].top10++;
-      }
+      const n = kxPos(c);
+      if (n === 1) months[m].top1++;
+      if (n != null && n <= 10) months[m].top10++;
     });
   });
 
@@ -11854,50 +11990,66 @@ function renderBestMonth() {
     return;
   }
 
+  const METRICS = [
+    { k: 'gains', label: 'Gains', fmt: v => fmtNumber(Math.round(v)) + ' €' },
+    { k: 'cups', label: 'Cups', fmt: v => v + ' cup' + (v > 1 ? 's' : '') },
+    { k: 'top10', label: 'Top 10', fmt: v => v + ' top 10' },
+    { k: 'top1', label: 'Victoires', fmt: v => v + ' victoire' + (v > 1 ? 's' : '') }
+  ];
+  const metric = METRICS.find(m => m.k === bestMonthKey) || METRICS[0];
+
+  // Record all-time pour chaque indicateur (le premier mois atteint en cas d'égalité)
   function topBy(key) {
     let best = null;
-    entries.forEach(([m, s]) => {
+    entries.sort((a, b) => a[0].localeCompare(b[0])).forEach(([m, s]) => {
       if (!best || s[key] > best.stats[key]) best = { month: m, stats: s };
     });
     return best;
   }
-  const bestGains = topBy('gains');
-  const bestCups = topBy('cups');
-  const bestTop10 = topBy('top10');
-  const bestTop1 = topBy('top1');
+  const records = {};
+  METRICS.forEach(m => { records[m.k] = topBy(m.k); });
 
-  function formatMonth(yyyymm) {
-    if (!yyyymm) return '—';
+  function monthLabel(yyyymm, opts) {
     const [y, m] = yyyymm.split('-');
-    const date = new Date(parseInt(y, 10), parseInt(m, 10) - 1, 1);
-    return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }).toUpperCase();
+    return new Date(parseInt(y, 10), parseInt(m, 10) - 1, 1).toLocaleDateString('fr-FR', opts);
   }
 
-  container.innerHTML =
-    '<div class="best-month-card">' +
-      '<div class="bm-metric">Record gains</div>' +
-      '<div class="bm-period">' + formatMonth(bestGains.month) + '</div>' +
-      '<div class="bm-value">' + fmtNumber(Math.round(bestGains.stats.gains)) + ' €</div>' +
-    '</div>' +
-    '<div class="best-month-mini">' +
-      '<div class="bm-mini-card">' +
-        '<div class="label">+ de cups</div>' +
-        '<div class="period">' + formatMonth(bestCups.month) + '</div>' +
-        '<div class="value">' + bestCups.stats.cups + ' cups</div>' +
-      '</div>' +
-      '<div class="bm-mini-card">' +
-        '<div class="label">+ de Top 10</div>' +
-        '<div class="period">' + formatMonth(bestTop10.month) + '</div>' +
-        '<div class="value">' + bestTop10.stats.top10 + ' top 10</div>' +
-      '</div>' +
-      (bestTop1.stats.top1 > 0
-        ? '<div class="bm-mini-card" style="grid-column: span 2;">' +
-            '<div class="label">+ de victoires</div>' +
-            '<div class="period">' + formatMonth(bestTop1.month) + '</div>' +
-            '<div class="value">🏆 ' + bestTop1.stats.top1 + ' victoire' + (bestTop1.stats.top1 > 1 ? 's' : '') + '</div>' +
-          '</div>'
-        : '') +
+  // Les 12 derniers mois, mois en cours compris
+  const now = new Date();
+  const last12 = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    last12.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  }
+  const curKey = last12[11];
+  const vals = last12.map(m => (months[m] ? months[m][metric.k] : 0));
+  const max = Math.max(...vals, 1);
+  // En or : le meilleur des 12 mois affichés (le premier en cas d'égalité)
+  const bestIdx = vals.indexOf(max);
+  const recMonth = vals[bestIdx] > 0 ? last12[bestIdx] : null;
+
+  const bars = last12.map((m, i) => {
+    const v = vals[i];
+    const isRec = m === recMonth, isCur = m === curKey;
+    const h = v > 0 ? Math.max(4, v / max * 100) : 2;
+    const tip = monthLabel(m, { month: 'long', year: 'numeric' }) + ' : ' + metric.fmt(v) + (isCur ? ' (mois en cours)' : '') + (isRec ? ' · meilleur mois sur 12 mois' : '');
+    return '<div class="kx-mo' + (isRec ? ' rec' : '') + (isCur ? ' cur' : '') + '" title="' + escapeAttr(tip) + '">' +
+      '<div class="bar-wrap"><div class="bar" style="height:' + h.toFixed(1) + '%">' + (isRec ? '<span>' + escapeHtml(metric.fmt(v)) + '</span>' : '') + '</div></div>' +
+      '<small>' + escapeHtml(monthLabel(m, { month: 'short' }).replace('.', '')) + '</small>' +
     '</div>';
+  }).join('');
+
+  const chips = METRICS.filter(m => records[m.k] && records[m.k].stats[m.k] > 0).map(m =>
+    '<span>Record ' + m.label.toLowerCase() + ' : <b>' + escapeHtml(monthLabel(records[m.k].month, { month: 'long', year: 'numeric' })) + ' · ' + escapeHtml(m.fmt(records[m.k].stats[m.k])) + '</b></span>'
+  ).join('');
+
+  container.innerHTML =
+    '<div class="kx-head"><span>12 derniers mois</span><div class="kx-seg">' + METRICS.map(m =>
+      '<button type="button" aria-pressed="' + (m.k === metric.k) + '" onclick="setBestMonthKey(\'' + m.k + '\')">' + m.label + '</button>'
+    ).join('') + '</div></div>' +
+    '<div class="kx-months">' + bars + '</div>' +
+    '<div class="kx-chips">' + chips + '</div>' +
+    '<div class="kx-note">En or : le meilleur des 12 derniers mois. Hachuré : le mois en cours, pas encore terminé. Les étiquettes « Record » portent sur tout l\'historique.</div>';
 }
 
 /* ============================================================
@@ -11960,32 +12112,31 @@ function renderWinRate() {
 function renderCountryBreakdown() {
   const container = document.getElementById('countryBreakdown');
   if (!container) return;
-  const counts = {};
+  const groups = {};
   players.forEach(p => {
     const c = (p.country || 'UNK').toUpperCase();
-    counts[c] = (counts[c] || 0) + 1;
+    (groups[c] = groups[c] || []).push(p.pseudo || '?');
   });
-  const total = Object.values(counts).reduce((s, n) => s + n, 0);
+  const total = players.length;
   if (total === 0) {
     container.innerHTML = '<div class="dash-empty">Aucun joueur dans le roster.</div>';
     return;
   }
-  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const max = entries[0][1];
+  const entries = Object.entries(groups).sort((a, b) => b[1].length - a[1].length || (a[0] === 'UNK') - (b[0] === 'UNK'));
+  const nCountries = entries.filter(([c]) => c !== 'UNK').length;
 
-  container.innerHTML = entries.map(([code, n]) => {
-    const pct = (n / max) * 100;
-    const totalPct = ((n / total) * 100).toFixed(0);
-    const isUnknown = code === 'UNK';
-    return '<div class="country-row">' +
-      '<div class="cr-flag">' + (isUnknown ? '<span style="font-size:14px;color:var(--text-mute);">?</span>' : flagImg(code, 26)) + '</div>' +
-      '<div>' +
-        '<div class="cr-name">' + (isUnknown ? 'Pays non renseigné' : escapeHtml(getCountryName(code) || code)) + ' <span style="color:var(--text-mute);font-size:11px;margin-left:6px;">' + totalPct + '%</span></div>' +
-        '<div class="cr-bar-wrap"><div class="cr-bar" style="width:' + pct.toFixed(1) + '%;"></div></div>' +
-      '</div>' +
-      '<div class="cr-count">' + n + '</div>' +
-    '</div>';
-  }).join('');
+  container.innerHTML =
+    '<div class="kx-head"><span><b>' + nCountries + '</b> pays · <b>' + total + '</b> joueur' + (total > 1 ? 's' : '') + '</span></div>' +
+    '<div class="kx-flags">' + entries.map(([code, names]) => {
+      const unk = code === 'UNK';
+      const pct = Math.round(names.length / total * 100);
+      const list = names.length > 4 ? names.slice(0, 3).join(', ') + ' +' + (names.length - 3) : names.join(', ');
+      return '<div class="kx-flag" title="' + escapeAttr(names.join(', ') + ' (' + pct + ' %)') + '">' +
+        '<span class="fl">' + (unk ? '?' : flagImg(code, 30)) + '</span>' +
+        '<b>' + names.length + '</b>' +
+        '<div style="min-width:0"><span>' + (unk ? 'Pays non renseigné' : escapeHtml(getCountryName(code) || code)) + '</span><small>' + escapeHtml(list) + '</small></div>' +
+      '</div>';
+    }).join('') + '</div>';
 }
 
 /* ============================================================
@@ -12110,10 +12261,8 @@ function renderBestPerf() {
   const items = players.map(p => {
     let bestPos = Infinity, bestCup = null;
     (p.cups || []).forEach(c => {
-      const m = String(c.position || '').match(/(\d+)/);
-      if (!m) return;
-      const n = parseInt(m[1], 10);
-      if (!isNaN(n) && n < bestPos) { bestPos = n; bestCup = c; }
+      const n = kxPos(c);
+      if (n != null && n < bestPos) { bestPos = n; bestCup = c; }
     });
     if (!isFinite(bestPos)) return null;
     return { player: p, position: bestPos, cup: bestCup };
@@ -12124,24 +12273,29 @@ function renderBestPerf() {
     return;
   }
 
-  function medal(n) {
-    if (n === 1) return '🥇';
-    if (n <= 3) return '🥈';
-    if (n <= 10) return '🥉';
-    return '🎯';
+  // Couleur de la médaille : or, argent, bronze, vert pour un top 10, neutre au-delà
+  function tier(n) {
+    if (n === 1) return { cls: '', label: 'Victoire' };
+    if (n === 2) return { cls: 'm2', label: 'Podium' };
+    if (n === 3) return { cls: 'm3', label: 'Podium' };
+    if (n <= 10) return { cls: 'm10', label: 'Top 10' };
+    if (n <= 50) return { cls: 'mx', label: 'Top 50' };
+    if (n <= 100) return { cls: 'mx', label: 'Top 100' };
+    return { cls: 'mx', label: n + 'e place' };
   }
 
-  container.innerHTML = items.slice(0, 6).map(x =>
-    '<div class="mini-row">' +
-      '<div>' +
-        '<div class="mini-row-name">' + medal(x.position) + ' ' + escapeHtml(x.player.pseudo) + '</div>' +
-        '<div class="mini-row-sub">' + escapeHtml((x.cup.name || 'cup') + ' · ' + fmtDateFR(x.cup.date || '')) + '</div>' +
+  container.innerHTML = '<div class="kx-trophies">' + items.slice(0, 6).map(x => {
+    const t = tier(x.position);
+    const date = x.cup.date ? ' · ' + fmtDateFR(x.cup.date) : '';
+    return '<button type="button" class="kx-trophy ' + t.cls + '" data-pid="' + escapeAttr(x.player.id) + '" onclick="kxOpenPlayer(this.dataset.pid)" title="Ouvrir la page de ' + escapeAttr(x.player.pseudo) + '">' +
+      '<span class="pl">#' + x.position + '</span>' +
+      '<div style="min-width:0">' +
+        '<div class="who">' + escapeHtml(x.player.pseudo) + '</div>' +
+        '<div class="cup">' + escapeHtml(x.cup.name || 'Cup') + '</div>' +
+        '<small>' + t.label + escapeHtml(date) + '</small>' +
       '</div>' +
-      '<div class="mini-row-val">' +
-        '<span style="font-family:var(--font-display);font-size:20px;color:var(--red-bright);">#' + x.position + '</span>' +
-      '</div>' +
-    '</div>'
-  ).join('');
+    '</button>';
+  }).join('') + '</div>';
 }
 
 /* ============================================================
@@ -12154,54 +12308,63 @@ function renderBestPerf() {
 function renderAgePyramid() {
   const container = document.getElementById('agePyramidBlock');
   if (!container) return;
-  // Age brackets
-  const brackets = [
-    { label: '< 16', min: 0, max: 15, count: 0 },
-    { label: '16-17', min: 16, max: 17, count: 0 },
-    { label: '18-20', min: 18, max: 20, count: 0 },
-    { label: '21-25', min: 21, max: 25, count: 0 },
-    { label: '26-30', min: 26, max: 30, count: 0 },
-    { label: '30+',   min: 31, max: 999, count: 0 }
-  ];
-  let withAge = 0;
-  const ages = [];
+  const list = [];
   players.forEach(p => {
     let age = null;
     if (p.birthdate) age = ageFromBirthdate(p.birthdate);
     if (age == null && p.age) age = Number(p.age);
     if (age == null || isNaN(age)) return;
-    withAge++;
-    ages.push(age);
-    for (const b of brackets) {
-      if (age >= b.min && age <= b.max) { b.count++; break; }
-    }
+    list.push({ p, age });
   });
 
-  if (withAge === 0) {
+  if (list.length === 0) {
     container.innerHTML = '<div class="dash-empty">Aucun âge renseigné dans le roster.</div>';
     return;
   }
 
-  const max = Math.max(...brackets.map(b => b.count));
+  const ages = list.map(x => x.age);
   const avgAge = ages.reduce((s, a) => s + a, 0) / ages.length;
-  const minAge = Math.min(...ages);
-  const maxAge = Math.max(...ages);
+  const minAge = Math.min(...ages), maxAge = Math.max(...ages);
+  const lo = Math.min(14, minAge - 1), hi = Math.max(25, maxAge + 1);
+  const X = a => ((a - lo) / (hi - lo) * 100).toFixed(2) + '%';
+  const step = hi - lo > 16 ? 5 : 2;
 
-  const rows = brackets.map(b => {
-    const pct = max > 0 ? (b.count / max) * 100 : 0;
-    return '<div class="age-pyramid-row">' +
-      '<div class="age-pyramid-bracket">' + b.label + ' ans</div>' +
-      '<div class="age-pyramid-bar-wrap"><div class="age-pyramid-bar" style="width:' + pct.toFixed(1) + '%;"></div></div>' +
-      '<div class="age-pyramid-count">' + b.count + '</div>' +
-    '</div>';
-  }).join('');
+  // Un repère par âge ; les joueurs du même âge sont regroupés
+  const groups = {};
+  list.forEach(x => { (groups[x.age] = groups[x.age] || []).push(x.p); });
+  const ageKeys = Object.keys(groups).map(Number).sort((a, b) => a - b);
 
+  let h = '<div class="axis"></div>';
+  for (let a = lo; a <= hi; a++) {
+    if ((a - lo) % step === 0 || a === hi) h += '<span class="tick" style="left:' + X(a) + '">' + a + '</span>';
+  }
+  // Un repère sur deux sous l'axe : les noms ne se chevauchent pas quand les âges sont proches
+  ageKeys.forEach((age, i) => {
+    const ps = groups[age];
+    const up = i % 2 === 1;
+    const color = TEAM_CARD_COLORS[ps[0].team || 'main'] || 'var(--red)';
+    const avs = '<span class="avs">' + ps.slice(0, 3).map(p =>
+      '<span class="av" style="--c:' + (TEAM_CARD_COLORS[p.team || 'main'] || 'var(--red)') + '">' + cardAvatar(p) + '</span>'
+    ).join('') + '</span>';
+    const names = ps.length <= 2 ? ps.map(p => p.pseudo).join(', ') : ps.length + ' joueurs';
+    const label = '<small><b>' + escapeHtml(names) + '</b>' + age + ' ans</small>';
+    const tip = ps.map(p => p.pseudo).join(', ') + ' : ' + age + ' ans';
+    h += '<div class="pin ' + (up ? 'up' : 'down') + '" style="left:' + X(age) + ';--c:' + color + '" title="' + escapeAttr(tip) + '">' +
+      (up ? avs + label + '<i></i>' : '<i></i>' + avs + label) + '</div>';
+  });
+  const avgTxt = avgAge.toFixed(1).replace('.', ',');
+  h += '<div class="avg" style="left:' + X(avgAge) + '" title="Âge moyen : ' + avgTxt + ' ans"></div>';
+
+  const youngest = list.filter(x => x.age === minAge).map(x => x.p.pseudo);
+  const oldest = list.filter(x => x.age === maxAge).map(x => x.p.pseudo);
+  const who = arr => arr.length <= 2 ? arr.join(', ') : arr.length + ' joueurs';
   container.innerHTML =
-    '<div class="age-pyramid">' + rows + '</div>' +
-    '<div class="age-stats-row">' +
-      '<div class="age-stat"><div class="v">' + avgAge.toFixed(1) + '</div><div class="l">Âge moyen</div></div>' +
-      '<div class="age-stat"><div class="v">' + minAge + '</div><div class="l">Plus jeune</div></div>' +
-      '<div class="age-stat"><div class="v">' + maxAge + '</div><div class="l">Plus âgé</div></div>' +
+    '<div class="kx-ages">' + h + '</div>' +
+    '<div class="kx-facts">' +
+      '<span><i class="avg-key"></i>Âge moyen <b>' + avgTxt + ' ans</b></span>' +
+      '<span>Plus jeune <b>' + escapeHtml(who(youngest)) + ', ' + minAge + ' ans</b></span>' +
+      '<span>Plus âgé <b>' + escapeHtml(who(oldest)) + ', ' + maxAge + ' ans</b></span>' +
+      (list.length < players.length ? '<span>' + (players.length - list.length) + ' sans âge renseigné</span>' : '') +
     '</div>';
 }
 
@@ -12329,70 +12492,89 @@ function renderNegoTime() {
 /* ============================================================
    COMPARAISON MOIS EN COURS VS PRÉCÉDENT
    ============================================================ */
+let monthCompMode = 'same';
+function setMonthCompMode(m) { monthCompMode = m; renderMonthComparison(); }
 function renderMonthComparison() {
   const container = document.getElementById('monthComparisonBlock');
   if (!container) return;
   const now = new Date();
-  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-  const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+  const day = now.getDate();
+  const y = now.getFullYear(), mo = now.getMonth();
+  const daysThis = new Date(y, mo + 1, 0).getDate();
+  const daysPrev = new Date(y, mo, 0).getDate();
+  const same = monthCompMode !== 'full';
 
-  let cupsThis = 0, cupsPrev = 0, gainsThis = 0, gainsPrev = 0, top10This = 0, top10Prev = 0;
-  let prEntriesThis = 0, prEntriesPrev = 0;
+  // Périodes comparées, en dates AAAA-MM-JJ (bornes incluses)
+  const thisStart = kxYmd(new Date(y, mo, 1));
+  const thisEnd = same ? kxYmd(now) : kxYmd(new Date(y, mo, daysThis));
+  const prevStart = kxYmd(new Date(y, mo - 1, 1));
+  const prevEnd = kxYmd(new Date(y, mo - 1, same ? Math.min(day, daysPrev) : daysPrev));
+  const inThis = d => d >= thisStart && d <= thisEnd;
+  const inPrev = d => d >= prevStart && d <= prevEnd;
 
+  const v = { cups: [0, 0], top10: [0, 0], gains: [0, 0], pr: [0, 0] };
   players.forEach(p => {
     (p.cups || []).forEach(c => {
       if (!c.date) return;
-      const t = new Date(c.date + 'T00:00:00').getTime();
-      const prize = Number(c.prize) || 0;
-      const m = String(c.position || '').match(/(\d+)/);
-      const isTop10 = m ? (parseInt(m[1], 10) <= 10) : false;
-      if (t >= thisMonthStart) {
-        cupsThis++;
-        gainsThis += prize;
-        if (isTop10) top10This++;
-      } else if (t >= prevMonthStart && t < thisMonthStart) {
-        cupsPrev++;
-        gainsPrev += prize;
-        if (isTop10) top10Prev++;
-      }
+      const d = c.date.slice(0, 10);
+      const k = inThis(d) ? 0 : inPrev(d) ? 1 : -1;
+      if (k < 0) return;
+      v.cups[k]++;
+      v.gains[k] += Number(c.prize) || 0;
+      const n = kxPos(c);
+      if (n != null && n <= 10) v.top10[k]++;
     });
     (p.prHistory || []).forEach(e => {
       if (!e.date) return;
-      const t = new Date(e.date + 'T00:00:00').getTime();
-      if (t >= thisMonthStart) prEntriesThis++;
-      else if (t >= prevMonthStart && t < thisMonthStart) prEntriesPrev++;
+      const d = String(e.date).slice(0, 10);
+      if (inThis(d)) v.pr[0]++;
+      else if (inPrev(d)) v.pr[1]++;
     });
   });
 
-  function deltaCard(label, cur, prev, formatter) {
-    const fmt = formatter || (v => String(v));
-    let deltaHtml = '<span class="delta flat">—</span>';
-    if (prev > 0) {
-      const pct = ((cur - prev) / prev) * 100;
-      if (Math.abs(pct) < 0.5) {
-        deltaHtml = '<span class="delta flat">±0%</span>';
-      } else {
-        const up = pct > 0;
-        deltaHtml = '<span class="delta ' + (up ? 'up' : 'down') + '">' + (up ? '▲' : '▼') + ' ' + Math.abs(pct).toFixed(0) + '%</span>';
-      }
-    } else if (cur > 0) {
-      deltaHtml = '<span class="delta up">▲ Nouveau</span>';
+  const short = (yy, mm) => new Date(yy, mm, 1).toLocaleDateString('fr-FR', { month: 'short' });
+  const long = (yy, mm) => new Date(yy, mm, 1).toLocaleDateString('fr-FR', { month: 'long' });
+  const prevDay = Math.min(day, daysPrev);
+  const period = (d, yy, mm) => d === 1 ? 'le 1er ' + short(yy, mm) : 'du 1er au ' + d + ' ' + short(yy, mm);
+  const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+  const title = same
+    ? cap(period(day, y, mo)) + ' vs ' + period(prevDay, y, mo - 1)
+    : cap(long(y, mo)) + ' (en cours) vs ' + long(y, mo - 1) + ' entier';
+
+  const eur = n => fmtNumber(Math.round(n)) + ' €';
+  function card(label, pair, fmt) {
+    const f = fmt || (n => String(n));
+    const [a, b] = pair;
+    const mx = Math.max(a, b, 1);
+    let chip;
+    if (a === b) chip = '<span class="kx-chip eq">=</span>';
+    else if (b === 0) chip = '<span class="kx-chip up">nouveau</span>';
+    else {
+      const pc = Math.round((a - b) / b * 100);
+      chip = pc === 0 ? '<span class="kx-chip eq">≈</span>'
+        : '<span class="kx-chip ' + (pc > 0 ? 'up' : 'down') + '">' + (pc > 0 ? '▲ +' : '▼ ') + pc + ' %</span>';
     }
-    return '<div class="month-comp-card">' +
-      '<div class="label">' + label + '</div>' +
-      '<div class="current">' + fmt(cur) + '</div>' +
-      '<div class="prev">Mois précédent : ' + fmt(prev) + '</div>' +
-      deltaHtml +
-    '</div>';
+    const proj = !same && day < daysThis ? '<em>Projection fin de mois : ' + f(Math.round(a / day * daysThis)) + '</em>' : '';
+    return '<div class="kx-cm"><span>' + label + '</span>' +
+      '<div class="v"><b>' + f(a) + '</b><em>contre ' + f(b) + '</em></div>' +
+      '<div class="kx-duo" title="Barre dorée : ' + (same ? 'ce mois-ci' : long(y, mo)) + ' · barre grise : ' + long(y, mo - 1) + '"><i class="a" style="width:' + (a / mx * 100).toFixed(1) + '%"></i><i class="b" style="width:' + (b / mx * 100).toFixed(1) + '%"></i></div>' +
+      chip + proj + '</div>';
   }
 
-  const eur = v => fmtNumber(Math.round(v)) + ' €';
-  container.innerHTML = '<div class="month-comp-grid">' +
-    deltaCard('Cups jouées', cupsThis, cupsPrev) +
-    deltaCard('Top 10', top10This, top10Prev) +
-    deltaCard('Gains', gainsThis, gainsPrev, eur) +
-    deltaCard('PR enregistrés', prEntriesThis, prEntriesPrev) +
-  '</div>';
+  container.innerHTML =
+    '<div class="kx-head"><b>' + escapeHtml(title) + '</b><div class="kx-seg">' +
+      '<button type="button" aria-pressed="' + same + '" onclick="setMonthCompMode(\'same\')">Même période</button>' +
+      '<button type="button" aria-pressed="' + !same + '" onclick="setMonthCompMode(\'full\')">Mois entier</button>' +
+    '</div></div>' +
+    '<div class="kx-cmp">' +
+      card('Cups jouées', v.cups) +
+      card('Top 10', v.top10) +
+      card('Gains', v.gains, eur) +
+      card('Relevés de PR', v.pr) +
+    '</div>' +
+    '<div class="kx-note">' + (same
+      ? 'On compare le même nombre de jours dans chaque mois, pour que le début de mois ne fausse pas les pourcentages.'
+      : 'La projection prolonge le rythme actuel jusqu\'à la fin du mois. Elle devient fiable après une ou deux semaines.') + '</div>';
 }
 
 /* ============================================================
