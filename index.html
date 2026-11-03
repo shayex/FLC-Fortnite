@@ -846,52 +846,11 @@
   .tk-status-select option { background: var(--bg-2); color: var(--text); }
 
   /* === Toutes les cups (plein écran) === */
-  .allcups-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 900;
-    background: var(--bg-0);
-    display: flex;
-    flex-direction: column;
-  }
-  .allcups-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-  .allcups-title {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    font-family: var(--font-display);
-    font-size: 20px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text);
-  }
-  .allcups-count {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--red-bright);
-    letter-spacing: 0.05em;
-  }
-  .allcups-tools {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .allcups-tools .search-input { max-width: 220px; }
-  .allcups-tools .compare-select { max-width: 170px; }
-  .allcups-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
-  }
+  .allcups-count { font-family: var(--font-mono); font-size: 13px; color: var(--red-bright); letter-spacing: 0.05em; white-space: nowrap; }
+  .allcups-tools .search-input { max-width: 280px; }
+  .allcups-tools .compare-select { max-width: 190px; }
+  .allcups-body { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--bg-1); }
+  .allcups-body:has(.dash-empty) { border: 0; background: none; }
   .allcups-body .rt-row td { padding: 8px 14px; }
 
   /* === Comparateur de joueurs === */
@@ -5533,27 +5492,6 @@
     .sq-card:hover .sq-hover, .sq-card:focus-within .sq-hover { opacity: 1; visibility: visible; transition: opacity 0.2s, visibility 0s; }
   }
   /* Écran tactile : la carte ouvre la fiche, le bouton « ⋯ » donne accès aux autres actions */
-  /* Onglet Données : bouton toujours visible en bas de la carte */
-  .sq-data .sq-ph { top: 11%; width: 40%; }
-  .sq-data .sq-bottom { bottom: 58px; }
-  .sq-data .sq-hover { bottom: 52px; justify-content: flex-end; padding-bottom: 8px; background: linear-gradient(180deg, rgba(5,5,7,0.35), rgba(5,5,7,0.94) 55%); }
-  .sq-data-btn {
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    z-index: 2;
-    padding: 9px 10px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #0d0b07;
-    background: linear-gradient(180deg, var(--red-bright), var(--red));
-    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
-    transition: box-shadow 0.15s, transform 0.15s;
-  }
-  .sq-data-btn:hover { box-shadow: 0 6px 18px var(--red-glow); }
-  .sq-data-btn:active { transform: scale(0.98); }
   .sq-touch-more { display: none; }
   @media (hover: none) {
     .sq-touch-more { display: grid; place-items: center; position: absolute; left: 8px; top: 42%; z-index: 2; width: 28px; height: 28px; border-radius: 9px; background: rgba(0,0,0,0.55); border: 1px solid var(--border-strong); color: var(--text); }
@@ -5578,10 +5516,6 @@
     .sq-h-actions > button { padding: 6px 4px; font-size: 11px; }
     .sq-h-actions > button.gold { flex-basis: 100%; }
     .sq-h-actions .pc-more { width: 32px; min-height: 30px; }
-    .sq-data .sq-ph { top: 9%; width: 38%; }
-    .sq-data .sq-bottom { bottom: 44px; }
-    .sq-data .sq-hover { bottom: 40px; }
-    .sq-data-btn { left: 8px; right: 8px; bottom: 8px; padding: 7px 6px; font-size: 11px; border-radius: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .sq-card, .sq-ph, .sq-hover, .sq-team { transition: none !important; }
@@ -6830,43 +6764,23 @@ window.addEventListener('DOMContentLoaded', function() {
   <div class="tab-content" id="tabData">
     <div class="section-header">
       <div class="section-title-block">
-        <h2>Données</h2>
-        <p>Clique sur un joueur pour saisir son power ranking et ses cups</p>
+        <h2>Toutes les cups</h2>
+        <p>Les résultats de tout le roster · clique sur une ligne pour ouvrir la page du joueur</p>
       </div>
       <div class="section-actions">
-        <button class="btn btn-ghost" onclick="openAllCupsView()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          Toutes les cups
-        </button>
-      </div>
-    </div>
-    <div class="filters-bar">
-      <input type="text" class="search-input" placeholder="Rechercher un joueur..." id="dataSearch" oninput="renderData()" />
-    </div>
-    <div id="dataList"></div>
-  </div>
-
-  <!-- Fullscreen: all cups across all players -->
-  <div class="allcups-overlay" id="allCupsOverlay" style="display:none;">
-    <div class="allcups-topbar">
-      <div class="allcups-title">
-        <span>Toutes les cups</span>
         <span class="allcups-count" id="allCupsCount"></span>
       </div>
-      <div class="allcups-tools">
-        <input type="text" class="search-input" id="allCupsSearch" placeholder="Rechercher (cup, joueur)..." oninput="renderAllCups()" />
-        <select id="allCupsPlayer" class="compare-select" onchange="renderAllCups()"><option value="">Tous les joueurs</option></select>
-        <select id="allCupsPlace" class="compare-select" onchange="renderAllCups()">
-          <option value="">Toutes places</option>
-          <option value="1">🥇 Victoires (#1)</option>
-          <option value="3">Top 3</option>
-          <option value="10">Top 10</option>
-          <option value="prized">Avec gains</option>
-        </select>
-        <button class="icon-btn" onclick="closeAllCupsView()" title="Fermer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
+    </div>
+    <div class="filters-bar allcups-tools">
+      <input type="text" class="search-input" id="allCupsSearch" placeholder="Rechercher (cup, joueur)..." oninput="renderAllCups()" />
+      <select id="allCupsPlayer" class="compare-select" onchange="renderAllCups()"><option value="">Tous les joueurs</option></select>
+      <select id="allCupsPlace" class="compare-select" onchange="renderAllCups()">
+        <option value="">Toutes places</option>
+        <option value="1">Victoires (#1)</option>
+        <option value="3">Top 3</option>
+        <option value="10">Top 10</option>
+        <option value="prized">Avec gains</option>
+      </select>
     </div>
     <div class="allcups-body" id="allCupsBody"></div>
   </div>
@@ -9336,8 +9250,17 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 25;  // bump this when you add an entry
+const CHANGELOG_VERSION = 26;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Onglet Données simplifié",
+    items: [
+      "L'onglet Données affiche maintenant directement la liste de toutes les cups du roster, avec recherche, filtre par joueur et par place, et tri par colonne.",
+      "Les cartes des joueurs y sont retirées : tout est sur la page joueur. Un clic sur une cup ouvre la page du joueur, sur l'onglet Résultats.",
+      "Pour saisir un PR ou une cup : bouton « Saisir » au survol des cartes du Roster, ou « Saisir PR / cups » sur la page joueur. « Rapport » passe dans le menu « ⋯ » des cartes."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Page joueur et comparateur en radar",
@@ -10900,7 +10823,7 @@ function renderKPIs() {
   } else {
     topValue = '<div class="kpi-empty">Pas encore de top performer</div>';
     topSub = 'Saisis un Power Ranking en ' + curMonth + ' pour voir qui progresse le plus.';
-    topSpark = '<button type="button" class="kpi-cta" onclick="switchTab(\'data\')">+ Saisir un PR</button>';
+    topSpark = '<button type="button" class="kpi-cta" onclick="switchTab(\'roster\')">+ Saisir un PR</button>';
     topChip = '';
   }
 
@@ -10948,7 +10871,7 @@ function renderDashAlerts() {
   const DAY = 86400000;
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const alerts = [];
-  const openData = id => "switchTab('data');setTimeout(function(){openDataModal('" + id + "')},100)";
+  const openData = id => "openDataModal('" + id + "')";
 
   // Contrats qui se terminent dans 30 jours ou moins, ou expirés
   players.forEach(p => {
@@ -11007,7 +10930,7 @@ function renderDashAlerts() {
       tone: 'info', order: 0, icon: 'cup',
       title: '<b>' + pluralFr(idle.length, 'joueur') + '</b> sans cup depuis plus de 3 semaines',
       sub: idle.slice(0, 4).map(x => escapeHtml(x.p.pseudo || '—') + ' (' + x.days + ' j)').join(' · ') + (idle.length > 4 ? ' · …' : ''),
-      btn: 'Voir les données', action: "switchTab('data')"
+      btn: 'Voir les cups', action: "switchTab('data')"
     });
   }
 
@@ -11133,7 +11056,7 @@ function renderPRChart() {
 
   const playersWithPR = players.filter(p => (p.prHistory || []).length > 0);
   if (playersWithPR.length === 0) {
-    container.innerHTML = dashEmptyHtml('Aucun Power Ranking pour l\'instant', 'Saisis les premiers points dans l\'onglet Données pour voir les courbes.', 'Aller dans Données', "switchTab('data')");
+    container.innerHTML = dashEmptyHtml('Aucun Power Ranking pour l\'instant', 'Saisis les premiers points depuis le Roster : bouton « Saisir » sur la carte d\'un joueur.', 'Aller au Roster', "switchTab('roster')");
     legendEl.innerHTML = '';
     return;
   }
@@ -11327,7 +11250,7 @@ function renderDashLeaderboard() {
     .slice(0, 10);
 
   if (items.length === 0) {
-    container.innerHTML = dashEmptyHtml('Aucun joueur classé', 'Saisis un Power Ranking dans l\'onglet Données pour lancer le classement.', 'Aller dans Données', "switchTab('data')");
+    container.innerHTML = dashEmptyHtml('Aucun joueur classé', 'Saisis un Power Ranking depuis la page d\'un joueur pour lancer le classement.', 'Aller au Roster', "switchTab('roster')");
     return;
   }
 
@@ -13497,11 +13420,12 @@ function playerCardHtml(p) {
       (socials.length ? '<div class="sq-h-soc">' + socials.join('') + '</div>' : '') +
       '<div class="sq-h-actions">' +
         '<button type="button" class="gold" onclick="event.stopPropagation();openPlayerModal(\'' + p.id + '\')">Éditer</button>' +
-        '<button type="button" onclick="event.stopPropagation();openPlayerReport(\'' + p.id + '\')">Rapport</button>' +
+        '<button type="button" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')"title="Saisir un PR ou une cup">Saisir</button>' +
         '<div class="pc-menu">' +
           '<button type="button" class="pc-more" aria-label="Plus d\'actions" aria-haspopup="menu" aria-expanded="false" onclick="event.stopPropagation();togglePcMenu(this)">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>' +
           '<div class="pc-menu-pop" role="menu">' +
+            '<button type="button" role="menuitem" onclick="event.stopPropagation();closePcMenus();openPlayerReport(\'' + p.id + '\')">Rapport</button>' +
             '<button type="button" role="menuitem" class="danger" onclick="event.stopPropagation();closePcMenus();deletePlayer(\'' + p.id + '\')">Supprimer le joueur</button>' +
           '</div>' +
         '</div>' +
@@ -14764,20 +14688,9 @@ function cupPodiumClass(pos) {
 // ============================================================
 let allCupsSort = { key: 'date', dir: 'desc' };
 
-function openAllCupsView() {
-  const sel = document.getElementById('allCupsPlayer');
-  if (sel) {
-    sel.innerHTML = '<option value="">Tous les joueurs</option>' +
-      players.slice().sort((a, b) => (a.pseudo || '').localeCompare(b.pseudo || '', 'fr'))
-        .map(p => '<option value="' + p.id + '">' + escapeHtml(p.pseudo) + '</option>').join('');
-  }
-  document.getElementById('allCupsOverlay').style.display = 'flex';
-  renderAllCups();
-}
-
-function closeAllCupsView() {
-  document.getElementById('allCupsOverlay').style.display = 'none';
-}
+// L'onglet Données affiche directement la liste ; ces deux fonctions restent pour les anciens liens
+function openAllCupsView() { switchTab('data'); }
+function closeAllCupsView() {}
 
 function setAllCupsSort(key) {
   if (allCupsSort.key === key) allCupsSort.dir = allCupsSort.dir === 'asc' ? 'desc' : 'asc';
@@ -14829,7 +14742,10 @@ function renderAllCups() {
     rows.length + ' cup' + (rows.length > 1 ? 's' : '') + ' · ' + fmtNumber(totalPrize) + ' €';
 
   if (rows.length === 0) {
-    body.innerHTML = '<div class="dash-empty" style="margin:40px;">Aucune cup ne correspond aux filtres.</div>';
+    const any = players.some(p => (p.cups || []).length);
+    body.innerHTML = any
+      ? dashEmptyHtml('Aucune cup ne correspond aux filtres', 'Modifie la recherche ou les filtres ci-dessus.')
+      : dashEmptyHtml('Aucune cup enregistrée', 'Ouvre la page d\'un joueur depuis le Roster, puis « Saisir PR / cups ».', 'Aller au Roster', "switchTab('roster')");
     return;
   }
 
@@ -14853,7 +14769,7 @@ function renderAllCups() {
       : '—';
     const av = r.photo ? '<img src="' + escapeAttr(r.photo) + '" class="rt-avatar" style="width:24px;height:24px;" />'
       : '<span class="rt-avatar rt-avatar-fallback" style="width:24px;height:24px;font-size:11px;">' + r.player.charAt(0).toUpperCase() + '</span>';
-    return '<tr class="rt-row" onclick="closeAllCupsView();openDataModal(\'' + r.playerId + '\')">' +
+    return '<tr class="rt-row" onclick="openPlayerPage(\'' + r.playerId + '\',\'res\')" title="Ouvrir la page de ' + escapeAttr(r.player) + '">' +
       '<td style="white-space:nowrap;color:var(--text-dim);">' + (r.date ? fmtDateFR(r.date) : '—') + '</td>' +
       '<td><div class="rt-player">' + av + '<span class="rt-name">' + escapeHtml(r.player) + '</span></div></td>' +
       '<td>' + escapeHtml(r.name) + '</td>' +
@@ -14867,57 +14783,17 @@ function renderAllCups() {
 
 function renderData() {
   setTimeout(refreshPlayerPageIfOpen, 0);
-  const container = document.getElementById('dataList');
-  if (!container) return;
-
-  let list = players.slice();
-  list.forEach(migratePlayerPRIfNeeded);
-
-  // Search filter
-  const search = (document.getElementById('dataSearch')?.value || '').toLowerCase().trim();
-  if (search) {
-    list = list.filter(p =>
-      (p.pseudo || '').toLowerCase().includes(search) ||
-      (p.realName || '').toLowerCase().includes(search)
-    );
+  // Liste des joueurs du filtre, en gardant le choix en cours
+  const sel = document.getElementById('allCupsPlayer');
+  if (sel) {
+    const prev = sel.value;
+    const sorted = players.slice().sort((a, b) => (a.pseudo || '').localeCompare(b.pseudo || '', 'fr'));
+    sel.innerHTML = '<option value="">Tous les joueurs</option>' + sorted.map(p => '<option value="' + p.id + '">' + escapeHtml(p.pseudo) + '</option>').join('');
+    if (prev && sorted.some(p => p.id === prev)) sel.value = prev;
   }
-
-  if (list.length === 0) {
-    container.innerHTML = '<div class="empty"><h3>Aucun joueur</h3><p>Ajoute des joueurs au roster pour pouvoir saisir leurs données.</p></div>';
-    return;
-  }
-
-  // Sort: PR points desc (players without PR at the end)
-  list.sort((a, b) => {
-    const ca = currentPR(a);
-    const cb = currentPR(b);
-    const va = ca && !isNaN(Number(ca.points)) ? Number(ca.points) : -Infinity;
-    const vb = cb && !isNaN(Number(cb.points)) ? Number(cb.points) : -Infinity;
-    if (va !== vb) return vb - va;
-    return (a.pseudo || '').localeCompare(b.pseudo || '', 'fr');
-  });
-
-  container.innerHTML = '<div class="grid grid-sq">' + list.map(p => dataPlayerCardHtml(p)).join('') + '</div>';
+  renderAllCups();
 }
 
-function dataPlayerCardHtml(p) {
-  const rank = playerPrRank(p);
-  const cups = (p.cups || []).filter(c => c);
-  const gains = totalGains(p);
-  const lastCup = cups.filter(c => c.date).sort((a, b) => (a.date < b.date ? 1 : -1))[0];
-  const nPr = (p.prHistory || []).length;
-  // Bouton « Saisir / modifier » toujours visible ; le survol ajoute seulement les stats
-  return '<div class="sq-card sq-data ' + sqRankClass(rank) + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Saisir les données de ' + escapeAttr(p.pseudo || '') + '" ' +
-    'onclick="openDataModal(\'' + p.id + '\')" onkeydown="if(event.target===this&&(event.key===\'Enter\'||event.key===\' \')){event.preventDefault();openDataModal(\'' + p.id + '\')}">' +
-    sqFaceHtml(p, rank, '') +
-    '<div class="sq-hover" aria-hidden="true">' +
-      '<div class="sq-h-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
-      '<div class="sq-h-stats">' + pluralFr(cups.length, 'cup') + ' · ' + fmtNumber(gains) + ' €</div>' +
-      '<div class="sq-h-contract">' + pluralFr(nPr, 'relevé') + ' de PR' + (lastCup ? ' · dernière cup le ' + formatDate(lastCup.date).replace(/\s\d{4}$/, '') : '') + '</div>' +
-    '</div>' +
-    '<button type="button" class="sq-data-btn" tabindex="-1" onclick="event.stopPropagation();openDataModal(\'' + p.id + '\')">Saisir / modifier</button>' +
-  '</div>';
-}
 
 /* ============================================================
    DATA MODAL — Open / refresh / close
