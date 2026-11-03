@@ -6699,6 +6699,48 @@
     .modal-overlay.fx-closing, .modal-overlay.fx-closing > :first-child, .fx-new, .fx-gone, .fx-cal-next, .fx-cal-prev, .kanban-col.fx-glow, .fx-lvl *, .sq-balloons i, .sq-cake { animation: none !important; }
     .sq-balloons { display: none; }
   }
+
+  /* ===== Avatars par défaut, jauge de forme, onglets directionnels, podium vivant ===== */
+  .mono { position: relative; width: 100%; height: 100%; display: grid; place-items: center; border-radius: inherit; overflow: hidden; font-family: var(--font-display); font-weight: 400; letter-spacing: .02em; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.45);
+    background: repeating-linear-gradient(135deg, rgba(255,255,255,.06) 0 3px, transparent 3px 8px), linear-gradient(150deg, color-mix(in srgb, var(--t) 85%, #fff 15%), color-mix(in srgb, var(--t) 40%, #050507)); }
+  .mono::after { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 50% at 30% 20%, rgba(255,255,255,.28), transparent 70%); pointer-events: none; }
+  .sq-ph.sq-mono { background: repeating-linear-gradient(135deg, rgba(255,255,255,.06) 0 4px, transparent 4px 10px), linear-gradient(150deg, color-mix(in srgb, var(--t) 85%, #fff 15%), color-mix(in srgb, var(--t) 40%, #050507)); }
+  .sq-ph.sq-mono::after { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 50% at 30% 20%, rgba(255,255,255,.28), transparent 70%); pointer-events: none; }
+  .sq-ph.sq-mono .sq-initial { position: relative; z-index: 1; font-size: 48px; letter-spacing: .02em; }
+  @media (max-width: 700px) { .sq-ph.sq-mono .sq-initial { font-size: 34px; } }
+  .form-ring { position: relative; display: inline-grid; place-items: center; flex-shrink: 0; }
+  .form-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .form-ring .tr { fill: none; stroke: var(--bg-4); }
+  .form-ring .vl { fill: none; stroke: var(--c); stroke-linecap: round; filter: drop-shadow(0 0 4px color-mix(in srgb, var(--c) 45%, transparent)); }
+  .fx-in .form-ring .vl { animation: fxRingFill 1.1s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes fxRingFill { from { stroke-dashoffset: var(--len); } }
+  .form-ring b { position: relative; font-family: var(--font-display); font-weight: 400; line-height: 1; color: var(--white); font-variant-numeric: tabular-nums; }
+  .ppg-form { display: flex; align-items: center; gap: 10px; }
+  .ppg-form .form-ring { width: 52px; height: 52px; } .ppg-form .form-ring b { font-size: 20px; }
+  .ppg-form em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--c); }
+  .ppg-kpi b.ppg-form-wrap { font-size: inherit; }
+  .drk-ring { display: inline-flex; align-items: center; gap: 8px; }
+  .drk-ring .form-ring { width: 30px; height: 30px; } .drk-ring .form-ring b { font-size: 12px; }
+  .drk-ring small { font-size: 11px; color: var(--c); }
+  @keyframes fxTabR { from { opacity: 0; transform: translateX(28px); } }
+  @keyframes fxTabL { from { opacity: 0; transform: translateX(-28px); } }
+  .tab-content.active.fx-tab-r { animation: fxTabR .34s cubic-bezier(.2,.8,.2,1); }
+  .tab-content.active.fx-tab-l { animation: fxTabL .34s cubic-bezier(.2,.8,.2,1); }
+  body { overflow-x: clip; }
+  @keyframes fxShine { 0%, 62% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+  @keyframes fxCrown { 50% { transform: translateY(-4px) rotate(-6deg); } }
+  .pod-av { position: relative; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .pod-av::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%); transform: translateX(-120%); animation: fxShine 3.4s ease-in-out infinite; }
+  .pod-2 .pod-av::after { animation-delay: .7s; } .pod-3 .pod-av::after { animation-delay: 1.4s; }
+  @media (hover: hover) { .pod-step:hover .pod-av { transform: rotateY(360deg); } }
+  .pod-crown { display: block; font-size: 20px; line-height: 1; margin-bottom: -2px; filter: drop-shadow(0 0 8px rgba(201,164,92,.7)); animation: fxCrown 2.4s ease-in-out infinite; }
+  .fx-in .pod-block { transform-origin: center bottom; animation: fxGrowY .7s cubic-bezier(.3,1.35,.5,1) both; }
+  .fx-in .pod-2 .pod-block { animation-delay: .1s; } .fx-in .pod-3 .pod-block { animation-delay: .2s; }
+  .fx-in .pod-step > :not(.pod-block) { animation: fxPop .45s cubic-bezier(.3,1.35,.5,1) both; animation-delay: .5s; }
+  .fx-in .pod-2 > :not(.pod-block) { animation-delay: .6s; } .fx-in .pod-3 > :not(.pod-block) { animation-delay: .7s; }
+  @media (prefers-reduced-motion: reduce) {
+    .pod-av::after, .pod-crown, .fx-in .pod-block, .fx-in .pod-step > *, .fx-in .form-ring .vl, .tab-content.active.fx-tab-r, .tab-content.active.fx-tab-l { animation: none !important; }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -9748,8 +9790,18 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 32;  // bump this when you add an entry
+const CHANGELOG_VERSION = 33;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Avatars, jauge de forme, onglets et podium",
+    items: [
+      "Sans photo, un joueur a maintenant un avatar avec deux lettres sur un dégradé à la couleur de son équipe (violet pour les grinders), partout sur le site.",
+      "La forme d'un joueur s'affiche en anneau : rouge sous 40, orange jusqu'à 65, vert au-dessus, avec « en difficulté », « correcte » ou « en forme ». Sur la page joueur et dans le Classement du roster.",
+      "En changeant d'onglet, la page arrive du côté de l'onglet choisi : par la droite si tu vas vers la droite du menu, et inversement.",
+      "Podium du Classement PR : les marches montent à l'ouverture du dashboard, une couronne flotte au-dessus du n°1, un reflet passe sur les médailles, et au survol la médaille fait un tour sur elle-même."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Encore des animations",
@@ -10983,6 +11035,8 @@ function switchTab(tab) {
   if (tab === 'admin' && currentUser.role !== 'admin') return;
   // Rôle restreint : seule la vue Grinder est autorisée
   if (isGrinderViewOnly() && tab !== 'grinder') return;
+  const tabOrder = [...document.querySelectorAll('.tab[data-tab]')].map(t => t.dataset.tab);
+  const fromIdx = tabOrder.indexOf(currentTab), toIdx = tabOrder.indexOf(tab);
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -10997,9 +11051,17 @@ function switchTab(tab) {
     grinder: 'tabGrinder',
     admin: 'tabAdminContent'
   };
-  document.getElementById(map[tab]).classList.add('active');
+  const tabEl = document.getElementById(map[tab]);
+  tabEl.classList.add('active');
+  // La page arrive du côté de l'onglet choisi
+  tabEl.classList.remove('fx-tab-r', 'fx-tab-l');
+  if (!fxReduce && fromIdx >= 0 && toIdx >= 0 && fromIdx !== toIdx) {
+    tabEl.classList.add(toIdx > fromIdx ? 'fx-tab-r' : 'fx-tab-l');
+    clearTimeout(tabEl._fxTab);
+    tabEl._fxTab = setTimeout(() => tabEl.classList.remove('fx-tab-r', 'fx-tab-l'), 400);
+  }
   if (tab === 'admin') fillDiscordForm();
-  fxEnter(document.getElementById(map[tab]));
+  fxEnter(tabEl);
 }
 
 function renderAll() {
@@ -11221,7 +11283,7 @@ function renderPlayerComparator() {
   const head = '<div class="cmp-col cmp-label-col"></div>' +
     stats.map(({ p }) => {
       const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" class="cmp-avatar" />'
-        : '<span class="cmp-avatar cmp-avatar-fb">' + (p.pseudo || '?').charAt(0).toUpperCase() + '</span>';
+        : '<span class="cmp-avatar cmp-avatar-fb">' + monoAvatar(p) + '</span>';
       return '<div class="cmp-col cmp-head">' + av + '<span class="cmp-pseudo">' + escapeHtml(p.pseudo) + '</span></div>';
     }).join('');
 
@@ -11381,7 +11443,7 @@ function renderKPIs() {
   let topValue, topSub, topSpark, topChip;
   if (topGainer) {
     const tp = topGainer.player;
-    const av = tp.photo ? '<img src="' + escapeAttr(tp.photo) + '" alt="" />' : escapeHtml((tp.pseudo || '?').charAt(0).toUpperCase());
+    const av = tp.photo ? '<img src="' + escapeAttr(tp.photo) + '" alt="" />' : monoAvatar(tp);
     topValue = '<div class="kpi-top-perf"><span class="kpi-av">' + av + '</span><span class="kpi-value">' + escapeHtml(tp.pseudo || '—') + '</span></div>';
     topSub = 'Meilleure progression de ' + curMonth;
     topSpark = areaSparkSvg(topGainer.hist.slice(-10).map(e => e.points), UI_COLORS.gold);
@@ -11906,6 +11968,29 @@ function fxCelebrate(big, text) {
   setTimeout(done, 2000);
 }
 
+// Avatar par défaut : deux lettres sur un dégradé à la couleur de l'équipe
+function monoInitials(name) {
+  const s = String(name || '').replace(/[^0-9A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+  return (s.slice(0, 2) || '?').toUpperCase();
+}
+function monoAvatar(p, color) {
+  const team = (p && (p.team || p.targetTeam)) || 'main';
+  const t = color || (typeof TEAM_CARD_COLORS !== 'undefined' && TEAM_CARD_COLORS[team]) || 'var(--red)';
+  return '<span class="mono" style="--t:' + t + '">' + escapeHtml(monoInitials(p && (p.pseudo || p.name))) + '</span>';
+}
+
+// Jauge de forme en anneau : rouge sous 40, orange jusqu'à 65, vert au-dessus
+function formTone(score) { return score < 40 ? 'var(--danger)' : score <= 65 ? 'var(--amber)' : 'var(--green)'; }
+function formWord(score) { return score < 40 ? 'en difficulté' : score <= 65 ? 'correcte' : 'en forme'; }
+function formRingHtml(score) {
+  const v = Math.max(0, Math.min(100, Math.round(score)));
+  const r = 15.5, len = 2 * Math.PI * r, off = len * (1 - v / 100);
+  return '<span class="form-ring" style="--c:' + formTone(v) + '" title="Forme : ' + v + '/100 (' + formWord(v) + ')">' +
+    '<svg viewBox="0 0 36 36" aria-hidden="true"><circle class="tr" cx="18" cy="18" r="' + r + '" stroke-width="3.5"/>' +
+    '<circle class="vl" cx="18" cy="18" r="' + r + '" stroke-width="3.5" stroke-dasharray="' + len.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) + '" style="--len:' + len.toFixed(2) + '"/></svg>' +
+    '<b>' + v + '</b></span>';
+}
+
 // Fermeture animée d'une fenêtre
 function fxCloseModal(el) {
   if (!el || !el.classList.contains('active')) return;
@@ -11989,7 +12074,7 @@ function renderDashLeaderboard() {
   }
 
   const open = id => "openPlayerPage('" + id + "')";
-  const av = p => p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+  const av = p => p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p);
   const deltaHtml = it => {
     if (it.pct == null) return '<span class="dlb-delta flat">—</span>';
     if (Math.abs(it.pct) < 0.05) return '<span class="dlb-delta flat">±0 %</span>';
@@ -12002,6 +12087,7 @@ function renderDashLeaderboard() {
   const podium = '<div class="podium" style="grid-template-columns:repeat(' + order.length + ', minmax(0, 1fr))">' + order.map(it => {
     const r = items.indexOf(it) + 1;
     return '<button type="button" class="pod-step pod-' + r + '" data-flip="' + escapeAttr(it.player.id) + '" data-flip-v="' + it.cur + '" onclick="' + open(it.player.id) + '" title="Ouvrir la page de ' + escapeAttr(it.player.pseudo) + '">' +
+      (r === 1 ? '<span class="pod-crown" aria-hidden="true">👑</span>' : '') +
       '<span class="pod-medal" data-rank="' + r + '"><span class="pod-av">' + av(it.player) + '</span></span>' +
       '<span class="pod-name">' + escapeHtml(it.player.pseudo) + '</span>' +
       '<span class="pod-pts">' + fmtNumber(it.cur) + '</span>' +
@@ -12748,7 +12834,7 @@ function renderDashRanking() {
 
   const body = rows.map((r, i) => {
     const p = r.p;
-    const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+    const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p);
     const team = p.team || 'main';
     const open = "openPlayerPage('" + p.id + "')";
     const lastHtml = r.last5.length ? r.last5.slice().reverse().map(c => {
@@ -12761,7 +12847,7 @@ function renderDashRanking() {
       '<td class="drk-l"><div class="drk-who"><span class="drk-av" style="--t:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '">' + av + '</span>' +
         '<span><span class="drk-name">' + escapeHtml(p.pseudo || '—') + '</span><span class="drk-team">' + escapeHtml(teamLabelFull(team)) + '</span></span></div></td>' +
       '<td>' + (r.pr != null ? '<div class="drk-cell"><span>' + fmtNumber(r.pr) + (prDeltaChip(r.prPct) ? ' ' + prDeltaChip(r.prPct) : '') + '</span>' + bar(max.pr ? r.pr / max.pr : 0, avg.pr != null && max.pr ? avg.pr / max.pr : null) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
-      '<td>' + (r.form != null ? '<div class="drk-cell"><span>' + Math.round(r.form) + '<small>/100</small></span>' + bar(r.form / 100, avg.form != null ? avg.form / 100 : null, formColor(r.form)) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
+      '<td>' + (r.form != null ? '<span class="drk-ring" style="--c:' + formTone(r.form) + '">' + formRingHtml(r.form) + '<small>' + formWord(Math.round(r.form)) + '</small></span>' : '<span class="drk-none">—</span>') + '</td>' +
       '<td>' + (r.avgPlace != null ? '<div class="drk-cell"><span>#' + r.avgPlace.toFixed(1).replace('.', ',') + '</span>' + bar(placeRatio(r.avgPlace), avg.avgPlace != null ? placeRatio(avg.avgPlace) : null) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
       '<td><div class="drk-cell"><span>' + r.cups + '</span>' + bar(max.cups ? r.cups / max.cups : 0, avg.cups != null && max.cups ? avg.cups / max.cups : null) + '</div></td>' +
       '<td><div class="drk-cell"><span class="' + (r.gains > 0 ? 'drk-pos-val' : '') + '">' + fmtNumber(Math.round(r.gains)) + ' €</span>' + bar(max.gains ? r.gains / max.gains : 0, avg.gains != null && max.gains ? avg.gains / max.gains : null, 'var(--green)') + '</div></td>' +
@@ -14188,7 +14274,7 @@ function renderRosterTable() {
     const p = r.p;
     const avatar = p.photo
       ? '<img src="' + escapeAttr(p.photo) + '" class="rt-avatar" />'
-      : '<span class="rt-avatar rt-avatar-fallback">' + (p.pseudo || '?').charAt(0).toUpperCase() + '</span>';
+      : '<span class="rt-avatar rt-avatar-fallback">' + monoAvatar(p) + '</span>';
     const flag = p.country ? flagImg(p.country, 16) : '—';
     let contractCell = '<span style="color:var(--text-mute);">—</span>';
     if (p.contractIndefinite) {
@@ -14250,7 +14336,7 @@ function prDeltaChip(pct) {
 }
 
 function cardAvatar(p) {
-  return p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+  return p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p);
 }
 
 // Carte carrée « photo plein cadre » : photo, pseudo, PR, rang. Le reste au survol.
@@ -14268,7 +14354,7 @@ function sqFaceHtml(p, rank, alertHtml) {
   const flag = p.country ? flagImg(p.country, 16) : '';
   const country = p.country ? ((COUNTRIES.find(c => c.code === String(p.country).toUpperCase()) || {}).name || p.country) : '';
   const team = teamLabelFull(p.team || 'main');
-  return '<div class="sq-ph">' + (p.photo ? '' : '<span class="sq-initial">' + escapeHtml((p.pseudo || '?').charAt(0).toUpperCase()) + '</span>') + '</div>' +
+  return '<div class="sq-ph' + (p.photo ? '' : ' sq-mono') + '">' + (p.photo ? '' : '<span class="sq-initial">' + escapeHtml(monoInitials(p.pseudo)) + '</span>') + '</div>' +
     '<div class="sq-top">' +
       (rank ? '<span class="sq-rk" title="Rang au Power Ranking du roster">#' + rank + '</span>' : '<span></span>') +
       '<span class="sq-tr"><span class="sq-team" title="' + escapeAttr(team) + '"><i></i>' + escapeHtml(team) + '</span>' + (alertHtml || '') + '</span>' +
@@ -14689,7 +14775,7 @@ function advanceProspect(id) {
 }
 
 function kanbanCard(p) {
-  const avatar = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml((p.pseudo || '?').charAt(0).toUpperCase());
+  const avatar = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p);
   const flag = p.country ? flagImg(p.country, 14) : '';
   const teamRaw = (p.currentTeam || '').trim();
   const isFA = isFreeAgent(teamRaw);
@@ -14731,7 +14817,7 @@ function kanbanCard(p) {
 }
 
 function kanbanSignedCard(pl) {
-  const avatar = pl.photo ? '<img src="' + escapeAttr(pl.photo) + '" alt="" />' : escapeHtml((pl.pseudo || '?').charAt(0).toUpperCase());
+  const avatar = pl.photo ? '<img src="' + escapeAttr(pl.photo) + '" alt="" />' : monoAvatar(pl);
   const flag = pl.country ? flagImg(pl.country, 14) : '';
   return '<div class="kanban-card pp-card signed" onclick="switchTab(\'roster\')" title="Voir dans le roster">' +
     '<div class="pp-top"><div class="pp-av">' + avatar + '</div>' +
@@ -15633,7 +15719,7 @@ function renderAllCups() {
       const prize = Number(c.prize) || 0;
       rows.push({
         player: p.pseudo || '—', playerId: p.id, photo: p.photo,
-        name: c.name || '—', date: c.date || '', pos, prize, id: c.id
+        name: c.name || '—', date: c.date || '', pos, prize, id: c.id, team: p.team
       });
     });
   });
@@ -15686,7 +15772,7 @@ function renderAllCups() {
         : '#' + r.pos)
       : '—';
     const av = r.photo ? '<img src="' + escapeAttr(r.photo) + '" class="rt-avatar" style="width:24px;height:24px;" />'
-      : '<span class="rt-avatar rt-avatar-fallback" style="width:24px;height:24px;font-size:11px;">' + r.player.charAt(0).toUpperCase() + '</span>';
+      : '<span class="rt-avatar rt-avatar-fallback" style="width:24px;height:24px;font-size:11px;">' + monoAvatar({ pseudo: r.player, team: r.team }) + '</span>';
     return '<tr class="rt-row" data-fx-id="' + escapeAttr(r.id || '') + '" onclick="openPlayerPage(\'' + r.playerId + '\',\'res\')" title="Ouvrir la page de ' + escapeAttr(r.player) + '">' +
       '<td style="white-space:nowrap;color:var(--text-dim);">' + (r.date ? fmtDateFR(r.date) : '—') + '</td>' +
       '<td><div class="rt-player">' + av + '<span class="rt-name">' + escapeHtml(r.player) + '</span></div></td>' +
@@ -15743,7 +15829,7 @@ function openDataModal(playerId) {
   const avEl = document.getElementById('dataModalAvatar');
   avEl.innerHTML = p.photo
     ? '<img src="' + escapeAttr(p.photo) + '" />'
-    : (p.pseudo || '?').charAt(0).toUpperCase();
+    : monoAvatar(p);
 
   // Reset forms
   document.getElementById('d_prPoints').value = '';
@@ -17291,7 +17377,7 @@ function renderTracking() {
     const iso = dateToLocalISO(d);
     if (iso !== curDay) { curDay = iso; html += '<div class="tkf-day">' + dayLabel(iso) + '</div>'; }
     const time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-    const av = p && p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : escapeHtml(((p && p.pseudo) || '?').charAt(0).toUpperCase());
+    const av = p && p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p || { pseudo: '?' });
     const isNeed = e.type === 'besoin';
     let status = '';
     if (isNeed) {
@@ -18023,7 +18109,7 @@ function renderGrinderHighlights() {
   let hero;
   if (ranking.length) {
     const top = ranking[0];
-    const av = top.g.photo ? '<img src="' + escapeAttr(top.g.photo) + '" alt="" />' : escapeHtml((top.g.pseudo || '?').charAt(0).toUpperCase());
+    const av = top.g.photo ? '<img src="' + escapeAttr(top.g.photo) + '" alt="" />' : monoAvatar(top.g, '#a855f7');
     const lead = ranking[1] ? top.fgp - ranking[1].fgp : null;
     const podium = ranking.slice(0, 3).map((x, i) =>
       '<div class="grh-row"><span class="grh-rk">' + (i + 1) + '</span><span class="grh-nm">' + escapeHtml(x.g.pseudo || '—') + '</span>' +
@@ -18067,7 +18153,7 @@ function openGrinderDetail(id) {
   document.getElementById('grDetailSub').textContent =
     [g.realName, div ? div.label : null, country || null, since != null ? 'inscrit depuis ' + pluralFr(since, 'jour') : null].filter(Boolean).join(' · ') || 'Grinder FLC';
   const ph = document.getElementById('grDetailPhoto');
-  if (ph) ph.innerHTML = g.photo ? '<img src="' + escapeAttr(g.photo) + '" alt="" />' : '<span>' + escapeHtml((g.pseudo || '?').charAt(0).toUpperCase()) + '</span>';
+  if (ph) ph.innerHTML = g.photo ? '<img src="' + escapeAttr(g.photo) + '" alt="" />' : monoAvatar(g, '#a855f7');
 
   const totalFgp = grinderTotalFGP(id);
   const linksEl = document.getElementById('grDetailLinks');
@@ -20510,7 +20596,7 @@ function renderPlayerPage() {
   if (p.tracker) socials.push(socialLinkHtml('tracker', p.tracker));
 
   const head = '<div class="ppg-head" style="--t:' + tcol + '">' +
-    '<div class="ppg-photo ' + rankCls + '">' + (p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : '<span>' + escapeHtml((p.pseudo || '?').charAt(0).toUpperCase()) + '</span>') + '</div>' +
+    '<div class="ppg-photo ' + rankCls + '">' + (p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p)) + '</div>' +
     '<div class="ppg-id">' +
       '<div class="ppg-name">' + escapeHtml(p.pseudo || '—') + '</div>' +
       '<div class="ppg-sub"><span class="ppg-team">' + escapeHtml(teamLabelFull(team)) + '</span>' + sub.join('<span class="dot"></span>') + '</div>' +
@@ -20527,7 +20613,9 @@ function renderPlayerPage() {
   const kpi = (label, value, extra) => '<div class="ppg-kpi"><span>' + label + '</span><b>' + value + '</b>' + (extra || '') + '</div>';
   const kpis = '<div class="ppg-kpis">' +
     kpi('Power Ranking', pr.cur != null ? fmtNumber(pr.cur) : '—', prDeltaChip(pr.pct)) +
-    kpi('Forme', form != null ? Math.round(form) + '<small>/100</small>' : '—', '<em>5 dernières cups</em>') +
+    (form != null
+      ? '<div class="ppg-kpi"><span>Forme</span><div class="ppg-form" style="--c:' + formTone(form) + '">' + formRingHtml(form) + '<div><em>' + formWord(Math.round(form)) + '</em><div style="font-size:11px;color:var(--text-mute)">5 dernières cups</div></div></div></div>'
+      : kpi('Forme', '—', '<em>5 dernières cups</em>')) +
     kpi('Cups', String(cups.length), '<em>' + cups.filter(c => { const n = cupPlaceNum(c); return n != null && n <= 10; }).length + ' top 10</em>') +
     kpi('Gains', fmtNumber(Math.round(gains)) + ' €') +
   '</div>';
