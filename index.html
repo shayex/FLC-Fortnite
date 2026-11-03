@@ -6652,6 +6652,53 @@
   @media (prefers-reduced-motion: reduce) {
     .modal-overlay.active, .modal-overlay.active > :first-child, .fx-in *, .sq-card::after, .da-item .da-ico, .notif-btn.fx-ring *, .fx-flash, .btn.fx-done::after, .btn.fx-busy::after { animation: none !important; transition: none !important; }
   }
+
+  /* ===== Animations, suite ===== */
+  @keyframes fxBackOut { to { opacity: 0; } }
+  @keyframes fxModalOut { to { opacity: 0; transform: translateY(10px) scale(.96); } }
+  @keyframes fxRowIn { from { opacity: 0; transform: translateY(-8px); } }
+  @keyframes fxRowGold { 0%, 35% { background-color: rgba(201,164,92,.18); box-shadow: inset 3px 0 0 var(--red); } 100% { background-color: transparent; box-shadow: inset 3px 0 0 transparent; } }
+  @keyframes fxRowOut { to { opacity: 0; transform: translateX(28px); } }
+  @keyframes fxCalNext { from { opacity: 0; transform: translateX(36px); } }
+  @keyframes fxCalPrev { from { opacity: 0; transform: translateX(-36px); } }
+  @keyframes fxColGlow { 0% { box-shadow: 0 0 0 0 rgba(201,164,92,0); } 25% { box-shadow: 0 0 0 3px rgba(201,164,92,.35); border-color: var(--red); } 100% { box-shadow: 0 0 0 0 rgba(201,164,92,0); } }
+  @keyframes fxLvlPop { 0% { transform: scale(.4); opacity: 0; } 55% { transform: scale(1.12); opacity: 1; } 100% { transform: none; opacity: 1; } }
+  @keyframes fxLvlRing { from { opacity: .85; transform: scale(1); } to { opacity: 0; transform: scale(2.1); } }
+  @keyframes fxBalloon { 0% { transform: translateY(0) rotate(-6deg); opacity: 0; } 12% { opacity: .9; } 100% { transform: translateY(-260px) rotate(8deg); opacity: 0; } }
+  @keyframes fxCake { 50% { transform: translateY(-3px) rotate(-6deg); } }
+  /* 1. Fermeture des fenêtres */
+  .modal-overlay.fx-closing:not(.active) { display: flex; pointer-events: none; animation: fxBackOut .2s ease-in forwards; }
+  .modal-overlay.fx-closing:not(.active) > :first-child { animation: fxModalOut .2s ease-in forwards; }
+  /* 3. Prospect qui change de colonne */
+  .kanban-col.fx-glow { animation: fxColGlow .9s ease-out; }
+  .kanban-col-count.fx-bump { display: inline-block; animation: fxBump .45s cubic-bezier(.3,1.35,.5,1); }
+  /* 4. Lignes ajoutées / supprimées */
+  .fx-new { animation: fxRowIn .45s cubic-bezier(.3,1.25,.5,1), fxRowGold 1.8s ease-out; }
+  .fx-gone { animation: fxRowOut .3s ease-in forwards; pointer-events: none; }
+  /* 7. Palier grinder */
+  .fx-lvl { position: fixed; inset: 0; z-index: 3000; pointer-events: none; display: grid; place-items: center; }
+  .fx-lvl .box { display: grid; justify-items: center; gap: 8px; padding: 22px 30px; border-radius: 20px; background: rgba(5,5,7,.78); border: 1px solid color-mix(in srgb, var(--c) 50%, transparent); backdrop-filter: blur(6px); animation: fxStamp .7s cubic-bezier(.3,1.35,.5,1) both; }
+  .fx-lvl .bdg { position: relative; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--c); background: radial-gradient(circle, color-mix(in srgb, var(--c) 30%, transparent), transparent 70%); animation: fxLvlPop .6s .15s cubic-bezier(.3,1.35,.5,1) both; }
+  .fx-lvl .bdg b { font-family: var(--font-display); font-weight: 400; font-size: 38px; color: #fff; }
+  .fx-lvl .bdg i { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--c); opacity: 0; animation: fxLvlRing 1.1s .35s ease-out; }
+  .fx-lvl .bdg i + i { animation-delay: .55s; }
+  .fx-lvl .t1 { font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--text-dim); }
+  .fx-lvl .t2 { font-family: var(--font-display); font-size: 34px; letter-spacing: .05em; color: var(--c); line-height: 1; }
+  .fx-lvl .t3 { font-size: 13px; color: var(--text); }
+  .fx-lvl.out .box { animation: fxOut .35s ease-in both; }
+  /* 8. Changement de mois */
+  .fx-cal-next { animation: fxCalNext .38s cubic-bezier(.2,.8,.2,1); }
+  .fx-cal-prev { animation: fxCalPrev .38s cubic-bezier(.2,.8,.2,1); }
+  /* 11. Anniversaire du jour */
+  .sq-card.sq-bday { --m: #ec4899; box-shadow: 0 12px 28px rgba(0,0,0,0.45), 0 0 26px rgba(236,72,153,.25); }
+  .sq-balloons { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .sq-balloons i { position: absolute; bottom: -36px; width: 18px; height: 23px; border-radius: 50% 50% 48% 48%; background: var(--c); opacity: 0; animation: fxBalloon 4s ease-in infinite; animation-delay: var(--d); }
+  .sq-balloons i::after { content: ''; position: absolute; top: 100%; left: 50%; width: 1px; height: 18px; background: rgba(255,255,255,.3); }
+  .sq-cake { position: absolute; top: 44px; right: 12px; z-index: 4; font-size: 20px; line-height: 1; animation: fxCake 1.4s ease-in-out infinite; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .modal-overlay.fx-closing, .modal-overlay.fx-closing > :first-child, .fx-new, .fx-gone, .fx-cal-next, .fx-cal-prev, .kanban-col.fx-glow, .fx-lvl *, .sq-balloons i, .sq-cake { animation: none !important; }
+    .sq-balloons { display: none; }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -9701,8 +9748,20 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 31;  // bump this when you add an entry
+const CHANGELOG_VERSION = 32;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-03",
+    title: "Encore des animations",
+    items: [
+      "Les fenêtres se ferment en douceur, avec le même mouvement qu'à l'ouverture, mais à l'envers (croix, Échap, Annuler ou clic à côté).",
+      "Scouting : quand un prospect change de statut, sa carte vole jusqu'à sa nouvelle colonne, qui s'éclaire, et le compteur rebondit.",
+      "Une cup ou un relevé de PR ajouté apparaît surligné en or. Une ligne supprimée se replie avant de disparaître, et revient en or si tu annules.",
+      "Grinder : passer un palier (Recrue → Grinder → Confirmé → Élite → Légende) affiche le nouveau titre au centre de l'écran, avec un badge et des ondes.",
+      "Calendrier : la grille du mois (ou la semaine sur téléphone) glisse dans le sens des flèches.",
+      "Le jour de son anniversaire, la carte d'un joueur dans le Roster s'habille de ballons et d'un gâteau."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Animations",
@@ -11845,6 +11904,62 @@ function fxCelebrate(big, text) {
     if (k < 1) requestAnimationFrame(frame);
   })(t0);
   setTimeout(done, 2000);
+}
+
+// Fermeture animée d'une fenêtre
+function fxCloseModal(el) {
+  if (!el || !el.classList.contains('active')) return;
+  el.classList.remove('active');
+  if (fxReduce) return;
+  el.classList.add('fx-closing');
+  clearTimeout(el._fxClose);
+  el._fxClose = setTimeout(() => el.classList.remove('fx-closing'), 220);
+}
+
+// Lignes ajoutées : surlignées en or ; lignes supprimées : repliées avant de disparaître
+const fxNewIds = new Set();
+function fxMarkNew(id) { fxNewIds.add(id); setTimeout(() => fxNewIds.delete(id), 1500); }
+function fxHighlightNew() {
+  if (fxReduce) return;
+  fxNewIds.forEach(id => document.querySelectorAll('[data-fx-id="' + CSS.escape(id) + '"]').forEach(el => {
+    el.classList.remove('fx-new'); void el.offsetWidth; el.classList.add('fx-new');
+  }));
+}
+function fxRemoveRows(id) {
+  const els = [...document.querySelectorAll('[data-fx-id="' + CSS.escape(id) + '"]')].filter(el => el.offsetParent);
+  if (fxReduce || !els.length) return Promise.resolve();
+  els.forEach(el => el.classList.add('fx-gone'));
+  return new Promise(r => setTimeout(r, 300));
+}
+
+// Palier grinder atteint : badge, ondes et nouveau titre au centre de l'écran
+const fxGrinderTitles = {};
+function fxCheckGrinderLevels() {
+  grinders.forEach(g => {
+    const idx = GRINDER_TITLES.indexOf(grinderTitle(grinderTotalFGP(g.id)));
+    const before = fxGrinderTitles[g.id];
+    fxGrinderTitles[g.id] = idx;
+    if (before != null && idx > before) fxLevelUp(g, GRINDER_TITLES[idx]);
+  });
+}
+function fxLevelUp(g, title) {
+  const wrap = document.createElement('div');
+  wrap.className = 'fx-lvl';
+  wrap.setAttribute('aria-hidden', 'true');
+  wrap.style.setProperty('--c', title.color);
+  wrap.innerHTML = '<div class="box"><div class="bdg"><i></i><i></i><b>' + escapeHtml(title.label.charAt(0)) + '</b></div>' +
+    '<div class="t1">Nouveau palier</div><div class="t2">' + escapeHtml(title.label) + '</div><div class="t3">' + escapeHtml(g.pseudo) + ' passe ' + escapeHtml(title.label) + ' · ' + fmtNumber(grinderTotalFGP(g.id)) + ' FGP</div></div>';
+  document.body.appendChild(wrap);
+  setTimeout(() => { wrap.classList.add('out'); setTimeout(() => wrap.remove(), 380); }, fxReduce ? 1800 : 2300);
+}
+
+// Anniversaire du jour (date de naissance AAAA-MM-JJ)
+function isBirthdayToday(p) {
+  if (!p || !p.birthdate) return false;
+  const m = String(p.birthdate).match(/^\d{4}-(\d{2})-(\d{2})/);
+  if (!m) return false;
+  const now = new Date();
+  return +m[1] === now.getMonth() + 1 && +m[2] === now.getDate();
 }
 
 function renderDashLeaderboard() {
@@ -14186,9 +14301,12 @@ function playerCardHtml(p) {
   if (p.youtube) socials.push(socialLinkHtml('youtube', p.youtube));
   if (p.tracker) socials.push(socialLinkHtml('tracker', p.tracker));
 
-  return '<div class="sq-card ' + sqRankClass(rank) + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Ouvrir la page de ' + escapeAttr(p.pseudo || '') + '" ' +
+  const bday = isBirthdayToday(p);
+  const balloons = bday ? '<span class="sq-balloons" aria-hidden="true">' + ['#ec4899', '#c9a45c', '#3b82f6', '#a855f7', '#22c55e', '#f59e0b'].map((c, i) =>
+    '<i style="--c:' + c + ';--d:' + (i * 0.6).toFixed(1) + 's;left:' + (8 + i * 15) + '%"></i>').join('') + '</span><span class="sq-cake" title="Anniversaire aujourd\'hui">🎂</span>' : '';
+  return '<div class="sq-card ' + sqRankClass(rank) + (bday ? ' sq-bday' : '') + '" style="' + sqCardStyle(p) + '" tabindex="0" role="button" aria-label="Ouvrir la page de ' + escapeAttr(p.pseudo || '') + (bday ? ' · anniversaire aujourd\'hui' : '') + '" ' +
     'onclick="openPlayerPage(\'' + p.id + '\')" onkeydown="if(event.target===this&&(event.key===\'Enter\'||event.key===\' \')){event.preventDefault();openPlayerPage(\'' + p.id + '\')}">' +
-    sqFaceHtml(p, rank, sqContractAlert(p)) +
+    balloons + sqFaceHtml(p, rank, sqContractAlert(p)) +
     '<button type="button" class="sq-touch-more" aria-label="Afficher les actions" onclick="event.stopPropagation();this.closest(\'.sq-card\').classList.toggle(\'open\')">' +
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>' +
     '<div class="sq-hover" onclick="if(event.target===this&&matchMedia(\'(hover: none)\').matches){event.stopPropagation();this.closest(\'.sq-card\').classList.remove(\'open\')}">' +
@@ -14533,7 +14651,28 @@ async function setProspectStatus(id, newStatus) {
   p.status = newStatus;
   p.updatedAt = Date.now();
   await persistProspects();
+  const board = document.getElementById('scoutingList');
+  const oldCard = board && board.querySelector('.kanban-card[data-id="' + CSS.escape(id) + '"]');
+  const from = oldCard ? oldCard.getBoundingClientRect() : null;
   renderScouting();
+  // La carte vole de son ancienne place vers la nouvelle colonne, qui s'éclaire
+  if (!fxReduce && from && board) {
+    const card = board.querySelector('.kanban-card[data-id="' + CSS.escape(id) + '"]');
+    const col = board.querySelector('.kanban-col[data-col="' + CSS.escape(newStatus) + '"]');
+    if (card && card.animate) {
+      const to = card.getBoundingClientRect(), dx = from.left - to.left, dy = from.top - to.top;
+      card.animate([
+        { transform: 'translate(' + dx + 'px,' + dy + 'px)', boxShadow: '0 0 0 rgba(0,0,0,0)' },
+        { transform: 'translate(' + dx / 2 + 'px,' + (dy / 2 - 24) + 'px) rotate(-4deg) scale(1.05)', boxShadow: '0 18px 34px rgba(0,0,0,.55)', offset: .5 },
+        { transform: 'none', boxShadow: '0 0 0 rgba(0,0,0,0)' }
+      ], { duration: 540, easing: 'cubic-bezier(.3,1.1,.5,1)' });
+    }
+    if (col) {
+      col.classList.add('fx-glow'); setTimeout(() => col.classList.remove('fx-glow'), 950);
+      const cnt = col.querySelector('.kanban-col-count');
+      if (cnt) { cnt.classList.add('fx-bump'); setTimeout(() => cnt.classList.remove('fx-bump'), 500); }
+    }
+  }
   updateCounts();
   renderDashboard();
   const colLabel = (KANBAN_COLUMNS.find(c => c.key === newStatus) || {}).label || newStatus;
@@ -15494,7 +15633,7 @@ function renderAllCups() {
       const prize = Number(c.prize) || 0;
       rows.push({
         player: p.pseudo || '—', playerId: p.id, photo: p.photo,
-        name: c.name || '—', date: c.date || '', pos, prize
+        name: c.name || '—', date: c.date || '', pos, prize, id: c.id
       });
     });
   });
@@ -15548,7 +15687,7 @@ function renderAllCups() {
       : '—';
     const av = r.photo ? '<img src="' + escapeAttr(r.photo) + '" class="rt-avatar" style="width:24px;height:24px;" />'
       : '<span class="rt-avatar rt-avatar-fallback" style="width:24px;height:24px;font-size:11px;">' + r.player.charAt(0).toUpperCase() + '</span>';
-    return '<tr class="rt-row" onclick="openPlayerPage(\'' + r.playerId + '\',\'res\')" title="Ouvrir la page de ' + escapeAttr(r.player) + '">' +
+    return '<tr class="rt-row" data-fx-id="' + escapeAttr(r.id || '') + '" onclick="openPlayerPage(\'' + r.playerId + '\',\'res\')" title="Ouvrir la page de ' + escapeAttr(r.player) + '">' +
       '<td style="white-space:nowrap;color:var(--text-dim);">' + (r.date ? fmtDateFR(r.date) : '—') + '</td>' +
       '<td><div class="rt-player">' + av + '<span class="rt-name">' + escapeHtml(r.player) + '</span></div></td>' +
       '<td>' + escapeHtml(r.name) + '</td>' +
@@ -15664,7 +15803,7 @@ function renderPrHistoryList(p) {
         '</div>' +
       '</div>';
     }
-    return '<div class="history-entry pr-row">' +
+    return '<div class="history-entry pr-row" data-fx-id="' + escapeAttr(e.id) + '">' +
       '<div class="he-date">' + fmtDateFR(e.date) + '</div>' +
       '<div class="he-main">' +
         '<div class="he-primary">' + fmtPRPoints(e.points) + '</div>' +
@@ -15746,7 +15885,7 @@ function renderCupHistoryList(p) {
         '</div>' +
       '</div>';
     }
-    return '<div class="history-entry">' +
+    return '<div class="history-entry" data-fx-id="' + escapeAttr(c.id) + '">' +
       '<div class="he-date">' + fmtDateFR(c.date) + '</div>' +
       '<div class="he-main">' +
         '<div class="he-secondary">' + escapeHtml(c.name || '— Sans nom —') + '</div>' +
@@ -15966,13 +16105,15 @@ async function addPrEntry() {
   const newVal = Number(pts);
   const isRecord = p.prHistory.length > 0 && newVal > previousMax;
 
+  const newPrId = 'pr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
   p.prHistory.push({
-    id: 'pr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    id: newPrId,
     points: Number(pts),
     date,
     note,
     createdAt: Date.now()
   });
+  fxMarkNew(newPrId);
   recordPlayerHistory(p, 'pr', 'Relevé de PR ajouté', [{ label: 'Power Ranking', to: fmtPRPoints(Number(pts)) + ' le ' + fmtDateFR(date) + (note ? ' · ' + note : '') }]);
   p.updatedAt = Date.now();
   await persistPlayers();
@@ -15984,6 +16125,7 @@ async function addPrEntry() {
   renderData();
   renderRoster();
   renderDashboard();
+  fxHighlightNew();
   logActivity('data', 'PR ' + fmtNumber(Number(pts)) + ' pts pour ' + p.pseudo);
   if (isRecord) {
     fxCelebrate('Record', p.pseudo + ' : ' + fmtNumber(newVal) + ' pts');
@@ -16043,6 +16185,7 @@ async function deletePrEntry(entryId) {
   const e = (p.prHistory || []).find(x => x.id === entryId);
   if (!e) return;
   if (!await appConfirm('Supprimer cette entrée de power ranking ?')) return;
+  await fxRemoveRows(entryId);
   const snapshot = p.prHistory.slice();
   p.prHistory = p.prHistory.filter(x => x.id !== entryId);
   recordPlayerHistory(p, 'delete', 'Relevé de PR supprimé', [{ label: 'Power Ranking', from: fmtPRPoints(e.points) + ' le ' + fmtDateFR(e.date), to: '' }]);
@@ -16072,13 +16215,15 @@ async function addCupEntry() {
   const date = document.getElementById('d_cupDate').value || todayISO();
   if (!name) { showToast('Saisis un nom de cup', 'error'); return; }
   if (!Array.isArray(p.cups)) p.cups = [];
+  const newCupId = 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
   p.cups.push({
-    id: 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    id: newCupId,
     name,
     position: place,
     prize,
     date
   });
+  fxMarkNew(newCupId);
   recordPlayerHistory(p, 'cup', 'Cup ajoutée', [{ label: 'Cup', to: name + (place ? ' · place ' + place : '') + (Number(prize) ? ' · ' + fmtNumber(Number(prize)) + ' €' : '') + ' · ' + fmtDateFR(date) }]);
   p.updatedAt = Date.now();
   await persistPlayers();
@@ -16093,6 +16238,7 @@ async function addCupEntry() {
   renderRoster();
   renderDashboard();
   renderCalendar();
+  setTimeout(fxHighlightNew, 0);
   logActivity('data', 'Cup "' + name + '" ajoutée pour ' + p.pseudo);
   // Smart notifications based on result
   const posMatch = String(place || '').match(/(\d+)/);
@@ -16203,6 +16349,7 @@ async function deleteCupEntry(entryId) {
   const c = (p.cups || []).find(x => x.id === entryId);
   if (!c) return;
   if (!await appConfirm('Supprimer la cup "' + (c.name || 'sans nom') + '" ?')) return;
+  await fxRemoveRows(entryId);
   const snapshot = p.cups.slice();
   p.cups = p.cups.filter(x => x.id !== entryId);
   recordPlayerHistory(p, 'delete', 'Cup supprimée', [{ label: 'Cup', from: (c.name || 'sans nom') + (c.position ? ' · place ' + c.position : '') + ' · ' + fmtDateFR(c.date), to: '' }]);
@@ -16218,8 +16365,10 @@ async function deleteCupEntry(entryId) {
     p.cups = snapshot;
     recordPlayerHistory(p, 'undo', 'Suppression de la cup annulée', [{ label: 'Cup', to: c.name || 'sans nom' }]);
     await persistPlayers();
+    fxMarkNew(entryId);
     if (editingDataPlayerId === p.id) refreshDataModalView();
     renderAll();
+    setTimeout(fxHighlightNew, 0);
   });
 }
 
@@ -16953,7 +17102,9 @@ function sortEventsForDay(events) {
 }
 
 // =============== NAVIGATION ===============
+let calSlideDir = 0;
 function calendarNav(deltaMonths) {
+  calSlideDir = deltaMonths;
   const d = new Date(calCurrentDate);
   d.setDate(1);
   d.setMonth(d.getMonth() + deltaMonths);
@@ -18265,6 +18416,7 @@ function renderGrinderChart() {
 
 // ---------- Rendu global de l'onglet ----------
 function renderGrinder() {
+  fxCheckGrinderLevels();
   // Paliers d'ancienneté atteints depuis la dernière visite
   checkGrinderSeniority().then(n => { if (n > 0) { renderGrinderLeaderboard(); renderGrinderHighlights(); } });
   // Sélecteurs
@@ -18294,17 +18446,24 @@ function renderCalendar() {
   if (monthLabel) {
     monthLabel.textContent = calCurrentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
   }
+  const slide = calSlideDir;
   renderCalendarFilters();
   renderUpcomingComps();
   if (calView === 'month') {
     document.getElementById('calMonthView').style.display = '';
     document.getElementById('calListView').style.display = 'none';
     renderCalendarMonthView();
+    // La grille (ou la semaine sur téléphone) glisse dans le sens choisi
+    if (calSlideDir && !fxReduce) {
+      const cls = calSlideDir > 0 ? 'fx-cal-next' : 'fx-cal-prev';
+      document.querySelectorAll('#calMonthView .cmv-main, #calMonthView .cwk-strip, #calMonthView .cwk-list').forEach(el => el.classList.add(cls));
+    }
   } else {
     document.getElementById('calMonthView').style.display = 'none';
     document.getElementById('calListView').style.display = '';
     renderCalendarListView();
   }
+  if (slide) calSlideDir = 0;
 }
 
 // =============== UPCOMING COMPETITIONS BANNER ===============
@@ -18529,6 +18688,7 @@ function calendarPickMobileDay(iso) {
 }
 
 function calendarShiftMobileWeek(dir) {
+  calSlideDir = dir;
   const d = new Date((calMobileDay || todayISO()) + 'T00:00:00');
   d.setDate(d.getDate() + dir * 7);
   calendarPickMobileDay(dateToLocalISO(d));
@@ -19121,13 +19281,13 @@ async function resetAllData() {
    MODAL HELPERS
    ============================================================ */
 function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
+  fxCloseModal(document.getElementById(id));
 }
 
 // Close modal on overlay click
 document.addEventListener('click', (e) => {
   if (e.target.classList && e.target.classList.contains('modal-overlay')) {
-    e.target.classList.remove('active');
+    fxCloseModal(e.target);
   }
 });
 
@@ -19136,7 +19296,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (document.querySelector('.app-confirm')) return;   // la confirmation gère Échap elle-même
     const open = document.querySelectorAll('.modal-overlay.active');
-    if (open.length) open[open.length - 1].classList.remove('active');
+    if (open.length) fxCloseModal(open[open.length - 1]);
   }
 });
 
