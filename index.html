@@ -6741,6 +6741,42 @@
   @media (prefers-reduced-motion: reduce) {
     .pod-av::after, .pod-crown, .fx-in .pod-block, .fx-in .pod-step > *, .fx-in .form-ring .vl, .tab-content.active.fx-tab-r, .tab-content.active.fx-tab-l { animation: none !important; }
   }
+
+  /* ===== Suivi en barre, places récentes, radar / barres / compteurs / curseur animés ===== */
+  .tk-pipe { display: grid; gap: 10px; margin-bottom: 14px; }
+  .tk-pipe-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; gap: 2px; background: var(--bg-1); border: 1px solid var(--border); }
+  .tk-pipe-bar i { display: block; height: 100%; flex-grow: var(--g); background: var(--c); transition: flex-grow .5s cubic-bezier(.2,.8,.2,1); }
+  .tk-pipe-bar.empty { background: var(--bg-2); }
+  .tk-pipe .tk-counters { margin-bottom: 0; }
+  .tkc { border-top: 3px solid var(--c); }
+  .tkc small { display: block; font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+  .tk-pipe-f { display: flex; gap: 6px 18px; flex-wrap: wrap; font-size: 12px; color: var(--text-mute); }
+  .tk-pipe-f b { color: var(--text); font-weight: 600; }
+  .tk-pipe-f button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+  .tk-pipe-f button:hover b { color: var(--red-bright); }
+  .drk-l5 { display: inline-flex; align-items: center; gap: 4px; }
+  .drk-l5 .c5 { min-width: 32px; padding: 3px 0; border-radius: 6px; text-align: center; font-family: var(--font-display); font-size: 14px; line-height: 1; background: var(--bg-3); color: var(--text-dim); }
+  .drk-l5 .c5.t3 { background: rgba(201,164,92,.22); color: var(--red-bright); }
+  .drk-l5 .c5.t10 { background: rgba(34,197,94,.16); color: var(--green); }
+  .drk-l5 .c5.t50 { background: rgba(158,125,62,.18); color: #d6b87a; }
+  .drk-l5 .c5.na { color: var(--text-mute); }
+  .drk-trend { font-size: 11px; font-weight: 700; white-space: nowrap; margin-left: 4px; }
+  .drk-trend.up { color: var(--green); } .drk-trend.dn { color: var(--danger); } .drk-trend.eq { color: var(--text-mute); }
+  @keyframes fxCountIn { from { transform: translateY(-90%); opacity: 0; } }
+  @keyframes fxCountBump { 40% { transform: scale(1.45); box-shadow: 0 0 0 4px rgba(245,158,11,.25); } }
+  .count.fx-cbump, .mnav-count.fx-cbump { display: inline-block; animation: fxCountBump .5s cubic-bezier(.3,1.35,.5,1); }
+  .count.fx-cbump .fx-cn, .mnav-count.fx-cbump .fx-cn { display: inline-block; animation: fxCountIn .35s cubic-bezier(.2,.8,.2,1); }
+  .pr-scrub-line { stroke: var(--red-bright); stroke-dasharray: 3 3; opacity: .8; pointer-events: none; }
+  .pr-scrub-dot { stroke: #0a0a0e; stroke-width: 2; pointer-events: none; }
+  .chart-tooltip.pr-scrub { white-space: normal; min-width: 170px; padding: 9px 11px; }
+  .chart-tooltip.pr-scrub .ct-meta { margin-bottom: 6px; }
+  .pr-scrub-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 2px 0; font-size: 12px; color: var(--text-dim); }
+  .pr-scrub-row span { display: inline-flex; align-items: center; gap: 6px; }
+  .pr-scrub-row i { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+  .pr-scrub-row b { font-family: var(--font-display); font-weight: 400; font-size: 16px; color: var(--white); font-variant-numeric: tabular-nums; }
+  .pr-scrub-row.on span { color: var(--white); font-weight: 700; }
+  .pr-scrub-row small { font-size: 10px; color: var(--text-mute); margin-left: 4px; }
+  @media (prefers-reduced-motion: reduce) { .count.fx-cbump, .mnav-count.fx-cbump, .fx-cn { animation: none !important; } .tk-pipe-bar i { transition: none; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -7351,7 +7387,7 @@ window.addEventListener('DOMContentLoaded', function() {
         <button type="button" class="btn btn-primary tk-comp-btn" id="tkAddBtn" onclick="addTrackingEntry()">Ajouter le suivi</button>
       </div>
     </div>
-    <div class="tk-counters" id="tkCounters"></div>
+    <div class="tk-pipe" id="tkCounters"></div>
 
     <div class="filters-bar">
       <button class="filter-chip active" data-tkfilter="all" onclick="setTrackingFilter('all')">Tout</button>
@@ -9790,8 +9826,20 @@ function renderNotifications() {
    ci-dessous (la plus récente en premier). Incrémente CHANGELOG_VERSION
    pour faire réapparaître la pastille "nouveau" à tous les utilisateurs.
 */
-const CHANGELOG_VERSION = 33;  // bump this when you add an entry
+const CHANGELOG_VERSION = 34;  // bump this when you add an entry
 const CHANGELOG = [
+  {
+    date: "2026-11-04",
+    title: "Suivi, places récentes et graphiques animés",
+    items: [
+      "Suivi : une barre montre la part des besoins à traiter, en cours et résolus ce mois. Chaque compteur indique l'ancienneté du besoin le plus ancien, et en dessous s'affichent le délai moyen de résolution et le besoin qui attend depuis le plus longtemps.",
+      "Classement du roster : la colonne « 5 dernières » affiche les vraies places (#3, #16…), en or pour un top 3, en vert pour un top 10, avec une flèche ▲ ou ▼ si le joueur progresse ou recule.",
+      "Comparateur : en changeant de joueur, le radar se transforme et chaque pointe glisse vers sa nouvelle valeur.",
+      "Meilleur mois et Mois en cours vs précédent : en changeant d'indicateur ou de période, les barres montent ou descendent jusqu'à leur nouvelle taille.",
+      "Menu : quand un compteur change (nouveau besoin, prospect, grinder…), le chiffre défile et rebondit.",
+      "Évolution Power Ranking : une ligne suit la souris (ou le doigt) sur le graphique, et une bulle donne le PR de chaque joueur à cette date, du meilleur au moins bon."
+    ]
+  },
   {
     date: "2026-11-03",
     title: "Avatars, jauge de forme, onglets et podium",
@@ -11097,6 +11145,7 @@ function updateCounts() {
     ct.style.background = n > 0 ? 'rgba(245,158,11,0.2)' : '';
     ct.style.color = n > 0 ? 'var(--amber)' : '';
   }
+  setTimeout(fxAnimateCounts, 0);
 }
 
 /* ============================================================
@@ -11175,7 +11224,7 @@ function compareRadarHtml(chosen) {
     svg += '<text class="rd-label" x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) + '" text-anchor="' + (Math.abs(lx - cx) < 8 ? 'middle' : lx > cx ? 'start' : 'end') + '">' + a.l + '</text>';
   });
   series.forEach((s, si) => {
-    svg += '<g class="rd-serie" data-i="' + si + '"><polygon points="' + s.val.map((v, i) => pt(i, v).map(n => n.toFixed(1)).join(',')).join(' ') + '" fill="' + s.color + '" fill-opacity="0.16" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round"/>';
+    svg += '<g class="rd-serie" data-i="' + si + '" data-pid="' + escapeAttr(s.p.id) + '" data-vals="' + s.val.map(v => v.toFixed(4)).join(',') + '"><polygon points="' + s.val.map((v, i) => pt(i, v).map(n => n.toFixed(1)).join(',')).join(' ') + '" fill="' + s.color + '" fill-opacity="0.16" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round"/>';
     s.val.forEach((v, i) => {
       const [x, y] = pt(i, v);
       svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.5" fill="' + s.color + '"><title>' + escapeHtml(s.p.pseudo) + ' · ' + AXES[i].l + ' : ' + (s.raw[i] == null ? '—' : AXES[i].f(s.raw[i])) + '</title></circle>';
@@ -11310,10 +11359,12 @@ function renderPlayerComparator() {
     return '<div class="cmp-row"><div class="cmp-col cmp-label-col">' + m.label + '</div>' + cells + '</div>';
   }).join('');
 
+  const radarBefore = [...body.querySelectorAll('.rd-serie')].map(g => ({ pid: g.dataset.pid, vals: (g.dataset.vals || '').split(',').map(Number) }));
   body.innerHTML = compareRadarHtml(chosen) +
     '<details class="cmp-details"><summary>Voir le détail chiffré</summary>' +
     '<div class="cmp-table" style="--cmp-cols:' + stats.length + ';">' +
     '<div class="cmp-row cmp-head-row">' + head + '</div>' + rows + '</div></details>';
+  fxMorphRadar(body, radarBefore);
 }
 
 function setCompareSlot(i, value) {
@@ -11798,20 +11849,50 @@ function renderPRChart() {
   container.innerHTML = '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
     '<defs>' + defs + '</defs>' + grid + areas + lines + hits + points + ends + xLabels + '</svg>';
 
+  // Curseur : une ligne suit la souris (ou le doigt) et la bulle donne le PR de chaque joueur à cette date
   const tt = document.getElementById('prChartTooltip');
-  container.querySelectorAll('.chart-point').forEach(el => {
-    el.addEventListener('mouseenter', e => {
-      const rect = container.getBoundingClientRect();
-      const cx = e.target.getBoundingClientRect();
-      tt.innerHTML = '<strong>' + fmtNumber(Number(e.target.dataset.points)) + ' pts</strong>' +
-        '<div class="ct-meta">' + escapeHtml(e.target.dataset.pseudo) + ' · ' + fmtDateFR(e.target.dataset.date) + '</div>';
-      tt.style.left = (cx.left - rect.left + cx.width / 2) + 'px';
-      tt.style.top = (cx.top - rect.top - 8) + 'px';
-      tt.style.transform = 'translate(-50%, -100%)';
-      tt.style.opacity = '1';
+  const svgC = container.querySelector('svg');
+  const NS = 'http://www.w3.org/2000/svg';
+  const sLine = document.createElementNS(NS, 'line');
+  sLine.setAttribute('class', 'pr-scrub-line'); sLine.setAttribute('y1', pad.top); sLine.setAttribute('y2', H - pad.bottom); sLine.style.display = 'none';
+  svgC.appendChild(sLine);
+  const sDots = series.map(s => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('class', 'pr-scrub-dot'); c.setAttribute('r', 4.5); c.setAttribute('fill', s.color); c.style.display = 'none'; svgC.appendChild(c); return c; });
+  const stamps = [...new Set(series.flatMap(s => s.pts.map(p => p.t)))].sort((a, b) => a - b);
+  const valueAt = (s, t) => { let v = null; for (const p of s.pts) { if (p.t <= t) v = p.v; else break; } return v; };
+  const hideScrub = () => { sLine.style.display = 'none'; sDots.forEach(d => { d.style.display = 'none'; }); tt.style.opacity = '0'; tt.classList.remove('pr-scrub'); };
+  const scrubAt = ev => {
+    const box = svgC.getBoundingClientRect();
+    if (!box.width) return;
+    const vx = (ev.clientX - box.left) / box.width * W;
+    if (vx < pad.left - 10 || vx > W - pad.right + 10) { hideScrub(); return; }
+    const tRaw = startTs + (Math.max(pad.left, Math.min(W - pad.right, vx)) - pad.left) / (W - pad.left - pad.right) * (endTs - startTs);
+    const t = stamps.reduce((best, s) => Math.abs(s - tRaw) < Math.abs(best - tRaw) ? s : best, stamps[0]);
+    const xx = x(t);
+    sLine.setAttribute('x1', xx.toFixed(1)); sLine.setAttribute('x2', xx.toFixed(1)); sLine.style.display = '';
+    const rows = [];
+    series.forEach((s, i) => {
+      const v = valueAt(s, t);
+      if (v == null || prChartHiddenPlayers.has(s.player.id)) { sDots[i].style.display = 'none'; return; }
+      sDots[i].setAttribute('cx', xx.toFixed(1)); sDots[i].setAttribute('cy', y(v).toFixed(1)); sDots[i].style.display = '';
+      const exact = s.pts.some(p => p.t === t && p.t !== endTs);
+      rows.push({ s, v, exact });
     });
-    el.addEventListener('mouseleave', () => { tt.style.opacity = '0'; });
-  });
+    rows.sort((a, b) => b.v - a.v);
+    const isToday = t === endTs;
+    tt.classList.add('pr-scrub');
+    tt.innerHTML = '<div class="ct-meta">' + (isToday ? 'Aujourd\'hui' : fmtDateFR(new Date(t).toISOString().slice(0, 10))) + '</div>' +
+      rows.map(r => '<div class="pr-scrub-row' + (prChartFocus === r.s.player.id ? ' on' : '') + '" style="--c:' + r.s.color + '"><span><i></i>' + escapeHtml(r.s.player.pseudo) + (r.exact || isToday ? '' : '<small>dernier relevé</small>') + '</span><b>' + fmtNumber(r.v) + '</b></div>').join('');
+    const rect = container.getBoundingClientRect();
+    const px = box.left - rect.left + xx / W * box.width;
+    const flip = px > rect.width * 0.62;
+    tt.style.left = (flip ? px - 12 : px + 12) + 'px';
+    tt.style.top = (box.top - rect.top + 8) + 'px';
+    tt.style.transform = flip ? 'translateX(-100%)' : 'none';
+    tt.style.opacity = '1';
+  };
+  svgC.addEventListener('pointermove', scrubAt);
+  svgC.addEventListener('pointerdown', scrubAt);
+  svgC.addEventListener('pointerleave', hideScrub);
 
   legendEl.innerHTML = series.map(s =>
     '<button type="button" class="legend-item" data-pid="' + escapeAttr(s.player.id) + '" aria-pressed="false">' +
@@ -11966,6 +12047,69 @@ function fxCelebrate(big, text) {
     if (k < 1) requestAnimationFrame(frame);
   })(t0);
   setTimeout(done, 2000);
+}
+
+// Radar qui se transforme : chaque pointe glisse de l'ancien profil vers le nouveau
+function fxMorphRadar(body, before) {
+  if (fxReduce || !before || !before.length) return;
+  const svg = body.querySelector('.rd-svg');
+  if (!svg) return;
+  const W = 420, cx = W / 2, cy = 178, R = 128, N = 6;
+  const pt = (i, r) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [cx + Math.cos(a) * R * r, cy + Math.sin(a) * R * r]; };
+  const groups = [...svg.querySelectorAll('.rd-serie')];
+  const jobs = groups.map((g, si) => {
+    const to = (g.dataset.vals || '').split(',').map(Number);
+    const same = before.find(b => b.pid === g.dataset.pid);
+    // Même joueur : on part de son ancien profil ; nouveau joueur : on part du profil qui occupait sa place
+    const from = same ? same.vals : before[si] ? before[si].vals : to.map(() => 0);
+    if (from.length !== N || to.length !== N || from.every((v, i) => Math.abs(v - to[i]) < 0.001)) return null;
+    return { g, from, to, poly: g.querySelector('polygon'), dots: [...g.querySelectorAll('circle')] };
+  }).filter(Boolean);
+  if (!jobs.length) return;
+  const draw = k => jobs.forEach(j => {
+    const v = j.from.map((f, i) => f + (j.to[i] - f) * k);
+    j.poly.setAttribute('points', v.map((x, i) => pt(i, x).map(n => n.toFixed(1)).join(',')).join(' '));
+    j.dots.forEach((d, i) => { const [x, y] = pt(i, v[i]); d.setAttribute('cx', x.toFixed(1)); d.setAttribute('cy', y.toFixed(1)); });
+  });
+  const t0 = performance.now(), dur = 600;
+  const ease = k => { const c = 1.4; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+  draw(0);
+  (function step(now) { const k = Math.min(1, (now - t0) / dur); draw(ease(k)); if (k < 1) requestAnimationFrame(step); })(t0);
+}
+
+// Barres qui se transforment : chaque barre part de son ancienne taille
+function fxMorphBars(container, selector, prop, render) {
+  if (!container) { render(); return; }
+  const old = [...container.querySelectorAll(selector)].map(el => el.style[prop]);
+  render();
+  if (fxReduce || !old.length) return;
+  const bars = [...container.querySelectorAll(selector)];
+  if (bars.length !== old.length) return;
+  container.classList.remove('fx-in');
+  bars.forEach((el, i) => {
+    const target = el.style[prop];
+    if (!old[i] || old[i] === target) return;
+    el.style.transition = 'none';
+    el.style[prop] = old[i];
+    void el.offsetWidth;
+    el.style.transition = prop + ' .6s cubic-bezier(.3,1.25,.5,1)';
+    el.style[prop] = target;
+  });
+}
+
+// Compteurs du menu : le chiffre défile et rebondit quand il change
+const fxCountLast = {};
+function fxAnimateCounts() {
+  document.querySelectorAll('.tab .count[id]').forEach(el => {
+    const key = el.id;
+    const v = el.textContent.trim();
+    const before = fxCountLast[key];
+    fxCountLast[key] = v;
+    if (before == null || before === v || fxReduce) return;
+    el.innerHTML = '<span class="fx-cn">' + escapeHtml(v) + '</span>';
+    el.classList.remove('fx-cbump'); void el.offsetWidth; el.classList.add('fx-cbump');
+    setTimeout(() => el.classList.remove('fx-cbump'), 600);
+  });
 }
 
 // Avatar par défaut : deux lettres sur un dégradé à la couleur de l'équipe
@@ -12572,7 +12716,7 @@ function renderCupRoi() {
    7. BEST MONTH ALL-TIME
    ============================================================ */
 let bestMonthKey = 'gains';
-function setBestMonthKey(k) { bestMonthKey = k; renderBestMonth(); }
+function setBestMonthKey(k) { bestMonthKey = k; fxMorphBars(document.getElementById('bestMonthBlock'), '.kx-mo .bar', 'height', renderBestMonth); }
 function renderBestMonth() {
   const container = document.getElementById('bestMonthBlock');
   if (!container) return;
@@ -12765,7 +12909,7 @@ const DASH_RANK_COLS = [
   { key: 'avgPlace', label: 'Place moy.', dir: 'asc', title: 'Place moyenne sur toutes les cups' },
   { key: 'cups', label: 'Cups', dir: 'desc' },
   { key: 'gains', label: 'Gains', dir: 'desc' },
-  { key: 'last', label: '5 dernières', dir: null, title: 'Vert : top 10 · or : top 50 · bronze : top 100' }
+  { key: 'last', label: '5 dernières', dir: null, title: 'De la plus ancienne à la plus récente · or : top 3 · vert : top 10 · bronze : top 50 · ▲ progresse, ▼ recule' }
 ];
 
 function setDashRankSort(key) {
@@ -12837,11 +12981,24 @@ function renderDashRanking() {
     const av = p.photo ? '<img src="' + escapeAttr(p.photo) + '" alt="" />' : monoAvatar(p);
     const team = p.team || 'main';
     const open = "openPlayerPage('" + p.id + "')";
-    const lastHtml = r.last5.length ? r.last5.slice().reverse().map(c => {
+    // Les 5 dernières places, de la plus ancienne à la plus récente, avec la tendance
+    const l5 = r.last5.slice().reverse();
+    const nums = l5.map(c => posNum(c)).filter(n => n != null);
+    let trend = '';
+    if (nums.length >= 3) {
+      const h = Math.floor(nums.length / 2);
+      const avg = a => a.reduce((t, n) => t + n, 0) / a.length;
+      const older = avg(nums.slice(0, h)), recent = avg(nums.slice(nums.length - h));
+      const diff = older - recent; // positif = meilleures places récemment
+      trend = Math.abs(diff) < Math.max(3, older * 0.1) ? '<span class="drk-trend eq" title="Places stables">=</span>'
+        : diff > 0 ? '<span class="drk-trend up" title="Meilleures places sur les dernières cups">▲</span>'
+        : '<span class="drk-trend dn" title="Places en baisse sur les dernières cups">▼</span>';
+    }
+    const lastHtml = l5.length ? l5.map(c => {
       const n = posNum(c);
-      const cls = n == null ? '' : n <= 10 ? 't10' : n <= 50 ? 't50' : n <= 100 ? 't100' : '';
-      return '<i class="' + cls + '" title="' + escapeAttr((n != null ? '#' + n + ' (' + placeTier(n) + ')' : (c.position || '—')) + ' · ' + (c.name || 'cup') + ' · ' + fmtDateFR(c.date)) + '"></i>';
-    }).join('') : '<span class="drk-none">—</span>';
+      const cls = n == null ? 'na' : n <= 3 ? 't3' : n <= 10 ? 't10' : n <= 50 ? 't50' : '';
+      return '<span class="c5 ' + cls + '" title="' + escapeAttr((n != null ? '#' + n + ' (' + placeTier(n) + ')' : (c.position || '—')) + ' · ' + (c.name || 'cup') + ' · ' + fmtDateFR(c.date)) + '">' + (n != null ? '#' + n : '—') + '</span>';
+    }).join('') + trend : '<span class="drk-none">—</span>';
     return '<tr onclick="' + open + '" title="Ouvrir la page de ' + escapeAttr(p.pseudo || '') + '">' +
       '<td class="drk-pos">' + (i + 1) + '</td>' +
       '<td class="drk-l"><div class="drk-who"><span class="drk-av" style="--t:' + (TEAM_CARD_COLORS[team] || TEAM_CARD_COLORS.main) + '">' + av + '</span>' +
@@ -12851,7 +13008,7 @@ function renderDashRanking() {
       '<td>' + (r.avgPlace != null ? '<div class="drk-cell"><span>#' + r.avgPlace.toFixed(1).replace('.', ',') + '</span>' + bar(placeRatio(r.avgPlace), avg.avgPlace != null ? placeRatio(avg.avgPlace) : null) + '</div>' : '<span class="drk-none">—</span>') + '</td>' +
       '<td><div class="drk-cell"><span>' + r.cups + '</span>' + bar(max.cups ? r.cups / max.cups : 0, avg.cups != null && max.cups ? avg.cups / max.cups : null) + '</div></td>' +
       '<td><div class="drk-cell"><span class="' + (r.gains > 0 ? 'drk-pos-val' : '') + '">' + fmtNumber(Math.round(r.gains)) + ' €</span>' + bar(max.gains ? r.gains / max.gains : 0, avg.gains != null && max.gains ? avg.gains / max.gains : null, 'var(--green)') + '</div></td>' +
-      '<td><span class="drk-form">' + lastHtml + '</span></td>' +
+      '<td><span class="drk-l5">' + lastHtml + '</span></td>' +
     '</tr>';
   }).join('');
 
@@ -13176,7 +13333,7 @@ function renderNegoTime() {
    COMPARAISON MOIS EN COURS VS PRÉCÉDENT
    ============================================================ */
 let monthCompMode = 'same';
-function setMonthCompMode(m) { monthCompMode = m; renderMonthComparison(); }
+function setMonthCompMode(m) { monthCompMode = m; fxMorphBars(document.getElementById('monthComparisonBlock'), '.kx-duo i', 'width', renderMonthComparison); }
 function renderMonthComparison() {
   const container = document.getElementById('monthComparisonBlock');
   if (!container) return;
@@ -17412,13 +17569,39 @@ function renderTrackingCounters() {
   if (!el) return;
   const needs = trackingEntries.filter(e => e.type === 'besoin');
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
-  const todo = needs.filter(e => (e.status || 'todo') === 'todo').length;
-  const prog = needs.filter(e => e.status === 'in_progress').length;
-  const done = needs.filter(e => e.status === 'resolved' && (e.updatedAt || e.createdAt || 0) >= monthStart).length;
+  const DAY = 86400000, now = Date.now();
+  const todoL = needs.filter(e => (e.status || 'todo') === 'todo');
+  const progL = needs.filter(e => e.status === 'in_progress');
+  const doneL = needs.filter(e => e.status === 'resolved' && (e.updatedAt || e.createdAt || 0) >= monthStart);
+  const prevStart = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).getTime();
+  const donePrev = needs.filter(e => e.status === 'resolved' && (e.updatedAt || e.createdAt || 0) >= prevStart && (e.updatedAt || e.createdAt || 0) < monthStart).length;
+  const todo = todoL.length, prog = progL.length, done = doneL.length;
+  const ageDays = e => Math.max(0, Math.floor((now - (e.createdAt || now)) / DAY));
+  const oldest = list => list.reduce((o, e) => (!o || (e.createdAt || now) < (o.createdAt || now)) ? e : o, null);
+  const oTodo = oldest(todoL), oProg = oldest(progL), oOpen = oldest(todoL.concat(progL));
+  // Délai moyen de résolution, sur les besoins résolus des 90 derniers jours
+  const solved = needs.filter(e => e.status === 'resolved' && e.createdAt && e.updatedAt && e.updatedAt >= now - 90 * DAY);
+  const avgDays = solved.length ? solved.reduce((t, e) => t + Math.max(0, e.updatedAt - e.createdAt), 0) / solved.length / DAY : null;
   const cur = document.getElementById('tk_filterStatus')?.value || '';
-  const item = (key, n, label, color) => '<button type="button" class="tkc' + (cur === key ? ' on' : '') + '" style="--c:' + color + '" onclick="filterTrackingStatus(\'' + key + '\')">' +
-    '<b>' + n + '</b>' + label + '</button>';
-  el.innerHTML = item('todo', todo, 'à traiter', 'var(--amber)') + item('in_progress', prog, 'en cours', 'var(--blue)') + item('resolved', done, 'résolus ce mois', 'var(--green)');
+  const item = (key, n, label, color, sub) => '<button type="button" class="tkc' + (cur === key ? ' on' : '') + '" style="--c:' + color + '" onclick="filterTrackingStatus(\'' + key + '\')">' +
+    '<b>' + n + '</b>' + label + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+  const jours = n => n === 0 ? 'aujourd\'hui' : n + ' j';
+  const doneSub = done === donePrev ? 'autant qu\'en ' + new Date(prevStart).toLocaleDateString('fr-FR', { month: 'long' })
+    : (done > donePrev ? '▲ ' : '▼ ') + Math.abs(done - donePrev) + ' de ' + (done > donePrev ? 'plus' : 'moins') + ' qu\'en ' + new Date(prevStart).toLocaleDateString('fr-FR', { month: 'long' });
+  const total = todo + prog + done;
+  const bar = '<div class="tk-pipe-bar' + (total ? '' : ' empty') + '" role="img" aria-label="' + todo + ' à traiter, ' + prog + ' en cours, ' + done + ' résolus ce mois">' +
+    (total ? '<i style="--g:' + todo + ';--c:var(--amber)"></i><i style="--g:' + prog + ';--c:var(--blue)"></i><i style="--g:' + done + ';--c:var(--green)"></i>' : '') + '</div>';
+  const pl = oOpen ? players.find(p => p.id === oOpen.playerId) : null;
+  const foot = [];
+  if (avgDays != null) foot.push('<span>Délai moyen de résolution : <b>' + (avgDays < 1 ? 'moins d\'un jour' : avgDays.toFixed(1).replace('.', ',') + ' jours') + '</b></span>');
+  if (oOpen) foot.push('<button type="button" onclick="filterTrackingStatus(\'' + ((oOpen.status || 'todo') === 'todo' ? 'todo' : 'in_progress') + '\')">Plus ancien en attente : <b>' + escapeHtml((pl ? pl.pseudo + ' · ' : '') + String(oOpen.text || '').slice(0, 48)) + '</b> (' + jours(ageDays(oOpen)) + ')</button>');
+  el.innerHTML = bar +
+    '<div class="tk-counters">' +
+      item('todo', todo, 'à traiter', 'var(--amber)', oTodo ? 'le plus ancien : ' + jours(ageDays(oTodo)) : 'rien en attente') +
+      item('in_progress', prog, 'en cours', 'var(--blue)', oProg ? 'depuis ' + jours(ageDays(oProg)) : 'aucun') +
+      item('resolved', done, 'résolus ce mois', 'var(--green)', doneSub) +
+    '</div>' +
+    (foot.length ? '<div class="tk-pipe-f">' + foot.join('') + '</div>' : '');
 }
 
 function filterTrackingStatus(key) {
